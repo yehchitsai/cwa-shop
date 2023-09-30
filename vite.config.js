@@ -1,5 +1,6 @@
 import { resolve } from 'path'
 import { defineConfig } from 'vite'
+import faviconsInject from 'vite-plugin-favicons-inject'
 import react from '@vitejs/plugin-react-swc'
 import { viteMockServe } from 'vite-plugin-mock'
 import { version, name } from './package.json'
@@ -17,6 +18,7 @@ export default defineConfig({
   },
   root,
   plugins: [
+    faviconsInject('./src/assets/favicon.ico'),
     react(),
     viteMockServe({
       mockPath: 'mock',
