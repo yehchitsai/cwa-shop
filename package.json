@@ -1,9 +1,8 @@
 {
-  "name": "vite-spa-template",
+  "name": "cwa-shop",
   "private": true,
   "version": "0.11.0",
   "type": "module",
-  "homepage": "https://sky172839465.github.io/vite-spa-template/",
   "scripts": {
     "dev": "vite",
     "dev:mock": "MOCK=1 npm run dev",
