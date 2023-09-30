@@ -18,7 +18,7 @@ export default defineConfig({
   },
   root,
   plugins: [
-    faviconsInject('./src/assets/favicon.ico'),
+    faviconsInject('./src/assets/favicon-32x32.png'),
     react(),
     viteMockServe({
       mockPath: 'mock',
