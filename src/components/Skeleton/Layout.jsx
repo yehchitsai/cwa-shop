@@ -1,6 +1,6 @@
 import NavBar from '../NavBar'
 
-const Layout = () => (
+const SkeletonLayout = () => (
   <div className='hero min-h-screen bg-base-200'>
     <div className='hero-content text-center'>
       <div className='max-w-md'>
@@ -11,4 +11,4 @@ const Layout = () => (
   </div>
 )
 
-export default Layout
+export default SkeletonLayout
