@@ -18,7 +18,7 @@ const Home = () => (
   <>
     <div className='flex flex-wrap'>
       {fishData.map((item) => (
-        <Card key={item.id} item={item} />
+        <Card key={`${item.id}${item.price}`} item={item} />
       ))}
     </div>
     <br />
