@@ -24,9 +24,12 @@ const Card = (props) => {
             </div>
           </h2>
           <div className='card-actions justify-end'>
-            <button type='button' className='btn btn-primary btn-outline'>
-              add to cart
-            </button>
+            <div className='form-control'>
+              <label className='label cursor-pointer'>
+                <input type='checkbox' className='checkbox-primary checkbox mr-2' />
+                <span className='label-text'>ADD TO CART</span>
+              </label>
+            </div>
           </div>
         </div>
       </div>
