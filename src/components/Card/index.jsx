@@ -1,5 +1,6 @@
 const Card = (props) => {
   const {
+    onImageClick,
     item: {
       id, images, type, price
     } = {}
@@ -8,7 +9,7 @@ const Card = (props) => {
   return (
     <div className='p-4 max-xl:w-1/2 max-sm:w-full xl:w-1/3'>
       <div className='card bg-base-100 shadow-xl'>
-        <figure><img src={imgUrl} alt='Shoes' /></figure>
+        <figure><img onClick={onImageClick} className='cursor-pointer' src={imgUrl} alt='Shoes' /></figure>
         <div className='card-body'>
           <h2 className='card-title'>
             <div className='flex flex-wrap'>

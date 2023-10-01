@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { times, random } from 'lodash-es'
 import Card from '../components/Card'
+import ProductModel from '../components/Model/Product'
 
 const images = times(4, (index) => `img${index}.jpg`)
 const fishData = times(random(20, 40), (index) => {
@@ -14,18 +15,26 @@ const fishData = times(random(20, 40), (index) => {
   }
 })
 
-const Home = () => (
-  <>
-    <div className='flex flex-wrap'>
-      {fishData.map((item) => (
-        <Card key={`${item.id}${item.price}`} item={item} />
-      ))}
-    </div>
-    <br />
-    <Link to='/about'>about</Link>
-    <br />
-    <Link to='/detail'>detail</Link>
-  </>
-)
+const Home = () => {
+  const openProductModal = () => document.querySelector('#productModel').showModal()
+  return (
+    <>
+      <div className='flex flex-wrap'>
+        {fishData.map((item) => (
+          <Card
+            key={`${item.id}${item.price}`}
+            item={item}
+            onImageClick={openProductModal}
+          />
+        ))}
+      </div>
+      <ProductModel id='productModel' />
+      <br />
+      <Link to='/about'>about</Link>
+      <br />
+      <Link to='/detail'>detail</Link>
+    </>
+  )
+}
 
 export default Home
