@@ -7,11 +7,11 @@ const Drawer = (props) => {
       <input id='my-drawer-4' type='checkbox' className='drawer-toggle' />
       <div className='drawer-content'>
         {children}
-        <label htmlFor='my-drawer-4' className='btn btn-square btn-outline drawer-button fixed bottom-2 right-2 lg:hidden'>
+        <label htmlFor='my-drawer-4' className='btn btn-square btn-primary btn-outline drawer-button fixed bottom-2 right-2 lg:hidden'>
           <MdShoppingCart size='2em' />
         </label>
       </div>
-      <div className='drawer-side'>
+      <div className='drawer-side fixed top-[69px] h-[calc(100vh-69px)]'>
         <label htmlFor='my-drawer-4' aria-label='close sidebar' className='drawer-overlay lg:hidden' />
         <ul className='menu min-h-full w-80 bg-base-200 p-4 text-base-content'>
           {/* Sidebar content here */}

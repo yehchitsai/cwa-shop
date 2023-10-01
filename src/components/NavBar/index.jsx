@@ -28,7 +28,7 @@ const NavBar = (props) => {
   return (
     <div
       className={clx(
-        'navbar bg-base-300 w-full sticky top-0',
+        'navbar bg-base-300 w-full sticky top-0 z-10',
         { fixed }
       )}
     >
