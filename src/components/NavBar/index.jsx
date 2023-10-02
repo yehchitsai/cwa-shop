@@ -50,7 +50,7 @@ const NavBar = (props) => {
               </ul>
             </details>
           </li>
-          <li><span className='tooltip tooltip-bottom' data-tip={`v${window.APP_VERSION}`}>User 1</span></li>
+          <li><span className='tooltip tooltip-left' data-tip={`v${window.APP_VERSION}`}>User 1</span></li>
           <li><span><MdLogout size='1.5em' /></span></li>
         </ul>
       </div>
