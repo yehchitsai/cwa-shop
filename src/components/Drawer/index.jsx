@@ -77,8 +77,7 @@ const Drawer = (props) => {
       <div
         className={clx(
           'drawer-side',
-          'top-[69px]',
-          { 'h-[calc(100vh-69px)]': isRoot }
+          { 'md:top-[69px] md:h-[calc(100vh-69px)]': isRoot }
         )}
       >
         {
