@@ -4,6 +4,7 @@ import { LuArrowRightFromLine, LuArrowLeftFromLine } from 'react-icons/lu'
 import { size, delay, times } from 'lodash-es'
 import Model from '..'
 import Drawer from '../../Drawer'
+import LazyImage from '../../LazyImage'
 
 const imgUrls = times(4, (index) => new URL(`../../Card/img${index}.jpg`, import.meta.url).href)
 const ESC_KEY_CODE = 27
@@ -101,10 +102,16 @@ const ProductModel = (props) => {
                 >
                   ❮
                 </button>
-                <img
+                <LazyImage
                   src={imgUrl}
                   className='m-auto max-h-full object-scale-down'
                   alt='Carousel component'
+                  style={{
+                    transform: 'translateX(-50%)',
+                    'z-index': 0,
+                    width: '100vw',
+                    height: '80vh'
+                  }}
                 />
                 <button
                   type='button'

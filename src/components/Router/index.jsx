@@ -8,6 +8,7 @@ import SkeletonHome from '../Skeleton/Home'
 import ErrorElement from './ErrorElement.jsx'
 import Layout from './Layout'
 import NavBar from '../NavBar'
+import 'react-loading-skeleton/dist/skeleton.css'
 
 const pages = import.meta.glob('../../pages/*.jsx')
 

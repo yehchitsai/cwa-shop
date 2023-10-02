@@ -1,3 +1,5 @@
+import LazyImage from '../LazyImage'
+
 const Card = (props) => {
   const {
     onImageClick,
@@ -11,7 +13,17 @@ const Card = (props) => {
   return (
     <div className='p-4 max-xl:w-1/2 max-sm:w-full xl:w-1/3'>
       <div className='card bg-base-100 shadow-xl'>
-        <figure><img onClick={onImageClick} className='cursor-pointer' src={imgUrl} alt='Shoes' /></figure>
+        <figure
+          className='h-[30vh] cursor-pointer'
+          style={{ display: 'block' }}
+          onClick={onImageClick}
+        >
+          <LazyImage
+            src={imgUrl}
+            alt={type}
+            style={{ width: '100%', height: '100%' }}
+          />
+        </figure>
         <div className='card-body'>
           <h2 className='card-title'>
             <div className='flex flex-wrap'>
