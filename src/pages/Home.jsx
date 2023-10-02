@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { MdShoppingCart } from 'react-icons/md'
+import {
+  filter, isEmpty, groupBy, flow, reduce, size
+} from 'lodash-es'
 import Card from '../components/Card'
 import ProductModel from '../components/Model/Product'
 import useFishData from '../hooks/useFishData'
@@ -16,29 +19,58 @@ const options = [
 ].map((option) => ({ label: option, value: option }))
 const productModelKey = 'productModel'
 
+const CartItems = (props) => {
+  const { items = [] } = props
+  if (isEmpty(items)) {
+    return <li disabled><span>Cart is empty</span></li>
+  }
+
+  const cartList = flow(
+    () => groupBy(items, (item) => item.type),
+    (groupedItems) => reduce(groupedItems, (list, products, type) => {
+      const newList = [...list, { index: size(products), type, products }]
+      return newList
+    }, [])
+  )()
+  return cartList.map((item) => (
+    <li key={item.index}><span>{`${item.type} X ${size(item.products)}`}</span></li>
+  ))
+}
+
 const Home = () => {
   const [isProductModalOpen, setIsProductModalOpen] = useState(false)
+  const [targetProduct, setTargetProduct] = useState({})
+  const [selectProducts, setSelectProducts] = useState([])
   const { data, isLoading } = useFishData()
   if (isLoading) {
     return <SkeletonHome />
   }
 
-  const openProductModal = async () => {
+  const openProductModal = (newTargetProduct) => async () => {
+    setTargetProduct(newTargetProduct)
     setIsProductModalOpen(true)
     document.querySelector(`#${productModelKey}`).showModal()
   }
 
   const closeProductModal = () => setIsProductModalOpen(false)
 
+  const onSelectProduct = (product) => (e) => {
+    const isSelected = e.target.checked
+    let newSelectProducts = [...selectProducts]
+    if (isSelected) {
+      newSelectProducts = [...selectProducts, product]
+    } else {
+      newSelectProducts = filter(selectProducts, (selectProduct) => {
+        return selectProduct.id !== product.id
+      })
+    }
+    setSelectProducts(newSelectProducts)
+  }
+
   return (
     <Drawer
       id='rootSidebar'
-      items={(
-        <>
-          <li><span>Sidebar Item 1</span></li>
-          <li><span>Sidebar Item 2</span></li>
-        </>
-      )}
+      items={(<CartItems items={selectProducts} />)}
       openIcon={MdShoppingCart}
       overlay
       // indicator={2}
@@ -68,7 +100,8 @@ const Home = () => {
             <Card
               key={`${item.id}${item.price}`}
               item={item}
-              onImageClick={openProductModal}
+              onImageClick={openProductModal(item)}
+              onSelectProduct={onSelectProduct}
             />
           ))}
         </div>
@@ -77,6 +110,7 @@ const Home = () => {
         id={productModelKey}
         visible={isProductModalOpen}
         onClose={closeProductModal}
+        product={targetProduct}
       />
     </Drawer>
   )

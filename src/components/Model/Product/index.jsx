@@ -1,19 +1,28 @@
 import { useEffect, useCallback } from 'react'
 import clx from 'classnames'
 import { LuArrowRightFromLine, LuArrowLeftFromLine } from 'react-icons/lu'
-import { times, size, delay } from 'lodash-es'
+import { size, delay, times } from 'lodash-es'
 import Model from '..'
 import Drawer from '../../Drawer'
 
 const imgUrls = times(4, (index) => new URL(`../../Card/img${index}.jpg`, import.meta.url).href)
-const maxIndex = size(imgUrls) - 1
 const ESC_KEY_CODE = 27
 
 const ProductModel = (props) => {
-  const { id, visible, onClose } = props
+  const {
+    id, visible, onClose, product = {}
+  } = props
+  const {
+    id: productId,
+    images: productImages = [],
+    price,
+    type
+  } = product
+  const images = imgUrls.slice(0, size(productImages))
+  const maxIndex = size(images) - 1
 
   const scrollToOtherImage = (targetIndex) => {
-    document.querySelector(`#${id} img[src="${imgUrls[targetIndex]}"]`).scrollIntoView()
+    document.querySelector(`#${id} img[src="${images[targetIndex]}"]`).scrollIntoView()
   }
 
   const onClickEsc = useCallback(async (e) => {
@@ -57,7 +66,14 @@ const ProductModel = (props) => {
     >
       <Drawer
         id='productInfoSidebar'
-        className='bg-slate-100/30'
+        className='bg-slate-100/50'
+        items={(
+          <>
+            <li><span className='p-1'>{`id: ${productId}`}</span></li>
+            <li><span className='p-1'>{`type: ${type}`}</span></li>
+            <li><span className='p-1'>{`price: ${price} NTD`}</span></li>
+          </>
+        )}
         openIcon={LuArrowLeftFromLine}
         closeIcon={LuArrowRightFromLine}
         overlay={false}
@@ -65,8 +81,8 @@ const ProductModel = (props) => {
         rwd={false}
         defaultOpen
       >
-        <div className='carousel w-full items-center rounded-none max-md:h-full md:h-[100vh]'>
-          {imgUrls.map((imgUrl, index) => {
+        <div className='carousel w-full items-center rounded-none bg-slate-100 max-md:h-full md:h-[100vh]'>
+          {images.map((imgUrl, index) => {
             const prevIndex = index - 1
             const nextIndex = index + 1
             return (

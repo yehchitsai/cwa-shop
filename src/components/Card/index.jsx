@@ -1,10 +1,12 @@
 const Card = (props) => {
   const {
     onImageClick,
-    item: {
-      id, images, type, price
-    } = {}
+    onSelectProduct,
+    item = {}
   } = props
+  const {
+    id, images, type, price
+  } = item
   const imgUrl = new URL(`./${images[0]}`, import.meta.url).href
   return (
     <div className='p-4 max-xl:w-1/2 max-sm:w-full xl:w-1/3'>
@@ -27,7 +29,11 @@ const Card = (props) => {
           <div className='card-actions justify-end'>
             <div className='form-control'>
               <label className='label cursor-pointer'>
-                <input type='checkbox' className='checkbox-primary checkbox mr-2' />
+                <input
+                  type='checkbox'
+                  className='checkbox-primary checkbox mr-2'
+                  onChange={onSelectProduct(item)}
+                />
                 <span className='label-text'>ADD TO CART</span>
               </label>
             </div>
