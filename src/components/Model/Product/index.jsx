@@ -51,7 +51,6 @@ const ProductModel = (props) => {
                 </button>
                 <img
                   src={imgUrl}
-                  // className='object-contain'
                   alt='Carousel component'
                 />
                 <button
