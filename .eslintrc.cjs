@@ -16,6 +16,7 @@ module.exports = {
       { allowConstantExport: true }
     ],
     'no-console': 'off',
+    'arrow-body-style': 'off',
     semi: [2, 'never'],
     'comma-dangle': ['error', 'never'],
     'jsx-quotes': ['error', 'prefer-single'],

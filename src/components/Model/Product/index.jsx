@@ -11,7 +11,6 @@ const ProductModel = (props) => {
   const { id } = props
 
   const scrollToOtherImage = (targetIndex) => {
-    console.log(targetIndex)
     document.querySelector(`#${id} img[src="${imgUrls[targetIndex]}"]`).scrollIntoView()
   }
 
@@ -35,7 +34,6 @@ const ProductModel = (props) => {
           {imgUrls.map((imgUrl, index) => {
             const prevIndex = index - 1
             const nextIndex = index + 1
-            console.log({ imgUrl, index })
             return (
               <div
                 key={imgUrl}
