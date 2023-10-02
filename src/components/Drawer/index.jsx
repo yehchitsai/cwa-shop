@@ -41,7 +41,7 @@ const Drawer = (props) => {
   return (
     <div
       className={clx(
-        'drawer drawer-end',
+        'drawer drawer-end h-full',
         { 'lg:drawer-open': rwd }
       )}
     >
@@ -71,7 +71,7 @@ const Drawer = (props) => {
       <div
         className={clx(
           'drawer-side',
-          { 'fixed top-[69px] h-[calc(100vh-69px)]': isRoot }
+          { 'fixed top-[69px] h-[calc(100%-69px)]': isRoot }
         )}
       >
         {

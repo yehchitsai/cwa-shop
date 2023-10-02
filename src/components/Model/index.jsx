@@ -1,3 +1,4 @@
+import { MdOutlineClose } from 'react-icons/md'
 import { isUndefined } from 'lodash-es'
 import clx from 'classnames'
 
@@ -20,7 +21,9 @@ const Model = (props) => {
       >
         <form method='dialog'>
           {/* if there is a button in form, it will close the modal */}
-          <button type='submit' className='btn btn-circle glass btn-md absolute right-2 top-2 z-10'>✕</button>
+          <button type='submit' className='btn btn-circle btn-md absolute right-2 top-2 z-10'>
+            <MdOutlineClose size='1.5em' />
+          </button>
         </form>
         {!isUndefined(title) && (
           <h3 className='text-lg font-bold'>{title}</h3>

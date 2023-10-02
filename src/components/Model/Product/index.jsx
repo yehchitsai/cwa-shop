@@ -17,7 +17,7 @@ const ProductModel = (props) => {
   return (
     <Model
       id={id}
-      className='h-[100%] max-h-[100vh] w-[100%] max-w-[100vw] rounded-none p-0'
+      className='h-[100%] min-h-[100%] w-[100%] max-w-[100vw] rounded-none p-0'
       isCloseBtnVisible={false}
     >
       <Drawer
@@ -30,14 +30,14 @@ const ProductModel = (props) => {
         rwd={false}
         defaultOpen
       >
-        <div className='carousel h-[100vh] w-full rounded-none'>
+        <div className='carousel h-full w-full items-center rounded-none'>
           {imgUrls.map((imgUrl, index) => {
             const prevIndex = index - 1
             const nextIndex = index + 1
             return (
               <div
                 key={imgUrl}
-                className='carousel-item relative flex h-[100vh] w-full items-center justify-center overflow-y-auto'
+                className='carousel-item relative flex h-[100%] w-full items-center justify-center overflow-y-auto'
               >
                 <button
                   type='button'
