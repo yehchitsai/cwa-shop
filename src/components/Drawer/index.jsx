@@ -77,7 +77,8 @@ const Drawer = (props) => {
       <div
         className={clx(
           'drawer-side',
-          { 'fixed top-[69px] h-[calc(100%-69px)]': isRoot }
+          'top-[69px]',
+          { 'h-[calc(100vh-69px)]': isRoot }
         )}
       >
         {
@@ -100,7 +101,12 @@ const Drawer = (props) => {
           )}
         >
           {/* Sidebar content here */}
-          <li className='max-lg:mb-14'>
+          <li
+            className={clx(
+              'max-lg:mb-14',
+              { 'mb-14': !isRoot }
+            )}
+          >
             <label
               htmlFor={id}
               className={clx(
