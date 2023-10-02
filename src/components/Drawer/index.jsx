@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { MdOutlineClose } from 'react-icons/md'
 import clx from 'classnames'
+import { isUndefined } from 'lodash-es'
 
 const withBadgeBtn = (indicator, isRoot, component) => {
   if (!indicator) {
@@ -28,6 +29,7 @@ const Drawer = (props) => {
     id,
     children,
     items,
+    bottomItems,
     openIcon: OpenIcon,
     closeIcon: CloseIcon = MdOutlineClose,
     overlay = false,
@@ -38,6 +40,7 @@ const Drawer = (props) => {
     className
   } = props
   const [isOpen, setIsOpen] = useState(defaultOpen)
+  const isBottomItemsExist = !isUndefined(bottomItems)
 
   return (
     <div
@@ -76,8 +79,8 @@ const Drawer = (props) => {
       </div>
       <div
         className={clx(
-          'drawer-side',
-          { 'md:top-[69px] md:h-[calc(100vh-69px)]': isRoot }
+          'drawer-side flex flex-wrap',
+          { 'md:top-[69px] md:h-[calc(100vh-69px)] z-10': isRoot }
         )}
       >
         {
@@ -95,7 +98,9 @@ const Drawer = (props) => {
         }
         <ul
           className={clx(
-            'menu min-h-full max-sm:w-full sm:w-80 bg-base-200 p-4 text-base-content',
+            'menu max-sm:w-full sm:w-80 bg-base-200 p-4 text-base-content',
+            { 'max-sm:h-[80%] sm:h-[70%]': isBottomItemsExist },
+            { 'h-full': !isBottomItemsExist },
             { [className]: className }
           )}
         >
@@ -119,6 +124,18 @@ const Drawer = (props) => {
           </li>
           {items}
         </ul>
+        {
+          isBottomItemsExist && (
+            <ul
+              className={clx(
+                'menu max-sm:h-[20%] sm:h-[30%] max-sm:w-full sm:w-80 bg-base-200 p-4 text-base-content',
+                { [className]: className }
+              )}
+            >
+              {bottomItems}
+            </ul>
+          )
+        }
       </div>
     </div>
   )

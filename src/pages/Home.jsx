@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import clx from 'classnames'
 import { MdShoppingCart } from 'react-icons/md'
 import {
-  filter, isEmpty, groupBy, flow, reduce, size
+  filter, groupBy, flow, reduce, size, sumBy
 } from 'lodash-es'
 import Card from '../components/Card'
 import ProductModel from '../components/Model/Product'
@@ -21,7 +22,9 @@ const productModelKey = 'productModel'
 
 const CartItems = (props) => {
   const { items = [] } = props
-  if (isEmpty(items)) {
+  const selectedSize = size(items)
+  const isNoProductSelected = selectedSize === 0
+  if (isNoProductSelected) {
     return <li disabled><span>Cart is empty</span></li>
   }
 
@@ -30,11 +33,37 @@ const CartItems = (props) => {
     (groupedItems) => reduce(groupedItems, (list, products, type) => {
       const newList = [...list, { index: size(products), type, products }]
       return newList
-    }, [])
+    }, []),
+    (groupedProducts) => groupedProducts.map((item) => (
+      <li key={item.type}><span>{`${item.type} X ${size(item.products)}`}</span></li>
+    ))
   )()
-  return cartList.map((item) => (
-    <li key={item.type}><span>{`${item.type} X ${size(item.products)}`}</span></li>
-  ))
+  return cartList
+}
+
+const CartBottomItems = (props) => {
+  const { items = [] } = props
+  const selectedSize = size(items)
+  const isNoProductSelected = selectedSize === 0
+  return (
+    <>
+      <li key='totalCount'>
+        <span>{`Total count: ${selectedSize}`}</span>
+      </li>
+      <li key='totalPrice'>
+        <span>{`Total: ${sumBy(items, (item) => item.price)} NTD`}</span>
+      </li>
+      <button
+        type='button'
+        className={clx(
+          'btn btn-primary btn-outline btn-md w-full my-1',
+          { 'btn-disabled': isNoProductSelected }
+        )}
+      >
+        Confirm order
+      </button>
+    </>
+  )
 }
 
 const Home = () => {
@@ -71,6 +100,7 @@ const Home = () => {
     <Drawer
       id='rootSidebar'
       items={(<CartItems items={selectProducts} />)}
+      bottomItems={(<CartBottomItems items={selectProducts} />)}
       openIcon={MdShoppingCart}
       overlay
       // indicator={2}
