@@ -20,7 +20,7 @@ const Model = (props) => {
       >
         <form method='dialog'>
           {/* if there is a button in form, it will close the modal */}
-          <button type='submit' className='btn btn-circle btn-ghost btn-sm absolute right-2 top-2 z-10'>✕</button>
+          <button type='submit' className='btn btn-circle glass btn-md absolute right-2 top-2 z-10'>✕</button>
         </form>
         {!isUndefined(title) && (
           <h3 className='text-lg font-bold'>{title}</h3>

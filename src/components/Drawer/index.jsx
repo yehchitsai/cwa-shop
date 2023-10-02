@@ -29,7 +29,7 @@ const Drawer = (props) => {
         <label
           htmlFor={id}
           className={clx(
-            'btn btn-square btn-primary btn-outline drawer-button bottom-2 right-2',
+            'btn btn-square glass btn-outline drawer-button bottom-2 right-2',
             { absolute: !isRoot },
             { fixed: isRoot },
             { 'lg:hidden': rwd },

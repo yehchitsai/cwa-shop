@@ -42,7 +42,7 @@ const ProductModel = (props) => {
                 <button
                   type='button'
                   className={clx(
-                    'btn btn-circle absolute left-4 z-10',
+                    'btn btn-circle glass absolute left-4 z-10',
                     { hidden: prevIndex === -1 }
                   )}
                   onClick={() => scrollToOtherImage(prevIndex)}
@@ -57,7 +57,7 @@ const ProductModel = (props) => {
                 <button
                   type='button'
                   className={clx(
-                    'btn btn-circle absolute right-4 z-10',
+                    'btn btn-circle glass absolute right-4 z-10',
                     { hidden: nextIndex > maxIndex }
                   )}
                   onClick={() => scrollToOtherImage(nextIndex)}
