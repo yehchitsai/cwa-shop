@@ -79,7 +79,7 @@ const Drawer = (props) => {
       </div>
       <div
         className={clx(
-          'drawer-side',
+          'drawer-side max-sm:flex max-sm:flex-wrap',
           { 'md:top-[69px] md:h-[calc(100vh-69px)] z-10': isRoot }
         )}
       >
@@ -128,7 +128,7 @@ const Drawer = (props) => {
           isBottomItemsExist && (
             <ul
               className={clx(
-                'menu h-[30%] max-sm:w-full sm:w-80 bg-base-200 p-4 text-base-content',
+                'menu h-[30%] max-sm:w-full sm:w-80 bg-base-200 p-4 text-base-content relative max-lg:top-[70%] max-sm:top-auto lg:top-auto',
                 { [className]: className }
               )}
             >
