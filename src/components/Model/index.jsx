@@ -8,8 +8,11 @@ const Model = (props) => {
     title,
     children,
     className,
-    isCloseBtnVisible = true
+    isCloseBtnVisible = true,
+    onClose
   } = props
+
+  const onModalClose = () => onClose && onClose()
 
   return (
     <dialog id={id} className='modal'>
@@ -21,7 +24,11 @@ const Model = (props) => {
       >
         <form method='dialog'>
           {/* if there is a button in form, it will close the modal */}
-          <button type='submit' className='btn btn-circle btn-md absolute right-2 top-2 z-10'>
+          <button
+            type='submit'
+            className='btn btn-circle btn-md absolute right-2 top-2 z-10'
+            onClick={onModalClose}
+          >
             <MdOutlineClose size='1.5em' />
           </button>
         </form>
@@ -34,7 +41,7 @@ const Model = (props) => {
             <div className='modal-action'>
               <form method='dialog'>
                 {/* if there is a button in form, it will close the modal */}
-                <button type='submit' className='btn'>Close</button>
+                <button type='submit' className='btn' onClick={onModalClose}>Close</button>
               </form>
             </div>
           )

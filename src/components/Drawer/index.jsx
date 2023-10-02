@@ -32,20 +32,26 @@ const Drawer = (props) => {
     closeIcon: CloseIcon = MdOutlineClose,
     overlay = false,
     indicator = false,
+    defaultOpen = false,
     isRoot = false,
     rwd = true,
     className
   } = props
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(defaultOpen)
 
   return (
     <div
       className={clx(
-        'drawer drawer-end h-full',
+        'drawer drawer-end max-sm:h-full',
         { 'lg:drawer-open': rwd }
       )}
     >
-      <input id={id} type='checkbox' className='drawer-toggle' />
+      <input
+        id={id}
+        type='checkbox'
+        className='drawer-toggle'
+        defaultChecked={defaultOpen}
+      />
       <div className='drawer-content'>
         {children}
         {withBadgeBtn(
@@ -89,7 +95,7 @@ const Drawer = (props) => {
         }
         <ul
           className={clx(
-            'menu min-h-full w-80 bg-base-200 p-4 text-base-content',
+            'menu min-h-full max-sm:w-full sm:w-80 bg-base-200 p-4 text-base-content',
             { [className]: className }
           )}
         >

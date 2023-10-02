@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { MdShoppingCart } from 'react-icons/md'
 import Card from '../components/Card'
@@ -13,14 +14,22 @@ const options = [
   'Lisa',
   'Maggie'
 ].map((option) => ({ label: option, value: option }))
+const productModelKey = 'productModel'
 
 const Home = () => {
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false)
   const { data, isLoading } = useFishData()
   if (isLoading) {
     return <SkeletonHome />
   }
 
-  const openProductModal = () => document.querySelector('#productModel').showModal()
+  const openProductModal = async () => {
+    setIsProductModalOpen(true)
+    document.querySelector(`#${productModelKey}`).showModal()
+  }
+
+  const closeProductModal = () => setIsProductModalOpen(false)
+
   return (
     <Drawer
       id='rootSidebar'
@@ -64,7 +73,11 @@ const Home = () => {
           ))}
         </div>
       </div>
-      <ProductModel id='productModel' />
+      <ProductModel
+        id={productModelKey}
+        visible={isProductModalOpen}
+        onClose={closeProductModal}
+      />
     </Drawer>
   )
 }
