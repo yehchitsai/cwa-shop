@@ -17,10 +17,10 @@ const Card = (props) => {
                 {`No.${id}`}
               </div>
               <div className='w-2/3 text-right'>
-                {`$${price} NTD`}
-              </div>
-              <div className='w-full'>
                 {type}
+              </div>
+              <div className='w-full py-2'>
+                {`$${price} NTD`}
               </div>
             </div>
           </h2>
