@@ -66,6 +66,7 @@ const ProductModel = (props) => {
     >
       <Drawer
         id='productInfoSidebar'
+        key={productId}
         className='bg-slate-100/50'
         items={(
           <>
