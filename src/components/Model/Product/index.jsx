@@ -65,7 +65,7 @@ const ProductModel = (props) => {
         rwd={false}
         defaultOpen
       >
-        <div className='carousel w-full items-center rounded-none max-sm:h-full sm:h-[100vh]'>
+        <div className='carousel w-full items-center rounded-none max-md:h-full md:h-[100vh]'>
           {imgUrls.map((imgUrl, index) => {
             const prevIndex = index - 1
             const nextIndex = index + 1
