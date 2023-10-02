@@ -3,14 +3,19 @@ import Skeleton from 'react-loading-skeleton'
 
 const LazyImage = (props) => {
   const {
-    src: imageSrc, alt, style, className
+    src: imageSrc, alt, style, className, loaderClassName
   } = props
   const { src, isLoading } = useImage({
     srcList: imageSrc
   })
 
   if (isLoading) {
-    return <Skeleton style={{ display: 'block', ...style }} />
+    return (
+      <Skeleton
+        style={{ display: 'block', ...style }}
+        className={loaderClassName}
+      />
+    )
   }
 
   return (

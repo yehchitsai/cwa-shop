@@ -14,14 +14,14 @@ const Card = (props) => {
     <div className='p-4 max-xl:w-1/2 max-sm:w-full xl:w-1/3'>
       <div className='card bg-base-100 shadow-xl'>
         <figure
-          className='h-[30vh] cursor-pointer'
+          className='cursor-pointer'
           style={{ display: 'block' }}
           onClick={onImageClick}
         >
           <LazyImage
             src={imgUrl}
             alt={type}
-            style={{ width: '100%', height: '100%' }}
+            loaderClassName='w-full h-[10rem]'
           />
         </figure>
         <div className='card-body'>

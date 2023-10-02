@@ -106,12 +106,7 @@ const ProductModel = (props) => {
                   src={imgUrl}
                   className='m-auto max-h-full object-scale-down'
                   alt='Carousel component'
-                  style={{
-                    transform: 'translateX(-50%)',
-                    'z-index': 0,
-                    width: '100vw',
-                    height: '80vh'
-                  }}
+                  loaderClassName='translate-x-[-100%] z-0 w-[100vw] h-[80vh]'
                 />
                 <button
                   type='button'
