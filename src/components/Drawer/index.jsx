@@ -79,7 +79,7 @@ const Drawer = (props) => {
       </div>
       <div
         className={clx(
-          'drawer-side flex flex-wrap',
+          'drawer-side',
           { 'md:top-[69px] md:h-[calc(100vh-69px)] z-10': isRoot }
         )}
       >
