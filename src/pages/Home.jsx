@@ -33,7 +33,7 @@ const CartItems = (props) => {
     }, [])
   )()
   return cartList.map((item) => (
-    <li key={item.index}><span>{`${item.type} X ${size(item.products)}`}</span></li>
+    <li key={item.type}><span>{`${item.type} X ${size(item.products)}`}</span></li>
   ))
 }
 
