@@ -3,11 +3,12 @@ import { times, random } from 'lodash-es'
 
 const images = times(4, (index) => `img${index}.jpg`)
 const fishData = times(random(20, 40), (index) => {
-  const fishType = random(0, 3)
+  const imageSize = random(0, 2)
+  const fishType = random(0, imageSize - 1)
   return {
     index,
     id: index * random(10, 20),
-    images: [images[fishType]],
+    images: images.slice(imageSize, 4),
     type: `Fish ${fishType}`,
     price: random(1000, 1500) * (index + 1)
   }
