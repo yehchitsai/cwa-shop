@@ -33,6 +33,7 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'react/jsx-uses-react': 'off',
     'react/function-component-definition': 'off',
+    'react/no-array-index-key': 'off',
     'operator-linebreak': ['error', 'after'],
     'import/extensions': [0],
     'import/no-extraneous-dependencies': [0],
