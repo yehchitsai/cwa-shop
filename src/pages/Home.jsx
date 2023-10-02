@@ -32,6 +32,7 @@ const Home = () => {
       )}
       openIcon={MdShoppingCart}
       overlay
+      // indicator={2}
       isRoot
       rwd
     >

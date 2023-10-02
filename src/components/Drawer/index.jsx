@@ -2,6 +2,27 @@ import { useState } from 'react'
 import { MdOutlineClose } from 'react-icons/md'
 import clx from 'classnames'
 
+const withBadgeBtn = (indicator, isRoot, component) => {
+  if (!indicator) {
+    return component
+  }
+
+  return (
+    <div className='indicator fixed bottom-2 right-2'>
+      <span
+        className={clx(
+          'badge indicator-item badge-secondary bottom-2 right-2',
+          { absolute: !isRoot },
+          { fixed: isRoot }
+        )}
+      >
+        {indicator}
+      </span>
+      {component}
+    </div>
+  )
+}
+
 const Drawer = (props) => {
   const {
     id,
@@ -10,6 +31,7 @@ const Drawer = (props) => {
     openIcon: OpenIcon,
     closeIcon: CloseIcon = MdOutlineClose,
     overlay = false,
+    indicator = false,
     isRoot = false,
     rwd = true,
     className
@@ -26,19 +48,25 @@ const Drawer = (props) => {
       <input id={id} type='checkbox' className='drawer-toggle' />
       <div className='drawer-content'>
         {children}
-        <label
-          htmlFor={id}
-          className={clx(
-            'btn btn-square glass btn-outline drawer-button bottom-2 right-2',
-            { absolute: !isRoot },
-            { fixed: isRoot },
-            { 'lg:hidden': rwd },
-            { hidden: isOpen }
-          )}
-          onClick={() => setIsOpen(true)}
-        >
-          <OpenIcon size='2em' />
-        </label>
+        {withBadgeBtn(
+          indicator,
+          isRoot,
+          (
+            <label
+              htmlFor={id}
+              className={clx(
+                'btn btn-square glass btn-outline drawer-button bottom-2 right-2',
+                { absolute: !isRoot },
+                { fixed: isRoot },
+                { 'lg:hidden': rwd },
+                { hidden: isOpen }
+              )}
+              onClick={() => setIsOpen(true)}
+            >
+              <OpenIcon size='2em' />
+            </label>
+          )
+        )}
       </div>
       <div
         className={clx(
