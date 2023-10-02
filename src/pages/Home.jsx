@@ -6,6 +6,14 @@ import useFishData from '../hooks/useFishData'
 import SkeletonHome from '../components/Skeleton/Home'
 import Drawer from '../components/Drawer'
 
+const options = [
+  'Homer',
+  'Marge',
+  'Bart',
+  'Lisa',
+  'Maggie'
+].map((option) => ({ label: option, value: option }))
+
 const Home = () => {
   const { data, isLoading } = useFishData()
   if (isLoading) {
@@ -32,6 +40,19 @@ const Home = () => {
         &nbsp;
         <Link to='/detail'>detail</Link>
         <br />
+        <div className='flex flex-wrap'>
+          <div className='w-full p-4'>
+            <select className='select select-bordered w-full max-w-xs' defaultValue={-1}>
+              <option value={-1} disabled>Select fish type</option>
+              {options.map((option) => {
+                const { label, value } = option
+                return (
+                  <option value={value} key={value}>{label}</option>
+                )
+              })}
+            </select>
+          </div>
+        </div>
         <div className='flex flex-wrap'>
           {data.map((item) => (
             <Card
