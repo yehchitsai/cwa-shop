@@ -12,7 +12,11 @@ export default {
     aspectRatio: false
   },
   theme: {
-    extend: {}
+    extend: {
+      height: {
+        'screen-fill': '-webkit-fill-available'
+      }
+    }
   },
   plugins: [
     typography,

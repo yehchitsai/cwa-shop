@@ -8,7 +8,14 @@ module.exports = {
   ],
   ignorePatterns: ['dist', 'node_modules'],
   parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
-  settings: { react: { version: 'detect' } },
+  settings: {
+    react: {
+      version: 'detect'
+    },
+    tailwindcss: {
+      whitelist: ['screen-fill']
+    }
+  },
   plugins: ['react-refresh'],
   rules: {
     'react-refresh/only-export-components': [
