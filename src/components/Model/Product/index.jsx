@@ -1,8 +1,9 @@
 import { useEffect, useCallback } from 'react'
 import clx from 'classnames'
+import { useTranslation } from 'react-i18next'
 import Skeleton from 'react-loading-skeleton'
 import { LuArrowRightFromLine, LuArrowLeftFromLine } from 'react-icons/lu'
-import { size, delay } from 'lodash-es'
+import { size, delay, get } from 'lodash-es'
 import useFishInfo from '../../../hooks/useFishInfo'
 import Drawer from '../../Drawer'
 import LazyImage from '../../LazyImage'
@@ -12,21 +13,26 @@ const ESC_KEY_CODE = 27
 
 const ProductModel = (props) => {
   const {
-    id, visible, onClose, product = {}
+    id, visible, onClose, product = {}, fishTypeMap = {}
   } = props
   const {
     itemSerial,
-    // images: productImages = [],
-    price,
     fishType
   } = product
   const {
+    trigger,
     data: {
       itemImages = []
     } = {},
-    isLoading
+    isLoading,
+    isMutating
   } = useFishInfo(itemSerial)
+  const { t } = useTranslation()
   const maxIndex = size(itemImages) - 1
+  const {
+    fishName,
+    fishPrice
+  } = get(fishTypeMap, fishType, {})
 
   const scrollToOtherImage = (targetIndex) => {
     document.querySelector(`#${id} img[src="${itemImages[targetIndex]}"]`).scrollIntoView()
@@ -54,14 +60,15 @@ const ProductModel = (props) => {
   useEffect(() => {
     if (visible) {
       addListener()
+      trigger()
     } else {
       removeListener()
     }
 
     return removeListener
-  }, [visible, addListener, removeListener])
+  }, [visible, addListener, removeListener, trigger])
 
-  if (isLoading) {
+  if (isLoading || isMutating) {
     return (
       <Model
         id={id}
@@ -96,8 +103,8 @@ const ProductModel = (props) => {
         items={(
           <>
             <li><span className='p-1'>{`id: ${itemSerial}`}</span></li>
-            <li><span className='p-1'>{`type: ${fishType}`}</span></li>
-            <li><span className='p-1'>{`price: ${price} NTD`}</span></li>
+            <li><span className='p-1'>{`type: ${fishName}`}</span></li>
+            <li><span className='p-1'>{`price: ${fishPrice} ${t('currency')}`}</span></li>
           </>
         )}
         openIcon={LuArrowLeftFromLine}

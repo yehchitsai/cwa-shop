@@ -1,9 +1,12 @@
-import { useState, useMemo } from 'react'
+import {
+  useMemo,
+  useState
+} from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { MdShoppingCart } from 'react-icons/md'
 import {
-  filter, get
+  filter, get, isEmpty
 } from 'lodash-es'
 import clx from 'classnames'
 import useFishTypes from '../hooks/useFishTypes'
@@ -22,8 +25,8 @@ const Home = () => {
   const { i18n } = useTranslation()
   const {
     fishTypes,
-    isLoading: isFishTypesLoading,
-    fishTypeMap
+    fishTypeMap,
+    isLoading: isFishTypesLoading
   } = useFishTypes(i18n.language)
   const fishType = useMemo(
     () => searchParams.get('fishType') || get(fishTypes, '0.value'),
@@ -33,13 +36,9 @@ const Home = () => {
   const [isProductModalOpen, setIsProductModalOpen] = useState(false)
   const [targetProduct, setTargetProduct] = useState({})
   const [selectProducts, setSelectProducts] = useState([])
-  if (isFishTypesLoading) {
-    return <SkeletonHome />
-  }
 
   const openProductModal = (newTargetProduct) => async () => {
-    const fishTypeInfo = get(fishTypeMap, fishType, {})
-    setTargetProduct({ ...newTargetProduct, ...fishTypeInfo })
+    setTargetProduct({ ...newTargetProduct, fishType })
     setIsProductModalOpen(true)
     document.querySelector(`#${productModelKey}`).showModal()
   }
@@ -55,8 +54,7 @@ const Home = () => {
     const isSelected = e.target.checked
     let newSelectProducts = [...selectProducts]
     if (isSelected) {
-      const fishTypeInfo = get(fishTypeMap, fishType, {})
-      newSelectProducts = [...selectProducts, { ...product, ...fishTypeInfo }]
+      newSelectProducts = [...selectProducts, { ...product, fishType }]
     } else {
       newSelectProducts = filter(selectProducts, (selectProduct) => {
         return selectProduct.itemSerial !== product.itemSerial
@@ -65,11 +63,19 @@ const Home = () => {
     setSelectProducts(newSelectProducts)
   }
 
+  if (isFishTypesLoading && isFishDataLoading && isEmpty(fishTypes)) {
+    return <SkeletonHome />
+  }
+
   return (
     <Drawer
       id='rootSidebar'
-      items={(<CartItems items={selectProducts} />)}
-      bottomItems={(<CartBottomItems items={selectProducts} />)}
+      items={(
+        <CartItems items={selectProducts} fishTypeMap={fishTypeMap} />
+      )}
+      bottomItems={(
+        <CartBottomItems items={selectProducts} fishTypeMap={fishTypeMap} />
+      )}
       openIcon={MdShoppingCart}
       overlay
       // indicator={2}
@@ -84,15 +90,18 @@ const Home = () => {
         <div className='flex flex-wrap'>
           <div className='w-full p-4'>
             <select
-              className='select select-bordered w-full max-w-xs'
-              defaultValue={-1}
+              className={clx(
+                'select select-bordered w-full',
+                { 'select-disabled': isFishTypesLoading }
+              )}
               onChange={onSelectType}
+              defaultValue={fishType}
             >
               <option value={-1} disabled>Select fish type</option>
               {fishTypes.map((type) => {
                 const { label, value } = type
                 return (
-                  <option value={value} key={value} selected={value === fishType}>
+                  <option value={value} key={value}>
                     {label}
                   </option>
                 )
@@ -101,8 +110,8 @@ const Home = () => {
           </div>
         </div>
         <div className='flex flex-wrap'>
-          {isFishDataLoading && <p>loading</p>}
-          {!isFishDataLoading && fishData.map((item) => (
+          {/* {isFishDataLoading && <p>loading</p>} */}
+          {fishData.map((item) => (
             <Card
               key={item.itemSerial}
               item={item}
@@ -117,6 +126,7 @@ const Home = () => {
         visible={isProductModalOpen}
         onClose={closeProductModal}
         product={targetProduct}
+        fishTypeMap={fishTypeMap}
       />
     </Drawer>
   )

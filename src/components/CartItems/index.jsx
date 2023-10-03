@@ -3,7 +3,7 @@ import {
 } from 'lodash-es'
 
 const CartItems = (props) => {
-  const { items = [] } = props
+  const { items = [], fishTypeMap } = props
   const selectedSize = size(items)
   const isNoProductSelected = selectedSize === 0
   if (isNoProductSelected) {
@@ -17,7 +17,7 @@ const CartItems = (props) => {
       return newList
     }, []),
     (groupedProducts) => groupedProducts.map((item) => {
-      const { fishName } = get(item, 'products[0]', {})
+      const { fishName } = get(fishTypeMap, item.type, {})
       return (
         <li key={item.type}><span>{`${fishName} X ${size(item.products)}`}</span></li>
       )
