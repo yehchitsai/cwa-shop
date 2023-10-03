@@ -41,7 +41,7 @@ const getFishData = (type) => times(random(10, 20), (index) => {
   return {
     itemSerial,
     itemPrice,
-    imageURL: `https://fakeimg.pl/640x640/?text=Batta${itemSerial}&font=lobster`
+    imageURL: `https://fakeimg.pl/640x640/?text=Batta${itemSerial}&font=lobster&font_size=50`
   }
 })
 const fishDataMap = {
@@ -59,7 +59,7 @@ const getFishInfo = (itemSerial) => ({
   itemImages: [
     totalFishDataMapByItemSerial[itemSerial].imageURL,
     ...times(random(1, 4), (index) => {
-      return `https://fakeimg.pl/640x640/?text=Batta${itemSerial}-itemImage${index}&font=lobster`
+      return `https://fakeimg.pl/1280x640/?text=Batta${itemSerial}-item${index}&font=lobster&font_size=50`
     })
   ],
   itemVideos: []
