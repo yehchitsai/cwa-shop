@@ -55,7 +55,7 @@ const Drawer = (props) => {
         className='drawer-toggle'
         defaultChecked={defaultOpen}
       />
-      <div className='drawer-content'>
+      <div className='drawer-content m-auto'>
         {children}
         {withBadgeBtn(
           indicator,
