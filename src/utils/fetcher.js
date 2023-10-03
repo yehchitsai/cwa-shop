@@ -1,9 +1,9 @@
 const {
   VITE_MOCK_API_HOST
 } = import.meta.env
-const defaultOptions = {}
+
 const fetcher = (url, options) => {
-  return fetch(`${VITE_MOCK_API_HOST}${url}`, { ...defaultOptions, ...options })
+  return fetch(`${VITE_MOCK_API_HOST}${url}`, options)
     .then((res) => res.json())
 }
 
