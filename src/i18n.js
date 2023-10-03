@@ -9,7 +9,7 @@ i18n
   .use(initReactI18next)
   .init({
     backend: {
-      loadPath: window.APP_BASENAME
+      loadPath: `${window.APP_BASENAME}/{{lng}}/{{ns}}.json`
     },
     fallbackLng: 'en',
     debug: true,
