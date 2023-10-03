@@ -32,7 +32,10 @@ const Home = () => {
     () => searchParams.get('fishType') || get(fishTypes, '0.value'),
     [searchParams, fishTypes]
   )
-  const { data: fishData, isLoading: isFishDataLoading } = useFishData(fishType)
+  const {
+    data: fishData,
+    isLoading: isFishDataLoading
+  } = useFishData(fishType)
   const [isProductModalOpen, setIsProductModalOpen] = useState(false)
   const [targetProduct, setTargetProduct] = useState({})
   const [selectProducts, setSelectProducts] = useState([])
@@ -63,9 +66,11 @@ const Home = () => {
     setSelectProducts(newSelectProducts)
   }
 
-  if (isFishTypesLoading && isFishDataLoading && isEmpty(fishTypes)) {
-    return <SkeletonHome />
-  }
+  const isContentLoading = (
+    isFishTypesLoading ||
+    isFishDataLoading ||
+    isEmpty(fishTypes)
+  )
 
   return (
     <Drawer
@@ -77,6 +82,9 @@ const Home = () => {
         <CartBottomItems items={selectProducts} fishTypeMap={fishTypeMap} />
       )}
       openIcon={MdShoppingCart}
+      drawerContentClassName={clx(
+        { 'm-0 p-0 w-full overflow-y-hidden': isContentLoading }
+      )}
       overlay
       // indicator={2}
       isRoot
@@ -84,7 +92,7 @@ const Home = () => {
     >
       <div
         className={clx(
-          'max-lg:m-auto max-lg:max-w-2xl max-sm:min-w-full lg:max-w-5xl max-sm:p-4 sm:p-12'
+          { 'max-lg:m-auto max-lg:max-w-2xl max-sm:min-w-full lg:max-w-5xl max-sm:p-4 sm:p-12': !isContentLoading }
         )}
       >
         <div className='flex flex-wrap'>
@@ -109,17 +117,20 @@ const Home = () => {
             </select>
           </div>
         </div>
-        <div className='flex flex-wrap'>
-          {/* {isFishDataLoading && <p>loading</p>} */}
-          {fishData.map((item) => (
-            <Card
-              key={item.itemSerial}
-              item={item}
-              onImageClick={openProductModal(item)}
-              onSelectProduct={onSelectProduct}
-            />
-          ))}
-        </div>
+        {
+          isFishDataLoading ? <SkeletonHome /> : (
+            <div className='flex flex-wrap'>
+              {fishData.map((item) => (
+                <Card
+                  key={item.itemSerial}
+                  item={item}
+                  onImageClick={openProductModal(item)}
+                  onSelectProduct={onSelectProduct}
+                />
+              ))}
+            </div>
+          )
+        }
       </div>
       <ProductModel
         id={productModelKey}

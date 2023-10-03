@@ -5,9 +5,11 @@ import { isEmpty } from 'lodash-es'
 const useFishData = (fishType) => {
   const params = { fishType }
   const url = `/v1/battafish?${qs.stringify(params)}`
-  const { data = [], error, isLoading } = useSWR(() => {
+  const {
+    data = [], error, isLoading
+  } = useSWR(() => {
     return isEmpty(fishType) ? null : url
-  })
+  }, { suspense: true })
   return {
     data,
     isLoading,

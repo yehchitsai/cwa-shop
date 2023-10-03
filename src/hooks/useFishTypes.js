@@ -5,9 +5,11 @@ import { isEmpty, keyBy } from 'lodash-es'
 const useFishTypes = (lang) => {
   const params = { lang }
   const url = `/v1/battafish?${qs.stringify(params)}`
-  const { data = [], error, isLoading } = useSWR(() => {
+  const {
+    data = [], error, isLoading
+  } = useSWR(() => {
     return isEmpty(lang) ? null : url
-  })
+  }, { suspense: true })
   const fishTypes = data.map((item) => {
     const {
       fishType, fishName, scientificName, fishPrice

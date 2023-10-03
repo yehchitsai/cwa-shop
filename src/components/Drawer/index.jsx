@@ -37,7 +37,8 @@ const Drawer = (props) => {
     defaultOpen = false,
     isRoot = false,
     rwd = true,
-    className
+    className,
+    drawerContentClassName
   } = props
   const [isOpen, setIsOpen] = useState(defaultOpen)
   const isBottomItemsExist = !isUndefined(bottomItems)
@@ -55,7 +56,12 @@ const Drawer = (props) => {
         className='drawer-toggle'
         defaultChecked={defaultOpen}
       />
-      <div className='drawer-content m-auto'>
+      <div
+        className={clx(
+          'drawer-content m-auto',
+          { [drawerContentClassName]: drawerContentClassName }
+        )}
+      >
         {children}
         {withBadgeBtn(
           indicator,
