@@ -76,6 +76,7 @@ export default [
         fishType,
         itemSerial
       } = JSON.parse(JSON.stringify(stringObject))
+      console.log({ stringObject }, JSON.parse(JSON.stringify(stringObject)))
 
       if (!isUndefined(lang)) {
         const fishTypes = types.map(((type) => {

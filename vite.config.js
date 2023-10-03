@@ -11,20 +11,22 @@ const endpointFileName = 'index.html'
 
 // https://vitejs.dev/config/
 export default ({ mode }) => {
+  const isMock = !!process.env.MOCK
   process.env = { ...process.env, ...loadEnv(mode, envDir) }
   const viteConfig = {
     base: './',
     envDir,
     define: {
       'window.APP_VERSION': `"${version}"`,
-      'window.APP_BASENAME': `"${process.env.BASENAME ? `/${name}` : ''}"`
+      'window.APP_BASENAME': `"${process.env.BASENAME ? `/${name}` : ''}"`,
+      'window.IS_MOCK': `${isMock}`
     },
     root,
     plugins: [
       react(),
       viteMockServe({
-        mockPath: 'mock',
-        localEnabled: !!process.env.MOCK
+        mockPath: './src/mock',
+        localEnabled: isMock
       })
     ],
     build: {
