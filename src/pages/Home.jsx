@@ -1,96 +1,65 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import clx from 'classnames'
+import { useState, useMemo } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { MdShoppingCart } from 'react-icons/md'
 import {
-  filter, groupBy, flow, reduce, size, sumBy
+  filter, get
 } from 'lodash-es'
+import clx from 'classnames'
+import useFishTypes from '../hooks/useFishTypes'
+import useFishData from '../hooks/useFishData'
 import Card from '../components/Card'
 import ProductModel from '../components/Model/Product'
-import useFishData from '../hooks/useFishData'
 import SkeletonHome from '../components/Skeleton/Home'
 import Drawer from '../components/Drawer'
+import CartItems from '../components/CartItems'
+import CartBottomItems from '../components/CartBottomItems'
 
-const options = [
-  'Homer',
-  'Marge',
-  'Bart',
-  'Lisa',
-  'Maggie'
-].map((option) => ({ label: option, value: option }))
 const productModelKey = 'productModel'
 
-const CartItems = (props) => {
-  const { items = [] } = props
-  const selectedSize = size(items)
-  const isNoProductSelected = selectedSize === 0
-  if (isNoProductSelected) {
-    return <li disabled><span>Cart is empty</span></li>
-  }
-
-  const cartList = flow(
-    () => groupBy(items, (item) => item.type),
-    (groupedItems) => reduce(groupedItems, (list, products, type) => {
-      const newList = [...list, { index: size(products), type, products }]
-      return newList
-    }, []),
-    (groupedProducts) => groupedProducts.map((item) => (
-      <li key={item.type}><span>{`${item.type} X ${size(item.products)}`}</span></li>
-    ))
-  )()
-  return cartList
-}
-
-const CartBottomItems = (props) => {
-  const { items = [] } = props
-  const selectedSize = size(items)
-  const isNoProductSelected = selectedSize === 0
-  return (
-    <>
-      <li key='totalCount'>
-        <span>{`Total count: ${selectedSize}`}</span>
-      </li>
-      <li key='totalPrice'>
-        <span>{`Total: ${sumBy(items, (item) => item.price)} NTD`}</span>
-      </li>
-      <button
-        type='button'
-        className={clx(
-          'btn btn-primary btn-outline btn-md w-full my-1',
-          { 'btn-disabled': isNoProductSelected }
-        )}
-      >
-        Confirm order
-      </button>
-    </>
-  )
-}
-
 const Home = () => {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const { i18n } = useTranslation()
+  const {
+    fishTypes,
+    isLoading: isFishTypesLoading,
+    fishTypeMap
+  } = useFishTypes(i18n.language)
+  const fishType = useMemo(
+    () => searchParams.get('fishType') || get(fishTypes, '0.value'),
+    [searchParams, fishTypes]
+  )
+  const { data: fishData, isLoading: isFishDataLoading } = useFishData(fishType)
   const [isProductModalOpen, setIsProductModalOpen] = useState(false)
   const [targetProduct, setTargetProduct] = useState({})
   const [selectProducts, setSelectProducts] = useState([])
-  const { data, isLoading } = useFishData()
-  if (isLoading) {
+  if (isFishTypesLoading) {
     return <SkeletonHome />
   }
 
   const openProductModal = (newTargetProduct) => async () => {
-    setTargetProduct(newTargetProduct)
+    const fishTypeInfo = get(fishTypeMap, fishType, {})
+    setTargetProduct({ ...newTargetProduct, ...fishTypeInfo })
     setIsProductModalOpen(true)
     document.querySelector(`#${productModelKey}`).showModal()
   }
 
   const closeProductModal = () => setIsProductModalOpen(false)
 
+  const onSelectType = (e) => {
+    const newFishType = e.target.value
+    setSearchParams({ fishType: newFishType })
+  }
+
   const onSelectProduct = (product) => (e) => {
     const isSelected = e.target.checked
     let newSelectProducts = [...selectProducts]
     if (isSelected) {
-      newSelectProducts = [...selectProducts, product]
+      const fishTypeInfo = get(fishTypeMap, fishType, {})
+      newSelectProducts = [...selectProducts, { ...product, ...fishTypeInfo }]
     } else {
       newSelectProducts = filter(selectProducts, (selectProduct) => {
-        return selectProduct.id !== product.id
+        return selectProduct.itemSerial !== product.itemSerial
       })
     }
     setSelectProducts(newSelectProducts)
@@ -107,28 +76,35 @@ const Home = () => {
       isRoot
       rwd
     >
-      <div className='max-lg:m-auto max-lg:max-w-2xl max-sm:min-w-full max-sm:p-4 sm:p-12 lg:max-w-5xl'>
-        <Link to='/about'>about</Link>
-        &nbsp;
-        <Link to='/detail'>detail</Link>
-        <br />
+      <div
+        className={clx(
+          'max-lg:m-auto max-lg:max-w-2xl max-sm:min-w-full lg:max-w-5xl max-sm:p-4 sm:p-12'
+        )}
+      >
         <div className='flex flex-wrap'>
           <div className='w-full p-4'>
-            <select className='select select-bordered w-full max-w-xs' defaultValue={-1}>
+            <select
+              className='select select-bordered w-full max-w-xs'
+              defaultValue={-1}
+              onChange={onSelectType}
+            >
               <option value={-1} disabled>Select fish type</option>
-              {options.map((option) => {
-                const { label, value } = option
+              {fishTypes.map((type) => {
+                const { label, value } = type
                 return (
-                  <option value={value} key={value}>{label}</option>
+                  <option value={value} key={value} selected={value === fishType}>
+                    {label}
+                  </option>
                 )
               })}
             </select>
           </div>
         </div>
         <div className='flex flex-wrap'>
-          {data.map((item) => (
+          {isFishDataLoading && <p>loading</p>}
+          {!isFishDataLoading && fishData.map((item) => (
             <Card
-              key={`${item.id}${item.price}`}
+              key={item.itemSerial}
               item={item}
               onImageClick={openProductModal(item)}
               onSelectProduct={onSelectProduct}

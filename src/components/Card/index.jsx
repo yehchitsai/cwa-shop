@@ -7,9 +7,8 @@ const Card = (props) => {
     item = {}
   } = props
   const {
-    id, images, type, price
+    itemSerial, imageURL
   } = item
-  const imgUrl = new URL(`./${images[0]}`, import.meta.url).href
   return (
     <div className='p-4 max-xl:w-1/2 max-sm:w-full xl:w-1/3'>
       <div className='card bg-base-100 shadow-xl'>
@@ -19,22 +18,16 @@ const Card = (props) => {
           onClick={onImageClick}
         >
           <LazyImage
-            src={imgUrl}
-            alt={type}
+            src={imageURL}
+            alt={itemSerial}
             loaderClassName='w-full h-[10rem]'
           />
         </figure>
         <div className='card-body'>
           <h2 className='card-title'>
             <div className='flex flex-wrap'>
-              <div className='w-1/3'>
-                {`No.${id}`}
-              </div>
-              <div className='w-2/3 text-right'>
-                {type}
-              </div>
-              <div className='w-full py-2'>
-                {`$${price} NTD`}
+              <div className='w-full'>
+                {`No.${itemSerial}`}
               </div>
             </div>
           </h2>

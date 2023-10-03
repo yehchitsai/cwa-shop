@@ -1,12 +1,13 @@
 import { useEffect, useCallback } from 'react'
 import clx from 'classnames'
+import Skeleton from 'react-loading-skeleton'
 import { LuArrowRightFromLine, LuArrowLeftFromLine } from 'react-icons/lu'
-import { size, delay, times } from 'lodash-es'
-import Model from '..'
+import { size, delay } from 'lodash-es'
+import useFishInfo from '../../../hooks/useFishInfo'
 import Drawer from '../../Drawer'
 import LazyImage from '../../LazyImage'
+import Model from '..'
 
-const imgUrls = times(4, (index) => new URL(`../../Card/img${index}.jpg`, import.meta.url).href)
 const ESC_KEY_CODE = 27
 
 const ProductModel = (props) => {
@@ -14,16 +15,21 @@ const ProductModel = (props) => {
     id, visible, onClose, product = {}
   } = props
   const {
-    id: productId,
-    images: productImages = [],
+    itemSerial,
+    // images: productImages = [],
     price,
-    type
+    fishType
   } = product
-  const images = imgUrls.slice(0, size(productImages))
-  const maxIndex = size(images) - 1
+  const {
+    data: {
+      itemImages = []
+    } = {},
+    isLoading
+  } = useFishInfo(itemSerial)
+  const maxIndex = size(itemImages) - 1
 
   const scrollToOtherImage = (targetIndex) => {
-    document.querySelector(`#${id} img[src="${images[targetIndex]}"]`).scrollIntoView()
+    document.querySelector(`#${id} img[src="${itemImages[targetIndex]}"]`).scrollIntoView()
   }
 
   const onClickEsc = useCallback(async (e) => {
@@ -55,6 +61,24 @@ const ProductModel = (props) => {
     return removeListener
   }, [visible, addListener, removeListener])
 
+  if (isLoading) {
+    return (
+      <Model
+        id={id}
+        className={clx(
+          'h-full min-h-full w-full max-w-[100vw] rounded-none p-0',
+          { hidden: !visible }
+        )}
+        isCloseBtnVisible={false}
+        onClose={onClose}
+      >
+        <Skeleton
+          className='fixed mt-[10vh] h-[80vh] w-[100vw]'
+        />
+      </Model>
+    )
+  }
+
   return (
     <Model
       id={id}
@@ -67,12 +91,12 @@ const ProductModel = (props) => {
     >
       <Drawer
         id='productInfoSidebar'
-        key={productId}
+        key={itemSerial}
         className='bg-slate-100/50'
         items={(
           <>
-            <li><span className='p-1'>{`id: ${productId}`}</span></li>
-            <li><span className='p-1'>{`type: ${type}`}</span></li>
+            <li><span className='p-1'>{`id: ${itemSerial}`}</span></li>
+            <li><span className='p-1'>{`type: ${fishType}`}</span></li>
             <li><span className='p-1'>{`price: ${price} NTD`}</span></li>
           </>
         )}
@@ -84,7 +108,7 @@ const ProductModel = (props) => {
         defaultOpen
       >
         <div className='carousel w-full items-center rounded-none bg-slate-100 max-md:h-full md:h-[100vh]'>
-          {images.map((imgUrl, index) => {
+          {itemImages.map((imgUrl, index) => {
             const prevIndex = index - 1
             const nextIndex = index + 1
             return (

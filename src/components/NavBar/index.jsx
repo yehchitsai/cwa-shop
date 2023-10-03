@@ -1,8 +1,8 @@
-import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import clx from 'classnames'
 import { MdGTranslate, MdLogout } from 'react-icons/md'
 import { useTranslation } from 'react-i18next'
+import useOnInit from '../../hooks/useOnInit'
 
 const langs = [
   { label: '中文', value: 'zh-TW' },
@@ -41,10 +41,9 @@ const NavBar = (props) => {
     i18n.changeLanguage(selectLang)
   }
 
-  useEffect(() => {
+  useOnInit(() => {
     document.querySelector(`input[type='radio'][value="${i18n.language}"]`).checked = true
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  })
 
   return (
     <div
