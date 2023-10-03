@@ -2,6 +2,12 @@ import { Link } from 'react-router-dom'
 import clx from 'classnames'
 import { MdGTranslate, MdLogout } from 'react-icons/md'
 
+const langs = [
+  { label: '中文', value: 'ch' },
+  { label: '英文', value: 'en' },
+  { label: '日文', value: 'jp' }
+]
+
 const HomeLogo = (props) => {
   const { fixed } = props
   const className = 'btn btn-ghost text-xl normal-case'
@@ -36,23 +42,32 @@ const NavBar = (props) => {
       <div className='flex-1'>
         <HomeLogo fixed={fixed} />
       </div>
-      <div className='flex-none'>
-        <ul className='menu menu-horizontal px-1'>
-          <li>
-            <details>
-              <summary>
-                <MdGTranslate size='1.5em' />
-              </summary>
-              <ul className='bg-base-300 p-2'>
-                <li className='w-16'><span>中文</span></li>
-                <li><span>英文</span></li>
-                <li><span>日文</span></li>
-              </ul>
-            </details>
-          </li>
-          <li><span className='tooltip tooltip-left' data-tip={`v${window.APP_VERSION}`}>User 1</span></li>
-          <li><span><MdLogout size='1.5em' /></span></li>
-        </ul>
+      <div className='flex flex-1 justify-end'>
+        <div className='flex items-stretch'>
+          <div className='dropdown dropdown-end form-control'>
+            <label tabIndex={0} className='btn btn-ghost'>
+              <MdGTranslate size='1.5em' />
+            </label>
+            <ul tabIndex={0} className='menu dropdown-content rounded-box z-[1] mt-4 w-36 bg-base-100 p-2 shadow'>
+              {langs.map((lang) => (
+                <li key={lang.value}>
+                  <label className='label cursor-pointer'>
+                    <input type='radio' name='lang' className='radio' />
+                    <span className='label-text'>{lang.label}</span>
+                  </label>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className='btn btn-ghost'>
+            <span className='tooltip tooltip-bottom' data-tip={`v${window.APP_VERSION}`}>
+              User 1
+            </span>
+          </div>
+          <span className='btn btn-ghost'>
+            <MdLogout size='1.5em' />
+          </span>
+        </div>
       </div>
     </div>
   )
