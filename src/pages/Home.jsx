@@ -25,8 +25,7 @@ const Home = () => {
   const { i18n } = useTranslation()
   const {
     fishTypes,
-    fishTypeMap,
-    isLoading: isFishTypesLoading
+    fishTypeMap
   } = useFishTypes(i18n.language)
   const fishType = useMemo(
     () => searchParams.get('fishType') || get(fishTypes, '0.value'),
@@ -67,7 +66,6 @@ const Home = () => {
   }
 
   const isContentLoading = (
-    isFishTypesLoading ||
     isFishDataLoading ||
     isEmpty(fishTypes)
   )
@@ -99,8 +97,7 @@ const Home = () => {
           <div className='w-full p-4'>
             <select
               className={clx(
-                'select select-bordered w-full',
-                { 'select-disabled': isFishTypesLoading }
+                'select select-bordered w-full'
               )}
               onChange={onSelectType}
               defaultValue={fishType}
