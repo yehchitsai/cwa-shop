@@ -8,6 +8,9 @@ i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
+    backend: {
+      loadPath: window.APP_BASENAME
+    },
     fallbackLng: 'en',
     debug: true,
     interpolation: {
