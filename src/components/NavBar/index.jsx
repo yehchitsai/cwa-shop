@@ -1,20 +1,22 @@
 import { Link } from 'react-router-dom'
 import clx from 'classnames'
 import { MdGTranslate, MdLogout } from 'react-icons/md'
+import { useTranslation } from 'react-i18next'
 
 const langs = [
-  { label: '中文', value: 'ch' },
+  { label: '中文', value: 'zh-TW' },
   { label: '英文', value: 'en' },
   { label: '日文', value: 'jp' }
 ]
 
 const HomeLogo = (props) => {
   const { fixed } = props
+  const { t } = useTranslation()
   const className = 'btn btn-ghost text-xl normal-case'
   if (fixed) {
     return (
       <span className={className}>
-        CWA SHOP
+        {`CWA ${t('shop')}`}
       </span>
     )
   }
@@ -24,13 +26,20 @@ const HomeLogo = (props) => {
       to='/'
       className={className}
     >
-      CWA SHOP
+      {`CWA ${t('shop')}`}
     </Link>
   )
 }
 
 const NavBar = (props) => {
   const { fixed } = props
+  const { t, i18n } = useTranslation()
+
+  const onChangeLang = (e) => {
+    const selectLang = e.target.value
+    i18n.changeLanguage(selectLang)
+  }
+
   return (
     <div
       className={clx(
@@ -48,20 +57,33 @@ const NavBar = (props) => {
             <label tabIndex={0} className='btn btn-ghost'>
               <MdGTranslate size='1.5em' />
             </label>
-            <ul tabIndex={0} className='menu dropdown-content rounded-box z-[1] mt-4 w-36 bg-base-100 p-2 shadow'>
-              {langs.map((lang) => (
-                <li key={lang.value}>
-                  <label className='label cursor-pointer'>
-                    <input type='radio' name='lang' className='radio' />
-                    <span className='label-text'>{lang.label}</span>
-                  </label>
-                </li>
-              ))}
+            <ul
+              tabIndex={0}
+              className='menu dropdown-content rounded-box z-[1] mt-4 w-36 translate-y-10 bg-base-100 p-2 shadow'
+            >
+              {langs.map((lang) => {
+                const { value, label } = lang
+                return (
+                  <li key={value}>
+                    <label className='label cursor-pointer'>
+                      <input
+                        type='radio'
+                        name='lang'
+                        className='radio'
+                        onChange={onChangeLang}
+                        value={value}
+                        checked={value === i18n.language}
+                      />
+                      <span className='label-text'>{label}</span>
+                    </label>
+                  </li>
+                )
+              })}
             </ul>
           </div>
           <div className='btn btn-ghost'>
             <span className='tooltip tooltip-bottom' data-tip={`v${window.APP_VERSION}`}>
-              User 1
+              {t('user')}
             </span>
           </div>
           <span className='btn btn-ghost'>
