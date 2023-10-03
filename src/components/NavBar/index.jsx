@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import clx from 'classnames'
 import { MdGTranslate, MdLogout } from 'react-icons/md'
@@ -40,6 +41,11 @@ const NavBar = (props) => {
     i18n.changeLanguage(selectLang)
   }
 
+  useEffect(() => {
+    document.querySelector(`input[type='radio'][value="${i18n.language}"]`).checked = true
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   return (
     <div
       className={clx(
@@ -59,7 +65,7 @@ const NavBar = (props) => {
             </label>
             <ul
               tabIndex={0}
-              className='menu dropdown-content rounded-box z-[1] mt-4 w-36 translate-y-10 bg-base-100 p-2 shadow'
+              className='menu dropdown-content rounded-box z-10 mt-4 w-36 translate-y-10 bg-base-100 p-2 shadow'
             >
               {langs.map((lang) => {
                 const { value, label } = lang
@@ -72,7 +78,6 @@ const NavBar = (props) => {
                         className='radio'
                         onChange={onChangeLang}
                         value={value}
-                        checked={value === i18n.language}
                       />
                       <span className='label-text'>{label}</span>
                     </label>
