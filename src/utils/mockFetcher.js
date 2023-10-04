@@ -7,6 +7,7 @@ import {
 // } from 'lodash-es'
 import types from '../mock/battaFish/types'
 import users from '../mock/jsonplaceholder/users'
+import posts from '../mock/jsonplaceholder/posts'
 
 // let cachedMockData = []
 // const getMockData = async () => {
@@ -34,7 +35,7 @@ import users from '../mock/jsonplaceholder/users'
 const mockFetcher = async (args) => {
   const { url: key } = args
   // await getMockData()
-  const mockData = [...types, ...users]
+  const mockData = [...types, ...users, ...posts]
   // console.log(mockData)
   const [endpoint, queryString] = key.split('?')
   const mock = find(mockData, (item) => item.url.includes(endpoint)) || {}

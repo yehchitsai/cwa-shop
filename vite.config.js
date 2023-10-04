@@ -12,14 +12,17 @@ const endpointFileName = 'index.html'
 // https://vitejs.dev/config/
 export default ({ mode }) => {
   const isMock = !!process.env.MOCK
-  process.env = { ...process.env, ...loadEnv(mode, envDir) }
+  const isMockAwsApi = !!process.env.MOCK_AWS_API
+  const modeEnv = loadEnv(mode, envDir)
+  process.env = { ...process.env, ...modeEnv }
   const viteConfig = {
     base: './',
     envDir,
     define: {
       'window.APP_VERSION': `"${version}"`,
-      'window.APP_BASENAME': `"${process.env.BASENAME ? `/${name}` : ''}"`,
-      'window.IS_MOCK': `${isMock}`
+      'window.APP_BASENAME': `"${process.env.BASENAME ? `/${name}` : '/'}"`,
+      'window.IS_MOCK': `${isMock}`,
+      'window.IS_MOCK_AWS_API': `${isMockAwsApi}`
     },
     root,
     plugins: [
@@ -42,7 +45,7 @@ export default ({ mode }) => {
     server: {
       proxy: {
         '/api': {
-          target: process.env.VITE_MOCK_API_HOST,
+          target: isMock ? process.env.VITE_LOCAL_MOCK_API_HOST : process.env.VITE_MOCK_API_HOST,
           changeOrigin: true,
           secure: false,
           rewrite: (path) => path.replace(/^\/api/, '')
