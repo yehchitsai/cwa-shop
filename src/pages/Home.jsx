@@ -3,12 +3,17 @@ import {
   useState
 } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { useRecoilState } from 'recoil'
 import { useTranslation } from 'react-i18next'
 import { MdShoppingCart } from 'react-icons/md'
 import {
   filter, get, isEmpty
 } from 'lodash-es'
 import clx from 'classnames'
+import {
+  // key as selectedProductsStateKey,
+  selectedProductsState
+} from '../state/selectedProducts'
 import useFishTypes from '../hooks/useFishTypes'
 import useFishData from '../hooks/useFishData'
 import Card from '../components/Card'
@@ -37,7 +42,7 @@ const Home = () => {
   } = useFishData(fishType)
   const [isProductModalOpen, setIsProductModalOpen] = useState(false)
   const [targetProduct, setTargetProduct] = useState({})
-  const [selectProducts, setSelectProducts] = useState([])
+  const [selectProducts, setSelectProducts] = useRecoilState(selectedProductsState)
 
   const openProductModal = (newTargetProduct) => async () => {
     setTargetProduct({ ...newTargetProduct, fishType })
@@ -62,6 +67,7 @@ const Home = () => {
         return selectProduct.itemSerial !== product.itemSerial
       })
     }
+    window.localStorage.setItem('selectProducts', JSON.stringify(newSelectProducts))
     setSelectProducts(newSelectProducts)
   }
 

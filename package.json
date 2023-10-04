@@ -38,6 +38,7 @@
     "react-image": "^4.1.0",
     "react-loading-skeleton": "^3.3.1",
     "react-router-dom": "^6.16.0",
+    "recoil": "^0.7.7",
     "swr": "^2.2.4"
   },
   "devDependencies": {

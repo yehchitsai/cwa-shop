@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { SWRConfig } from 'swr'
+import { RecoilRoot } from 'recoil'
 import fetcher from './utils/fetcher'
 import Router from './components/Router/index.jsx'
 import './i18n'
@@ -14,7 +15,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         fetcher
       }}
     >
-      <Router />
+      <RecoilRoot>
+        <Router />
+      </RecoilRoot>
     </SWRConfig>
   </React.StrictMode>
 )

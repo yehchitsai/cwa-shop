@@ -1,9 +1,10 @@
+import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import clx from 'classnames'
 import {
   get,
   size, sumBy
 } from 'lodash-es'
-import { useTranslation } from 'react-i18next'
 
 const CartBottomItems = (props) => {
   const { t } = useTranslation()
@@ -19,15 +20,17 @@ const CartBottomItems = (props) => {
       <li key='totalPrice'>
         <span>{`Total price: ${totalPrice} ${t('currency')}`}</span>
       </li>
-      <button
-        type='button'
-        className={clx(
-          'btn btn-primary btn-outline btn-md w-full my-1',
-          { 'btn-disabled': isNoProductSelected }
-        )}
-      >
-        Confirm order
-      </button>
+      <Link to='/confirm'>
+        <button
+          type='button'
+          className={clx(
+            'btn btn-primary btn-outline btn-md w-full my-1',
+            { 'btn-disabled': isNoProductSelected }
+          )}
+        >
+          Confirm order
+        </button>
+      </Link>
     </>
   )
 }
