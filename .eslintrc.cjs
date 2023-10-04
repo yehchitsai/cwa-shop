@@ -34,7 +34,7 @@ module.exports = {
     'react/jsx-uses-react': 'off',
     'react/function-component-definition': 'off',
     'react/no-array-index-key': 'off',
-    'operator-linebreak': ['error', 'after'],
+    'operator-linebreak': ['off', 'none'],
     'import/extensions': [0],
     'import/no-extraneous-dependencies': [0],
     'jsx-a11y/label-has-associated-control': [0],

@@ -8,10 +8,6 @@ import {
 import types from '../mock/battaFish/types'
 import users from '../mock/jsonplaceholder/users'
 
-const {
-  VITE_MOCK_API_HOST
-} = import.meta.env
-
 // let cachedMockData = []
 // const getMockData = async () => {
 //   if (!isEmpty(cachedMockData)) {
@@ -35,11 +31,12 @@ const {
 //   return data
 // }
 
-const mockFetcher = async (url) => {
+const mockFetcher = async (args) => {
+  const { url: key } = args
   // await getMockData()
   const mockData = [...types, ...users]
   // console.log(mockData)
-  const [endpoint, queryString] = url.replace(VITE_MOCK_API_HOST, '').split('?')
+  const [endpoint, queryString] = key.split('?')
   const mock = find(mockData, (item) => item.url.includes(endpoint)) || {}
   const { response, timeout } = mock
   const resp = new Promise((resolve) => {
