@@ -20,6 +20,7 @@ const Card = (props) => {
         >
           <LazyImage
             src={imageURL}
+            className='mask mask-square'
             alt={itemSerial}
             loaderClassName='w-full h-[10rem]'
           />

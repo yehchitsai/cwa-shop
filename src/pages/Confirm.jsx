@@ -35,9 +35,17 @@ const Confirm = () => {
 
   const closeProductModal = () => setIsProductModalOpen(false)
 
+  const onRemove = (product) => () => {
+    const newSelectedProducts = selectedProducts.filter((selectedProduct) => {
+      return selectedProduct.itemSerial !== product.itemSerial
+    })
+    setSelectedProducts(newSelectedProducts)
+    window.localStorage.setItem('selectProducts', newSelectedProducts)
+  }
+
   const onRemoveAll = () => {
     setSelectedProducts([])
-    window.localStorage.setItem('selectProducts', '[]')
+    window.localStorage.removeItem('selectProducts')
   }
 
   if (isLoading) {
@@ -51,15 +59,15 @@ const Confirm = () => {
       <div
         className='m-auto h-auto overflow-x-auto max-lg:max-w-2xl max-sm:min-w-full lg:max-w-5xl'
       >
-        <table className='table table-pin-rows table-pin-cols'>
-          <thead className='sticky top-0'>
+        <table className='table table-pin-cols'>
+          <thead>
             <tr>
               <th />
-              <th className='z-10'>Image</th>
+              <th className='z-[1]'>Image</th>
               <th>FishType Name</th>
               <th>ItemSerial</th>
               <th>ItemPrice</th>
-              <th className='-z-10' />
+              <th />
             </tr>
           </thead>
           <tbody>
@@ -74,20 +82,24 @@ const Confirm = () => {
                   <th>
                     <LazyImage
                       src={imageURL}
-                      className='mask mask-squircle m-0 h-20 w-20 cursor-pointer'
+                      className='mask mask-square m-0 h-20 w-20 cursor-pointer'
                       alt={fishName}
-                      loaderClassName='mask mask-squircle w-20 h-20'
+                      loaderClassName='mask mask-square w-20 h-20'
                       onClick={openProductModal(selectedProduct)}
                     />
                   </th>
                   <td>{fishName}</td>
                   <td>{itemSerial}</td>
                   <td>{`${itemPrice} ${t('currency')}`}</td>
-                  <td>
-                    <button type='button' className='btn btn-square btn-error btn-outline'>
+                  <th>
+                    <button
+                      type='button'
+                      className='btn btn-square btn-error btn-outline'
+                      onClick={onRemove(selectedProduct)}
+                    >
                       <MdDelete size='1.5em' />
                     </button>
-                  </td>
+                  </th>
                 </tr>
               )
             })}
