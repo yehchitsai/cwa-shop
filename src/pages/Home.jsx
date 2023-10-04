@@ -11,7 +11,7 @@ import {
 } from 'lodash-es'
 import clx from 'classnames'
 import {
-  // key as selectedProductsStateKey,
+  key as selectedProductsStateKey,
   selectedProductsState
 } from '../state/selectedProducts'
 import useFishTypes from '../hooks/useFishTypes'
@@ -67,7 +67,7 @@ const Home = () => {
         return selectProduct.itemSerial !== product.itemSerial
       })
     }
-    window.localStorage.setItem('selectProducts', JSON.stringify(newSelectProducts))
+    window.localStorage.setItem(selectedProductsStateKey, JSON.stringify(newSelectProducts))
     setSelectProducts(newSelectProducts)
   }
 

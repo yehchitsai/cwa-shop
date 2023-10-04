@@ -6,7 +6,10 @@ import { MdDelete } from 'react-icons/md'
 import {
   flow, get, size, sumBy, uniqBy
 } from 'lodash-es'
-import { selectedProductsState } from '../state/selectedProducts'
+import {
+  key as selectedProductsStateKey,
+  selectedProductsState
+} from '../state/selectedProducts'
 import useFishTypes from '../hooks/useFishTypes'
 import SkeletonHome from '../components/Skeleton/Home'
 import LazyImage from '../components/LazyImage'
@@ -40,12 +43,12 @@ const Confirm = () => {
       return selectedProduct.itemSerial !== product.itemSerial
     })
     setSelectedProducts(newSelectedProducts)
-    window.localStorage.setItem('selectProducts', newSelectedProducts)
+    window.localStorage.setItem(selectedProductsStateKey, JSON.stringify(newSelectedProducts))
   }
 
   const onRemoveAll = () => {
     setSelectedProducts([])
-    window.localStorage.removeItem('selectProducts')
+    window.localStorage.removeItem(selectedProductsStateKey)
   }
 
   if (isLoading) {
