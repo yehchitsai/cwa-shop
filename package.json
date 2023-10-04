@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite",
     "dev:mock": "MOCK=1 npm run dev",
-    "build": "vite build",
-    "build:gh": "MOCK=1 BASENAME=1 npm run build",
+    "build": "MOCK=1 vite build",
+    "build:gh": "BASENAME=1 npm run build",
     "lint": "eslint . --ext .js,.cjs,.jsx",
     "lint:fix": "npm run lint -- --fix",
     "preview": "npm run build && vite preview",
