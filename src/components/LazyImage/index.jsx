@@ -3,7 +3,7 @@ import Skeleton from 'react-loading-skeleton'
 
 const LazyImage = (props) => {
   const {
-    src: imageSrc, alt, style, className, loaderClassName
+    src: imageSrc, alt, style, className, loaderClassName, onClick
   } = props
   const { src, isLoading } = useImage({
     srcList: imageSrc
@@ -25,6 +25,7 @@ const LazyImage = (props) => {
       crossOrigin='anonymous'
       loading='lazy'
       className={className}
+      onClick={onClick}
     />
   )
 }
