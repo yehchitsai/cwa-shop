@@ -10,7 +10,7 @@ const useFishTypes = (lang) => {
   } = useSWR(() => {
     return isEmpty(lang) ? null : url
   }, { suspense: true })
-  const fishTypes = data.map((item) => {
+  const fishTypes = isEmpty(data) ? [] : data.map((item) => {
     const {
       fishType, fishName, scientificName, fishPrice
     } = item
