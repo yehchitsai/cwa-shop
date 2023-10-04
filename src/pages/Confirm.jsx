@@ -1,19 +1,30 @@
 // import { Link } from 'react-router-dom'
-// import { useRecoilValue, useRecoilState } from 'recoil'
+import { useRecoilState } from 'recoil'
 import { useTranslation } from 'react-i18next'
-import { useRecoilValue } from 'recoil'
 import { MdDelete } from 'react-icons/md'
-import { get } from 'lodash-es'
+import {
+  flow, get, size, sumBy, uniqBy
+} from 'lodash-es'
 import { selectedProductsState } from '../state/selectedProducts'
 import useFishTypes from '../hooks/useFishTypes'
 import SkeletonHome from '../components/Skeleton/Home'
 import LazyImage from '../components/LazyImage'
 
 const Confirm = () => {
-  const { i18n } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { fishTypeMap, isLoading } = useFishTypes(i18n.language)
-  // const [selectedProducts, setSelectedProducts] = useRecoilState(selectedProductsState)
-  const selectedProducts = useRecoilValue(selectedProductsState)
+  const [selectedProducts, setSelectedProducts] = useRecoilState(selectedProductsState)
+  const selectedTypes = flow(
+    () => uniqBy(selectedProducts, (selectedProduct) => selectedProduct.fishType),
+    (uniqSelectedProducts) => uniqSelectedProducts.map((product) => {
+      return get(fishTypeMap, `${product.fishType}.fishName`)
+    })
+  )()
+
+  const onRemoveAll = () => {
+    setSelectedProducts([])
+    window.localStorage.setItem('selectProducts', '[]')
+  }
 
   if (isLoading) {
     return (
@@ -23,49 +34,85 @@ const Confirm = () => {
 
   return (
     <div
-      className='max-lg:m-auto max-lg:max-w-2xl max-sm:min-w-full max-sm:p-4 sm:p-12 lg:max-w-5xl'
+      className='m-auto h-auto overflow-x-auto max-lg:max-w-2xl max-sm:min-w-full lg:max-w-5xl'
     >
-      <div className='w-full overflow-x-auto'>
-        <table className='table table-pin-rows table-pin-cols'>
-          <thead>
-            <tr>
-              <th />
-              <th>fishType name</th>
-              <th>itemSerial</th>
-              <th>itemPrice</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {selectedProducts.map((selectedProduct) => {
-              const {
-                imageURL, itemSerial, itemPrice, fishType
-              } = selectedProduct
-              const { fishName } = get(fishTypeMap, fishType, {})
-              return (
-                <tr key={itemSerial}>
-                  <th>
-                    <LazyImage
-                      src={imageURL}
-                      className='m-0 h-20 w-20'
-                      alt={fishName}
-                      loaderClassName='w-20 h-20'
-                    />
-                  </th>
-                  <td>{fishName}</td>
-                  <td>{itemSerial}</td>
-                  <td>{itemPrice}</td>
-                  <td>
-                    <button type='button' className='btn btn-square btn-error btn-outline'>
-                      <MdDelete size='1.5em' />
-                    </button>
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </div>
+      <table className='table table-pin-rows table-pin-cols'>
+        <thead className='sticky top-0'>
+          <tr>
+            <th />
+            <th className='z-10'>Image</th>
+            <th>FishType Name</th>
+            <th>ItemSerial</th>
+            <th>ItemPrice</th>
+            <th className='-z-10' />
+          </tr>
+        </thead>
+        <tbody>
+          {selectedProducts.map((selectedProduct, index) => {
+            const {
+              imageURL, itemSerial, itemPrice, fishType
+            } = selectedProduct
+            const { fishName } = get(fishTypeMap, fishType, {})
+            return (
+              <tr key={itemSerial}>
+                <th>{index + 1}</th>
+                <th>
+                  <LazyImage
+                    src={imageURL}
+                    className='mask mask-squircle m-0 h-20 w-20'
+                    alt={fishName}
+                    loaderClassName='mask mask-squircle w-20 h-20'
+                  />
+                </th>
+                <td>{fishName}</td>
+                <td>{itemSerial}</td>
+                <td>{`${itemPrice} ${t('currency')}`}</td>
+                <td>
+                  <button type='button' className='btn btn-square btn-error btn-outline'>
+                    <MdDelete size='1.5em' />
+                  </button>
+                </td>
+              </tr>
+            )
+          })}
+        </tbody>
+        <thead>
+          <tr>
+            <th colSpan={2} className='z-10'>Total selected</th>
+            <th colSpan={2}>Fish types</th>
+            <th>Total price</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th colSpan={2}>{`${size(selectedProducts)}`}</th>
+            <td colSpan={2}>
+              {selectedTypes.map((selectedType) => (
+                <p key={selectedType}>{selectedType}</p>
+              ))}
+            </td>
+            <td>
+              {`${sumBy(selectedProducts, (selectedProduct) => (get(fishTypeMap, `${selectedProduct.fishType}.fishPrice`)))} ${t('currency')}`}
+            </td>
+            <td className='space-y-2'>
+              <button
+                type='button'
+                className='btn btn-success btn-outline'
+              >
+                Submit cart
+              </button>
+              <br />
+              <button
+                type='button'
+                className='btn btn-error btn-outline'
+                onClick={onRemoveAll}
+              >
+                Remove all
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   )
 }
