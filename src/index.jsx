@@ -11,7 +11,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <SWRConfig
       value={{
+        // https://swr.vercel.app/docs/api
         keepPreviousData: true,
+        errorRetryCount: 3,
         fetcher
       }}
     >
