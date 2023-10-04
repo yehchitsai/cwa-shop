@@ -1,7 +1,9 @@
 import useSWR from 'swr'
 
+const host = import.meta.env.VITE_MOCK_API_HOST
+
 const useGithubRepo = () => {
-  const { data = [], error, isLoading } = useSWR('/users')
+  const { data = [], error, isLoading } = useSWR(() => ({ url: '/users', host }))
   return {
     data,
     isLoading,
