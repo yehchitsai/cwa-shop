@@ -32,6 +32,19 @@ const HomeLogo = (props) => {
   )
 }
 
+const Logout = (props) => {
+  const { children, fixed } = props
+  if (fixed) {
+    return children
+  }
+
+  return (
+    <Link to='/example' className='btn btn-ghost'>
+      {children}
+    </Link>
+  )
+}
+
 const NavBar = (props) => {
   const { fixed } = props
   const { t, i18n } = useTranslation()
@@ -90,9 +103,9 @@ const NavBar = (props) => {
               {t('user')}
             </span>
           </div>
-          <span className='btn btn-ghost'>
+          <Logout fixed={fixed}>
             <MdLogout size='1.5em' />
-          </span>
+          </Logout>
         </div>
       </div>
     </div>
