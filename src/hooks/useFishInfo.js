@@ -2,14 +2,14 @@ import useSWRMutation from 'swr/mutation'
 import qs from 'query-string'
 import { isEmpty } from 'lodash-es'
 
+const host = import.meta.env.VITE_AWS_DYNAMIC_HOST2
+
 const useFishInfo = (itemSerial) => {
   const params = { itemSerial }
-  const url = `/v1/battafish?${qs.stringify(params)}`
+  const url = isEmpty(itemSerial) ? null : `/v1/battafish?${qs.stringify(params)}`
   const {
     data = [], error, isLoading, isMutating, trigger
-  } = useSWRMutation(() => {
-    return isEmpty(itemSerial) ? null : url
-  }, { keepPreviousData: false })
+  } = useSWRMutation(() => ({ url, host }), { keepPreviousData: false })
   return {
     data,
     isLoading,

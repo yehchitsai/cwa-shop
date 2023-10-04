@@ -4,7 +4,7 @@
   "version": "0.45.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "MOCK_AWS_API=1 vite",
     "dev:mock": "MOCK=1 npm run dev",
     "build": "MOCK=1 vite build",
     "build:gh": "BASENAME=1 npm run build",

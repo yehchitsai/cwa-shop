@@ -7,10 +7,7 @@ import {
 // } from 'lodash-es'
 import types from '../mock/battaFish/types'
 import users from '../mock/jsonplaceholder/users'
-
-const {
-  VITE_MOCK_API_HOST
-} = import.meta.env
+import posts from '../mock/jsonplaceholder/posts'
 
 // let cachedMockData = []
 // const getMockData = async () => {
@@ -35,11 +32,12 @@ const {
 //   return data
 // }
 
-const mockFetcher = async (url) => {
+const mockFetcher = async (args) => {
+  const { url: key } = args
   // await getMockData()
-  const mockData = [...types, ...users]
+  const mockData = [...types, ...users, ...posts]
   // console.log(mockData)
-  const [endpoint, queryString] = url.replace(VITE_MOCK_API_HOST, '').split('?')
+  const [endpoint, queryString] = key.split('?')
   const mock = find(mockData, (item) => item.url.includes(endpoint)) || {}
   const { response, timeout } = mock
   const resp = new Promise((resolve) => {

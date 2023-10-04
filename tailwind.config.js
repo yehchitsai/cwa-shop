@@ -28,7 +28,7 @@ export default {
     themes: ['light'],
     base: true,
     utils: true,
-    logs: true,
+    logs: false,
     rtl: false,
     prefix: ''
   }
