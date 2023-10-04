@@ -4,7 +4,8 @@ const Card = (props) => {
   const {
     onImageClick,
     onSelectProduct,
-    item = {}
+    item = {},
+    selectProducts
   } = props
   const {
     itemSerial, imageURL
@@ -38,6 +39,9 @@ const Card = (props) => {
                   type='checkbox'
                   className='checkbox-primary checkbox mr-2'
                   onChange={onSelectProduct(item)}
+                  checked={selectProducts.find((selectProduct) => {
+                    return item.itemSerial === selectProduct.itemSerial
+                  })}
                 />
                 <span className='label-text'>ADD TO CART</span>
               </label>

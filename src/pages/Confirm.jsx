@@ -26,7 +26,7 @@ const Confirm = () => {
       className='max-lg:m-auto max-lg:max-w-2xl max-sm:min-w-full max-sm:p-4 sm:p-12 lg:max-w-5xl'
     >
       <div className='w-full overflow-x-auto'>
-        <table className='table'>
+        <table className='table table-pin-rows table-pin-cols'>
           <thead>
             <tr>
               <th />

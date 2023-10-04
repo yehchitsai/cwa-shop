@@ -129,6 +129,7 @@ const Home = () => {
                   item={item}
                   onImageClick={openProductModal(item)}
                   onSelectProduct={onSelectProduct}
+                  selectProducts={selectProducts}
                 />
               ))}
             </div>
