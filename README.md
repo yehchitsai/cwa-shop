@@ -3,12 +3,13 @@
     <img width=25px height=25px src="./src/favicon.ico" alt="CWA SHOP ICON">
     &nbsp;CWA SHOP
   </h1>
-  <img src="https://img.shields.io/github/package-json/v/sky172839465/cwa-shop/main?logo=github" />
-  <img src="https://img.shields.io/github/actions/workflow/status/sky172839465/cwa-shop/main.yml?event=push&style=flat&logo=githubactions" />
-  <br />
+  <a href="https://github.com/sky172839465/cwa-shop/actions">
+    <img src="https://img.shields.io/github/package-json/v/sky172839465/cwa-shop/main?logo=github" />
+  </a>
+  <a href="https://github.com/sky172839465/cwa-shop/tags">
+    <img src="https://img.shields.io/github/actions/workflow/status/sky172839465/cwa-shop/main.yml?event=push&style=flat&logo=githubactions" />
+  </a>
 </p>
-
-##
 
 <h2 id='environment'>environment</h2>
 
@@ -19,7 +20,7 @@
     </tr>
   <tbody>
     <tr>
-      <td>v18.15.0</td>
+      <td>18.15.0</td>
     </tr>
   </tbody>
 </table>
@@ -35,9 +36,13 @@
    ```shell
    code ./cwa-shop
    ```
-1. start dev server
+1. install dependencies
    ```shell
    npm i
+   ```
+1. start dev server
+   ```shell
+   npm run dev
    ```
 
 <h2 id='development'>development</h2>
@@ -45,8 +50,8 @@
 1. create change and commit to your remote branch
 1. send pull-request
 1. wait for status check success
-1. merge pr
    - check linter
+1. merge pr
 1. trigger `main` branch push ci
    - check linter
    - bump version
