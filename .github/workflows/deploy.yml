@@ -20,7 +20,15 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    needs: [check-coding-style]
     steps:
+      - run: Check needs
+        # see https://stackoverflow.com/a/67532120/4907315
+        if: >-
+          ${{
+               contains(needs.*.result, 'failure')
+            || contains(needs.*.result, 'cancelled')
+          }}
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set up Node
@@ -30,23 +38,6 @@ jobs:
           cache: "npm"
       - name: Install dependencies
         run: npm install
-      - name: Check coding style
-        run: |
-          npm run lint
-          npm run style
-          npm run prettier
-      - name: "cat package.json"
-        run: cat ./package.json
-      - name: "Automated Version Bump"
-        id: version-bump
-        uses: "phips28/gh-action-bump-version@master"
-        env:
-          GITHUB_TOKEN: ${{ secrets.ACTION_GITHUB_TOKEN }}
-        with:
-          version-type: "minor"
-          target-branch: "main"
-          tag-prefix: "v"
-          commit-message: "ci: bumps version to {{version}}"
       - name: Build
         run: npm run build:gh
       - name: Setup Pages
