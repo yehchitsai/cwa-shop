@@ -3,7 +3,6 @@ import mockFetcher from './mockFetcher'
 
 const fetcher = async (config = {}, triggerArgs = {}) => {
   const { arg: { url: keyFromTrigger = '', ...body } = {} } = triggerArgs
-  console.log({ config, triggerArgs })
   const { host = '', url: keyFromGet = '', options = {} } = config
   const key = keyFromGet || keyFromTrigger
   const url = `${host}${key}`
