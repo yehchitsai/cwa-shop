@@ -1,7 +1,7 @@
 {
   "name": "cwa-shop",
   "private": true,
-  "version": "0.51.0",
+  "version": "0.52.0",
   "type": "module",
   "scripts": {
     "dev": "MOCK_AWS_API=1 vite",
