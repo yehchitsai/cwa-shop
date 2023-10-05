@@ -1,17 +1,18 @@
-import { flow, get, isUndefined } from 'lodash-es'
+import { isUndefined } from 'lodash-es'
 import mockFetcher from './mockFetcher'
 
-const fetcher = async (args = {}) => {
-  const { host, url: key, options = {} } = args
+const fetcher = async (config = {}, triggerArgs = {}) => {
+  const { arg: { url: keyFromTrigger = '', ...body } = {} } = triggerArgs
+  console.log({ config, triggerArgs })
+  const { host = '', url: keyFromGet = '', options = {} } = config
+  const key = keyFromGet || keyFromTrigger
   const url = `${host}${key}`
   const isHttpRequest = host.startsWith('http')
   const isAwsApi = key.startsWith('/v1')
-  const isGetRequest = flow(
-    () => get(options, 'body'),
-    isUndefined
-  )()
+  const isGetRequest = isUndefined(body)
   const newOptions = {
     ...(!isGetRequest && {
+      body: JSON.stringify(body),
       headers: {
         'Content-type': 'application/json; charset=UTF-8'
       }
@@ -41,7 +42,7 @@ const fetcher = async (args = {}) => {
         'Fetch data failed, mock mode will will using mock data instead.',
         { url, options, error: e.toString() }
       )
-      return mockFetcher(args)
+      return mockFetcher(key)
     })
 }
 

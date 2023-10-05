@@ -9,8 +9,7 @@ const mockData = flow(
   (modules) => concat(...modules.map((module) => module.default))
 )()
 
-const mockFetcher = async (args) => {
-  const { url: key } = args
+const mockFetcher = async (key) => {
   const [endpoint, queryString] = key.split('?')
   const {
     response = () => [],

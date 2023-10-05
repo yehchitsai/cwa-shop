@@ -1,8 +1,12 @@
-import useCreatePost from '../hooks/useCreatePost'
-import useUpdatePost from '../hooks/useUpdatePost'
+import { uniqueId } from 'lodash-es'
+import useCreate from '../hooks/useCreate'
+import useUpdate from '../hooks/useUpdate'
+
+const host = window.IS_MOCK
+  ? import.meta.env.VITE_LOCAL_MOCK_API_HOST
+  : import.meta.env.VITE_MOCK_API_HOST
 
 const newPost = { aa: 123 }
-
 const updatedPost = { aa: 456, bb: 789 }
 
 const Example = () => {
@@ -10,19 +14,22 @@ const Example = () => {
     trigger: createPost,
     data: newPostData = {},
     isMutating: isMutatingNewPost
-  } = useCreatePost(newPost)
+  } = useCreate(host)
   const {
     trigger: updatePost,
     data: updatedPostData = {},
     isMutating: isMutatingUpdatedPost
-  } = useUpdatePost(updatedPost)
+  } = useUpdate(host)
   return (
     <div className='m-4 flex flex-wrap md:flex-nowrap md:space-x-4'>
       <div className='w-full md:w-1/2'>
         <button
           type='button'
           className='btn my-10'
-          onClick={() => createPost()}
+          onClick={() => {
+            const url = '/posts'
+            createPost({ url, uniqId: uniqueId('ex-new'), ...newPost })
+          }}
           disabled={isMutatingNewPost}
         >
           Click to send post request
@@ -36,7 +43,11 @@ const Example = () => {
         <button
           type='button'
           className='btn my-10'
-          onClick={() => updatePost()}
+          onClick={() => {
+            const uniqId = uniqueId()
+            const url = `/posts/${uniqId}`
+            updatePost({ url, uniqId: `ex-updated${uniqId}`, ...updatedPost })
+          }}
           disabled={isMutatingUpdatedPost}
         >
           Click to send put request
