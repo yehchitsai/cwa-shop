@@ -27,6 +27,7 @@ module.exports = {
     'arrow-body-style': 'off',
     semi: [2, 'never'],
     'comma-dangle': ['error', 'never'],
+    'default-param-last': 'off',
     'jsx-quotes': ['error', 'prefer-single'],
     'react/prop-types': 'off',
     'react/jsx-props-no-spreading': 'off',
