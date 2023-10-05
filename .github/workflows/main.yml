@@ -93,4 +93,4 @@ jobs:
           version-type: "minor"
           target-branch: "main"
           tag-prefix: "v"
-          commit-message: "ci: bumps version to {{version}}"
+          commit-message: "ci: bumps version to {{version}} [skip ci]"
