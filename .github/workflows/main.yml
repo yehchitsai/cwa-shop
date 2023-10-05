@@ -87,7 +87,7 @@ jobs:
         id: version-bump
         uses: "phips28/gh-action-bump-version@master"
         env:
-          GITHUB_TOKEN: ${{ secrets.PROTECTED_BRANCH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.CWA_PROTECTED_BRANCH_TOKEN }}
         with:
           version-type: "minor"
           target-branch: "main"
