@@ -81,6 +81,7 @@ jobs:
         uses: "actions/checkout@v4"
         with:
           ref: ${{ github.ref }}
+          token: ${{ secrets.CWA_PROTECTED_BRANCH_TOKEN }}
       - name: "cat package.json"
         run: cat ./package.json
       - name: "Automated Version Bump"
