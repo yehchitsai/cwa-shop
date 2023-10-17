@@ -29,7 +29,11 @@ const Dropzone = (props) => {
     }
   }, [files])
 
-  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({ onDrop, accept, noClick: true })
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
+    onDrop,
+    accept,
+    noClick: true
+  })
 
   const onRemoveFile = (target) => () => {
     const newFiles = files.filter((file) => file.url !== target.url)
