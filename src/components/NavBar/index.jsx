@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import clx from 'classnames'
 import { MdGTranslate, MdLogout } from 'react-icons/md'
+import { FaProductHunt } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
 import useOnInit from '../../hooks/useOnInit'
 
@@ -40,6 +41,19 @@ const Logout = (props) => {
 
   return (
     <Link to='/example' className='btn btn-ghost'>
+      {children}
+    </Link>
+  )
+}
+
+const Product = (props) => {
+  const { children, fixed } = props
+  if (fixed) {
+    return children
+  }
+
+  return (
+    <Link to='/product' className='btn btn-ghost'>
       {children}
     </Link>
   )
@@ -103,6 +117,9 @@ const NavBar = (props) => {
               {t('user')}
             </span>
           </div>
+          <Product fixed={fixed}>
+            <FaProductHunt size='1.5em' />
+          </Product>
           <Logout fixed={fixed}>
             <MdLogout size='1.5em' />
           </Logout>

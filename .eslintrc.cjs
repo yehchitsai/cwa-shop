@@ -24,6 +24,7 @@ module.exports = {
     ],
     'no-console': 'off',
     'no-unused-expressions': ['error', { allowShortCircuit: true, allowTernary: true }],
+    'no-restricted-syntax': 'off',
     'arrow-body-style': 'off',
     semi: [2, 'never'],
     'comma-dangle': ['error', 'never'],
@@ -42,6 +43,7 @@ module.exports = {
     'jsx-a11y/no-noninteractive-element-interactions': [0],
     'jsx-a11y/click-events-have-key-events': [0],
     'jsx-a11y/no-noninteractive-tabindex': [0],
-    'jsx-a11y/control-has-associated-label': [0]
+    'jsx-a11y/control-has-associated-label': [0],
+    'jsx-a11y/media-has-caption': [0]
   }
 }
