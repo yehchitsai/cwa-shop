@@ -30,10 +30,10 @@ const Dropzone = (props) => {
   }, [files])
 
   const {
-   getRootProps,
-   getInputProps,
-   isDragActive,
-   open
+    getRootProps,
+    getInputProps,
+    isDragActive,
+    open
   } = useDropzone({
     onDrop,
     accept,
@@ -50,8 +50,7 @@ const Dropzone = (props) => {
       <div
         {...getRootProps({
           className: clx('m-full', { [className]: className })
-        })}
-        onClick={open}
+        })}    
       >
         <label className={clx(
           'flex justify-center w-full h-32 px-4 transition bg-white border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer hover:border-gray-400 focus:outline-none',
@@ -67,7 +66,15 @@ const Dropzone = (props) => {
               {
                 isDragActive
                   ? <p>Drop the files here ...</p>
-                  : <p>Drag and drop some files here, or click to select files</p>
+                  : (
+                    <p>
+                      Drag and drop some files here, or
+                      <button type='button' onClick={open}>
+                        click here
+                      </button>
+                      to select files
+                    </p>
+                  )
               }
             </span>
           </span>
