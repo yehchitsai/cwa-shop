@@ -57,8 +57,8 @@ const Dropzone = (props) => {
     open
   } = useDropzone({ onDrop, accept, noClick: true })
 
-  const onRemoveFile = (target) => () => {
-    const newFiles = files.filter((file) => file.url !== target.url)
+  const onRemoveFile = (targetIndex) => () => {
+    const newFiles = files.filter((file, index) => index !== targetIndex)
     setFiles(newFiles)
     setFilesToInput(newFiles.map((newFile) => newFile.file))
   }
@@ -129,7 +129,7 @@ const Dropzone = (props) => {
         </div>
       )}
       <div className='m-auto flex w-full flex-wrap'>
-        {files.map((file) => {
+        {files.map((file, index) => {
           const { url, isVideo } = file
           return (
             <div
@@ -161,7 +161,7 @@ const Dropzone = (props) => {
               <button
                 type='button'
                 className='btn btn-square btn-error btn-outline btn-sm absolute bottom-4 right-4'
-                onClick={onRemoveFile(file)}
+                onClick={onRemoveFile(index)}
               >
                 <MdDelete
                   size='1.2em'
