@@ -5,44 +5,56 @@ import clx from 'classnames'
 import { isEmpty } from 'lodash-es'
 
 const Dropzone = (props) => {
-  const { className, accept } = props
+  const { className, accept, name } = props
   const [files, setFiles] = useState([])
   const [rejections, setRejections] = useState([])
 
+  const setFilesToInput = useCallback((newFiles) => {
+    const dt = new DataTransfer()
+    for (const newFile of newFiles) {
+      dt.items.add(newFile)
+    }
+    document.querySelector(`[name=${name}]`).files = dt.files
+  }, [name])
+
   const onDrop = useCallback((acceptedFiles, fileRejections) => {
-    console.log(acceptedFiles)
     setRejections(fileRejections)
     for (const acceptedFile of acceptedFiles) {
-      const { name, type } = acceptedFile
+      const { name: fileName, type } = acceptedFile
       const isVideo = type === 'video/mp4'
+      const commonInfo = { isVideo, name: fileName, file: acceptedFile }
       if (!isVideo) {
         const reader = new FileReader()
         reader.readAsDataURL(acceptedFile)
         reader.onloadend = () => {
           const { result } = reader
-          setFiles([...files, { url: result, isVideo }])
+          setFiles([...files, { url: result, ...commonInfo }])
         }
       } else {
         const url = URL.createObjectURL(acceptedFile)
-        setFiles([...files, { url, isVideo, name }])
+        setFiles([...files, { url, ...commonInfo }])
       }
     }
-  }, [files])
+    if (isEmpty(acceptedFiles)) {
+      return
+    }
+
+    setFilesToInput(
+      [...files.map((file) => file.file), ...acceptedFiles]
+    )
+  }, [files, setFilesToInput])
 
   const {
     getRootProps,
     getInputProps,
     isDragActive,
     open
-  } = useDropzone({
-    onDrop,
-    accept,
-    noClick: true
-  })
+  } = useDropzone({ onDrop, accept, noClick: true })
 
   const onRemoveFile = (target) => () => {
     const newFiles = files.filter((file) => file.url !== target.url)
     setFiles(newFiles)
+    setFilesToInput(newFiles.map((newFile) => newFile.file))
   }
 
   return (
@@ -117,14 +129,14 @@ const Dropzone = (props) => {
             <div
               className={clx(
                 'relative',
-                { 'w-full p-2 max-lg:w-1/3 lg:w-1/6': !isVideo },
+                { 'p-2 max-sm:w-1/2 max-lg:w-1/3 lg:w-1/6': !isVideo },
                 { 'w-full flex justify-evenly bg-black my-4': isVideo }
               )}
+              key={url}
             >
               {
                 !isVideo && (
                   <img
-                    key={url}
                     className='mask mask-square rounded-md'
                     src={url}
                     alt='upload file'
@@ -153,6 +165,12 @@ const Dropzone = (props) => {
           )
         })}
       </div>
+      <input
+        name={name}
+        type='file'
+        className='hidden'
+        multiple
+      />
     </>
   )
 }
