@@ -52,7 +52,7 @@ const Dropzone = (props) => {
           ...getRootProps({
             className: clx('m-full', { [className]: className })
           })
-        }    
+        }
       >
         <label className={clx(
           'flex justify-center w-full h-32 px-4 transition bg-white border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer hover:border-gray-400 focus:outline-none',
