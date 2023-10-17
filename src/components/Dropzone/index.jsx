@@ -29,7 +29,12 @@ const Dropzone = (props) => {
     }
   }, [files])
 
-  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
+  const {
+   getRootProps,
+   getInputProps,
+   isDragActive,
+   open
+  } = useDropzone({
     onDrop,
     accept,
     noClick: true
