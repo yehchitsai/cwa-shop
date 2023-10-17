@@ -17,30 +17,36 @@ const Dropzone = (props) => {
     document.querySelector(`[name=${name}]`).files = dt.files
   }, [name])
 
-  const onDrop = useCallback((acceptedFiles, fileRejections) => {
+  const onDrop = useCallback(async (acceptedFiles, fileRejections) => {
     setRejections(fileRejections)
+    const newFiles = []
     for (const acceptedFile of acceptedFiles) {
       const { name: fileName, type } = acceptedFile
       const isVideo = type === 'video/mp4'
       const commonInfo = { isVideo, name: fileName, file: acceptedFile }
-      if (!isVideo) {
-        const reader = new FileReader()
-        reader.readAsDataURL(acceptedFile)
-        reader.onloadend = () => {
-          const { result } = reader
-          setFiles([...files, { url: result, ...commonInfo }])
+      const newFile = new Promise((resolve) => {
+        if (!isVideo) {
+          const reader = new FileReader()
+          reader.readAsDataURL(acceptedFile)
+          reader.onloadend = () => {
+            const { result } = reader
+            resolve({ url: result, ...commonInfo })
+          }
+        } else {
+          const url = URL.createObjectURL(acceptedFile)
+          resolve({ url, ...commonInfo })
         }
-      } else {
-        const url = URL.createObjectURL(acceptedFile)
-        setFiles([...files, { url, ...commonInfo }])
-      }
+      })
+      newFiles.push(newFile)
     }
+    const allFiles = [...files, ...await Promise.all(newFiles)]
+    setFiles(allFiles)
     if (isEmpty(acceptedFiles)) {
       return
     }
 
     setFilesToInput(
-      [...files.map((file) => file.file), ...acceptedFiles]
+      allFiles.map((file) => file.file)
     )
   }, [files, setFilesToInput])
 
