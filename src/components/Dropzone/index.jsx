@@ -61,8 +61,7 @@ const Dropzone = (props) => {
         >
           <span className='flex items-center space-x-2'>
             <MdOutlineCloudUpload
-              size='1.5em'
-              className='h-6 w-6 text-gray-600'
+              className='text-gray-600 max-sm:h-16 max-sm:w-16 sm:h-8 sm:w-8'
             />
             <span className='font-medium text-gray-600'>
               {
@@ -74,9 +73,9 @@ const Dropzone = (props) => {
                       <button
                         type='button'
                         onClick={open}
-                        className='btn btn-outline'
+                        className='btn btn-outline mx-4'
                       >
-                        click here
+                        click
                       </button>
                       to select files
                     </p>
