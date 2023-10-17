@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import clx from 'classnames'
 import { MdGTranslate, MdLogout } from 'react-icons/md'
-import { FaProductHunt } from 'react-icons/fa'
+import { FaProductHunt, FaUserCircle } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
 import useOnInit from '../../hooks/useOnInit'
 
@@ -36,7 +36,11 @@ const HomeLogo = (props) => {
 const Logout = (props) => {
   const { children, fixed } = props
   if (fixed) {
-    return children
+    return (
+      <div>
+        {children}
+      </div>
+    )
   }
 
   return (
@@ -49,7 +53,11 @@ const Logout = (props) => {
 const Product = (props) => {
   const { children, fixed } = props
   if (fixed) {
-    return children
+    return (
+      <div>
+        {children}
+      </div>
+    )
   }
 
   return (
@@ -113,9 +121,13 @@ const NavBar = (props) => {
             </ul>
           </div>
           <div className='btn btn-ghost'>
-            <span className='tooltip tooltip-bottom' data-tip={`v${window.APP_VERSION}`}>
-              {t('user')}
-            </span>
+            <div
+              className='tooltip tooltip-bottom'
+              data-tip={`v${window.APP_VERSION}`}
+            >
+              <span className='max-sm:hidden'>{t('user')}</span>
+              <FaUserCircle className='md:hidden' size='1.5em' />
+            </div>
           </div>
           <Product fixed={fixed}>
             <FaProductHunt size='1.5em' />
