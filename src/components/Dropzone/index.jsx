@@ -29,7 +29,7 @@ const Dropzone = (props) => {
     }
   }, [files])
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, accept })
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({ onDrop, accept, noClick: true })
 
   const onRemoveFile = (target) => () => {
     const newFiles = files.filter((file) => file.url !== target.url)
@@ -42,6 +42,7 @@ const Dropzone = (props) => {
         {...getRootProps({
           className: clx('m-full', { [className]: className })
         })}
+        onClick={open}
       >
         <label className={clx(
           'flex justify-center w-full h-32 px-4 transition bg-white border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer hover:border-gray-400 focus:outline-none',
