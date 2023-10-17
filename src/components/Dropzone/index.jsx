@@ -69,7 +69,11 @@ const Dropzone = (props) => {
                   : (
                     <p>
                       Drag and drop some files here, or
-                      <button type='button' onClick={open}>
+                      <button
+                        type='button'
+                        onClick={open}
+                        className='btn btn-outline'
+                      >
                         click here
                       </button>
                       to select files
