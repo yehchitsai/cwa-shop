@@ -1,6 +1,6 @@
 import { uniqueId } from 'lodash-es'
-import useCreate from '../../hooks/useCreate'
-import useUpdate from '../../hooks/useUpdate'
+import useCreate from '../../../hooks/useCreate'
+import useUpdate from '../../../hooks/useUpdate'
 
 const host = window.IS_MOCK
   ? import.meta.env.VITE_LOCAL_MOCK_API_HOST

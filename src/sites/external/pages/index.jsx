@@ -14,15 +14,15 @@ import clx from 'classnames'
 import {
   key as selectedProductsStateKey,
   selectedProductsState
-} from '../state/selectedProducts'
-import useFishTypes from '../hooks/useFishTypes'
-import useFishData from '../hooks/useFishData'
-import Card from '../components/Card'
-import ProductModel from '../components/Model/Product'
-import SkeletonHome from '../components/Skeleton/Home'
-import Drawer from '../components/Drawer'
-import CartItems from '../components/CartItems'
-import CartBottomItems from '../components/CartBottomItems'
+} from '../../../state/selectedProducts'
+import useFishTypes from '../../../hooks/useFishTypes'
+import useFishData from '../../../hooks/useFishData'
+import Card from '../../../components/Card'
+import ProductModel from '../../../components/Model/Product'
+import SkeletonHome from '../../../components/Skeleton/Home'
+import Drawer from '../../../components/Drawer'
+import CartItems from '../../../components/CartItems'
+import CartBottomItems from '../../../components/CartBottomItems'
 
 const productModelKey = 'productModel'
 
