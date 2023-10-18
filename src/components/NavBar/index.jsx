@@ -44,9 +44,9 @@ const Logout = (props) => {
   }
 
   return (
-    <Link to='/example' className='btn btn-ghost'>
+    <a href='../' className='btn btn-ghost'>
       {children}
-    </Link>
+    </a>
   )
 }
 
