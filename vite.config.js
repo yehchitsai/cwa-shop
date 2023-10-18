@@ -1,13 +1,12 @@
 import { resolve } from 'path'
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig, splitVendorChunkPlugin, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import { viteMockServe } from 'vite-plugin-mock'
+import { sync } from 'glob'
 import { version, name } from './package.json'
 
-const root = resolve(__dirname, 'src')
 const outDir = resolve(__dirname, 'dist')
 const envDir = resolve(__dirname, 'environments')
-const endpointFileName = 'index.html'
 
 // https://vitejs.dev/config/
 export default ({ mode }) => {
@@ -20,13 +19,14 @@ export default ({ mode }) => {
     envDir,
     define: {
       'window.APP_VERSION': `"${version}"`,
-      'window.APP_BASENAME': `"${process.env.BASENAME ? `/${name}` : '/'}"`,
+      'window.APP_BASENAME': `"${process.env.BASENAME ? `/${name}` : ''}"`,
       'window.IS_MOCK': `${isMock}`,
       'window.IS_MOCK_AWS_API': `${isMockAwsApi}`
     },
-    root,
+    root: 'src/sites',
     plugins: [
       react(),
+      splitVendorChunkPlugin(),
       viteMockServe({
         mockPath: './src/mock',
         localEnabled: isMock
@@ -37,9 +37,12 @@ export default ({ mode }) => {
       emptyOutDir: true,
       assetsDir: 'assets',
       rollupOptions: {
-        input: {
-          main: resolve(root, endpointFileName)
-        }
+        input: Object.fromEntries(
+          sync('src/sites/**/index.html').map((file) => [
+            file.replace('src/sites/', '').replace('/index.html', ''),
+            file
+          ])
+        )
       }
     },
     server: {

@@ -1,62 +1,41 @@
-import { Suspense, lazy } from 'react'
+import { Suspense } from 'react'
 import {
   createBrowserRouter,
   RouterProvider
 } from 'react-router-dom'
-import { flow, isEmpty } from 'lodash-es'
 import SkeletonHome from '../Skeleton/Home'
 import ErrorElement from './ErrorElement.jsx'
 import Layout from './Layout'
 import NavBar from '../NavBar'
 import 'react-loading-skeleton/dist/skeleton.css'
 
-const pages = import.meta.glob('../../pages/**/*.jsx')
-
-const dynamicRoutes = flow(
-  () => Object.entries(pages),
-  (pagesEntries) => pagesEntries.reduce((collect, pagesEntry) => {
-    const [path, page] = pagesEntry
-    const fileName = path.match(/\.\/pages\/(.*)\.jsx$/)?.[1]
-    if (!fileName) {
-      return collect
-    }
-
-    const normalizedPathName = fileName.includes('$')
-      ? fileName.replace('$', ':')
-      : fileName.replace(/\/index/, '')
-
-    const Component = lazy(page)
-    collect.push({
-      path: fileName === 'index' ? '/' : `/${normalizedPathName.toLowerCase()}`,
-      element: <Component />
-    })
-    return collect
-  }, [])
-)()
-
-const withErrorElement = (routes) => routes.map(({ children, ...route }) => (
-  {
+const withErrorElement = (routes) => routes.map((item) => {
+  const {
+    children, element: Comp, ...route
+  } = item
+  return {
     ...route,
-    ...(!isEmpty(children) && { children: withErrorElement(children) }),
+    element: <Comp />,
     errorElement: <ErrorElement />
   }
-))
+})
 
-const routes = [
-  {
-    element: <Layout />,
-    children: withErrorElement([
-      ...dynamicRoutes,
-      {
-        path: '/test',
-        element: <SkeletonHome />
-      }
-    ])
-  }
-]
-
-const Router = () => {
-  const router = createBrowserRouter(routes, { basename: window.APP_BASENAME })
+const Router = (props) => {
+  const { routes, basename = '/' } = props
+  const totalRoutes = [
+    {
+      element: <Layout />,
+      children: withErrorElement([
+        ...routes,
+        {
+          path: '/test',
+          element: SkeletonHome
+        }
+      ])
+    }
+  ]
+  console.log(totalRoutes, `${window.APP_BASENAME}${basename}`)
+  const router = createBrowserRouter(totalRoutes, { basename: `${window.APP_BASENAME}${basename}` })
   return (
     <Suspense
       fallback={(

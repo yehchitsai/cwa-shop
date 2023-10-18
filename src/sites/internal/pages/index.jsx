@@ -5,10 +5,10 @@ import {
 import { useTranslation } from 'react-i18next'
 import { MdAdd } from 'react-icons/md'
 import clx from 'classnames'
-import useFishTypes from '../../hooks/useFishTypes'
-import Dropzone from '../../components/Dropzone'
-import ACCEPT from '../../components/Dropzone/accept'
-import getFormValues from '../../utils/getFormValues'
+import useFishTypes from '../../../hooks/useFishTypes'
+import Dropzone from '../../../components/Dropzone'
+import ACCEPT from '../../../components/Dropzone/accept'
+import getFormValues from '../../../utils/getFormValues'
 
 const FORM = {
   TYPE: 'type',
