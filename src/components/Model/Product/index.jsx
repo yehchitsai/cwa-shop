@@ -8,12 +8,13 @@ import useFishInfo from '../../../hooks/useFishInfo'
 import Drawer from '../../Drawer'
 import LazyImage from '../../LazyImage'
 import Model from '..'
+import useFishTypes from '../../../hooks/useFishTypes'
 
 const ESC_KEY_CODE = 27
 
 const ProductModel = (props) => {
   const {
-    id, visible, onClose, product = {}, fishTypeMap = {}
+    id, visible, onClose, product = {}
   } = props
   const {
     itemSerial,
@@ -27,7 +28,10 @@ const ProductModel = (props) => {
     isLoading,
     isMutating
   } = useFishInfo(itemSerial)
-  const { t } = useTranslation()
+  const { i18n, t } = useTranslation()
+  const {
+    fishTypeMap
+  } = useFishTypes(i18n.language)
   const maxIndex = size(itemImages) - 1
   const {
     fishName,

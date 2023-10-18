@@ -9,7 +9,7 @@ const useFishTypes = (lang) => {
   const url = isEmpty(lang) ? null : `/v1/battafish?${qs.stringify(params)}`
   const {
     data = [], error, isLoading
-  } = useSWR(() => ({ url, host }), {})
+  } = useSWR(() => ({ url, host }), { suspense: true })
   const fishTypes = isEmpty(data) ? [] : data.map((item) => {
     const {
       fishType, fishName, scientificName, fishPrice

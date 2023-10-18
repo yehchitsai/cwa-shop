@@ -50,7 +50,7 @@ const Router = () => {
       fallback={(
         <>
           <NavBar fixed />
-          <SkeletonHome />
+          <SkeletonHome className='fixed top-0 z-0' />
         </>
       )}
     >

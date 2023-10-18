@@ -5,10 +5,14 @@ import {
   get,
   size, sumBy
 } from 'lodash-es'
+import useFishTypes from '../../hooks/useFishTypes'
 
 const CartBottomItems = (props) => {
-  const { t } = useTranslation()
-  const { items = [], fishTypeMap = {} } = props
+  const { i18n, t } = useTranslation()
+  const {
+    fishTypeMap
+  } = useFishTypes(i18n.language)
+  const { items = [] } = props
   const selectedSize = size(items)
   const isNoProductSelected = selectedSize === 0
   const totalPrice = sumBy(items, (item) => get(fishTypeMap, `${item.fishType}.fishPrice`))

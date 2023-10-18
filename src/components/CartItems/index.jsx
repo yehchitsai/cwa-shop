@@ -1,9 +1,15 @@
+import { useTranslation } from 'react-i18next'
 import {
   groupBy, flow, reduce, size, get
 } from 'lodash-es'
+import useFishTypes from '../../hooks/useFishTypes'
 
 const CartItems = (props) => {
-  const { items = [], fishTypeMap } = props
+  const { items = [] } = props
+  const { i18n } = useTranslation()
+  const {
+    fishTypeMap
+  } = useFishTypes(i18n.language)
   const selectedSize = size(items)
   const isNoProductSelected = selectedSize === 0
   if (isNoProductSelected) {
