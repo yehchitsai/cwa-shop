@@ -1,4 +1,5 @@
 import {
+  Suspense,
   useMemo,
   useState
 } from 'react'
@@ -7,7 +8,7 @@ import { useRecoilState } from 'recoil'
 import { useTranslation } from 'react-i18next'
 import { MdShoppingCart } from 'react-icons/md'
 import {
-  filter, get, isEmpty
+  filter, get
 } from 'lodash-es'
 import clx from 'classnames'
 import {
@@ -25,36 +26,66 @@ import CartBottomItems from '../components/CartBottomItems'
 
 const productModelKey = 'productModel'
 
-const Home = () => {
+const SelectSection = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const { i18n } = useTranslation()
   const {
-    fishTypes,
-    fishTypeMap
+    fishTypes
   } = useFishTypes(i18n.language)
   const fishType = useMemo(
     () => searchParams.get('fishType') || get(fishTypes, '0.value'),
     [searchParams, fishTypes]
   )
+
+  const onSelectType = (e) => {
+    const newFishType = e.target.value
+    setSearchParams({ fishType: newFishType })
+  }
+
+  return (
+    <div className='w-full p-4'>
+      <select
+        className={clx(
+          'select select-bordered w-full'
+        )}
+        onChange={onSelectType}
+        defaultValue={fishType}
+      >
+        <option value={-1} disabled>Select fish type</option>
+        {fishTypes.map((type) => {
+          const { label, value } = type
+          return (
+            <option value={value} key={value}>
+              {label}
+            </option>
+          )
+        })}
+      </select>
+    </div>
+  )
+}
+
+const CardsSection = (props) => {
   const {
-    data: fishData,
-    isLoading: isFishDataLoading
+    setIsProductModalOpen,
+    setTargetProduct
+  } = props
+  const [searchParams] = useSearchParams()
+  const { i18n } = useTranslation()
+  const { fishTypes } = useFishTypes(i18n.language)
+  const fishType = useMemo(
+    () => searchParams.get('fishType') || get(fishTypes, '0.value'),
+    [searchParams, fishTypes]
+  )
+  const {
+    data: fishData
   } = useFishData(fishType)
-  const [isProductModalOpen, setIsProductModalOpen] = useState(false)
-  const [targetProduct, setTargetProduct] = useState({})
   const [selectProducts, setSelectProducts] = useRecoilState(selectedProductsState)
 
   const openProductModal = (newTargetProduct) => async () => {
     setTargetProduct({ ...newTargetProduct, fishType })
     setIsProductModalOpen(true)
     document.querySelector(`#${productModelKey}`).showModal()
-  }
-
-  const closeProductModal = () => setIsProductModalOpen(false)
-
-  const onSelectType = (e) => {
-    const newFishType = e.target.value
-    setSearchParams({ fishType: newFishType })
   }
 
   const onSelectProduct = (product) => (e) => {
@@ -71,23 +102,37 @@ const Home = () => {
     setSelectProducts(newSelectProducts)
   }
 
-  const isContentLoading = (
-    isFishDataLoading ||
-    isEmpty(fishTypes)
-  )
+  return fishData.map((item) => (
+    <Card
+      key={item.itemSerial}
+      item={item}
+      onImageClick={openProductModal(item)}
+      onSelectProduct={onSelectProduct}
+      selectProducts={selectProducts}
+    />
+  ))
+}
+
+const Home = () => {
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false)
+  const [targetProduct, setTargetProduct] = useState({})
+  const [selectProducts] = useRecoilState(selectedProductsState)
+
+  const closeProductModal = () => setIsProductModalOpen(false)
 
   return (
     <Drawer
       id='rootSidebar'
       items={(
-        <CartItems items={selectProducts} fishTypeMap={fishTypeMap} />
+        <CartItems items={selectProducts} />
       )}
       bottomItems={(
-        <CartBottomItems items={selectProducts} fishTypeMap={fishTypeMap} />
+        <CartBottomItems items={selectProducts} />
       )}
       openIcon={MdShoppingCart}
       drawerContentClassName={clx(
-        { 'm-0 p-0 w-full overflow-y-hidden': isContentLoading }
+        // { 'm-0 p-0 w-full overflow-y-hidden': isContentLoading }
+        'm-0 p-0 w-full overflow-y-hidden'
       )}
       overlay
       // indicator={2}
@@ -96,53 +141,31 @@ const Home = () => {
     >
       <div
         className={clx(
-          { 'max-lg:m-auto max-lg:max-w-2xl max-sm:min-w-full lg:max-w-5xl max-sm:p-4 sm:p-12': !isContentLoading }
+          'max-lg:m-auto max-lg:max-w-2xl max-sm:min-w-full lg:max-w-5xl max-sm:p-4 sm:p-12'
         )}
       >
         <div className='flex flex-wrap'>
-          <div className='w-full p-4'>
-            <select
-              className={clx(
-                'select select-bordered w-full'
-              )}
-              onChange={onSelectType}
-              defaultValue={fishType}
-            >
-              <option value={-1} disabled>Select fish type</option>
-              {fishTypes.map((type) => {
-                const { label, value } = type
-                return (
-                  <option value={value} key={value}>
-                    {label}
-                  </option>
-                )
-              })}
-            </select>
-          </div>
+          <Suspense fallback={<SkeletonHome />}>
+            <SelectSection />
+          </Suspense>
         </div>
-        {
-          isFishDataLoading ? <SkeletonHome /> : (
-            <div className='flex flex-wrap'>
-              {fishData.map((item) => (
-                <Card
-                  key={item.itemSerial}
-                  item={item}
-                  onImageClick={openProductModal(item)}
-                  onSelectProduct={onSelectProduct}
-                  selectProducts={selectProducts}
-                />
-              ))}
-            </div>
-          )
-        }
+        <div className='flex flex-wrap'>
+          <Suspense fallback={<SkeletonHome className='h-[70vh]' />}>
+            <CardsSection
+              setIsProductModalOpen={setIsProductModalOpen}
+              setTargetProduct={setTargetProduct}
+            />
+          </Suspense>
+        </div>
       </div>
-      <ProductModel
-        id={productModelKey}
-        visible={isProductModalOpen}
-        onClose={closeProductModal}
-        product={targetProduct}
-        fishTypeMap={fishTypeMap}
-      />
+      <Suspense fallback={<SkeletonHome />}>
+        <ProductModel
+          id={productModelKey}
+          visible={isProductModalOpen}
+          onClose={closeProductModal}
+          product={targetProduct}
+        />
+      </Suspense>
     </Drawer>
   )
 }

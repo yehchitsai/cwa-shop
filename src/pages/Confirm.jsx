@@ -4,7 +4,7 @@ import { useRecoilState } from 'recoil'
 import { useTranslation } from 'react-i18next'
 import { MdDelete } from 'react-icons/md'
 import {
-  flow, get, size, sumBy, uniqBy
+  flow, get, size, sumBy, groupBy, reduce
 } from 'lodash-es'
 import {
   key as selectedProductsStateKey,
@@ -24,10 +24,14 @@ const Confirm = () => {
   const [targetProduct, setTargetProduct] = useState({})
   const [isProductModalOpen, setIsProductModalOpen] = useState(false)
   const selectedTypes = flow(
-    () => uniqBy(selectedProducts, (selectedProduct) => selectedProduct.fishType),
-    (uniqSelectedProducts) => uniqSelectedProducts.map((product) => {
-      return get(fishTypeMap, `${product.fishType}.fishName`)
-    })
+    () => groupBy(selectedProducts, (selectedProduct) => selectedProduct.fishType),
+    (groupedProducts) => reduce(groupedProducts, (data, products, fishType) => {
+      data.push({
+        fishName: get(fishTypeMap, `${fishType}.fishName`),
+        count: size(products)
+      })
+      return data
+    }, [])
   )()
 
   const openProductModal = (newTargetProduct) => async () => {
@@ -119,14 +123,14 @@ const Confirm = () => {
             <tr>
               <th colSpan={2}>{`${size(selectedProducts)}`}</th>
               <td colSpan={2}>
-                {selectedTypes.map((selectedType) => (
-                  <p key={selectedType}>{selectedType}</p>
+                {selectedTypes.map(({ fishName, count }) => (
+                  <p key={fishName}>{`${fishName} x ${count}`}</p>
                 ))}
               </td>
               <td>
                 {`${sumBy(selectedProducts, (selectedProduct) => (get(fishTypeMap, `${selectedProduct.fishType}.fishPrice`)))} ${t('currency')}`}
               </td>
-              <td className='space-y-2'>
+              <th className='space-y-2'>
                 <button
                   type='button'
                   className='btn btn-success btn-outline'
@@ -141,7 +145,7 @@ const Confirm = () => {
                 >
                   Remove all
                 </button>
-              </td>
+              </th>
             </tr>
           </tbody>
         </table>

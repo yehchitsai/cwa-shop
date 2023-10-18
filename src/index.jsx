@@ -14,6 +14,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         // https://swr.vercel.app/docs/api
         keepPreviousData: true,
         errorRetryCount: 3,
+        suspense: false,
         fetcher
       }}
     >
