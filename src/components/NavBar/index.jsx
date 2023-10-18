@@ -37,7 +37,7 @@ const Logout = (props) => {
   const { children, fixed } = props
   if (fixed) {
     return (
-      <div>
+      <div className='btn btn-ghost'>
         {children}
       </div>
     )
@@ -54,7 +54,7 @@ const Product = (props) => {
   const { children, fixed } = props
   if (fixed) {
     return (
-      <div>
+      <div className='btn btn-ghost'>
         {children}
       </div>
     )
