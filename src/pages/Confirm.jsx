@@ -130,7 +130,7 @@ const Confirm = () => {
               <td>
                 {`${sumBy(selectedProducts, (selectedProduct) => (get(fishTypeMap, `${selectedProduct.fishType}.fishPrice`)))} ${t('currency')}`}
               </td>
-              <td className='space-y-2'>
+              <th className='space-y-2'>
                 <button
                   type='button'
                   className='btn btn-success btn-outline'
@@ -145,7 +145,7 @@ const Confirm = () => {
                 >
                   Remove all
                 </button>
-              </td>
+              </th>
             </tr>
           </tbody>
         </table>
