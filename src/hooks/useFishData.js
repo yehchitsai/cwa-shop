@@ -9,7 +9,7 @@ const useFishData = (fishType) => {
   const url = isEmpty(fishType) ? null : `/v1/battafish?${qs.stringify(params)}`
   const {
     data = [], error, isLoading
-  } = useSWR(() => ({ url, host }), { suspense: true })
+  } = useSWR(() => ({ url, host }), {})
   return {
     data,
     isLoading,
