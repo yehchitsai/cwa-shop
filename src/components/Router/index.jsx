@@ -3,24 +3,36 @@ import {
   createBrowserRouter,
   RouterProvider
 } from 'react-router-dom'
-import { isEmpty } from 'lodash-es'
+import { flow, isEmpty } from 'lodash-es'
 import SkeletonHome from '../Skeleton/Home'
 import ErrorElement from './ErrorElement.jsx'
 import Layout from './Layout'
 import NavBar from '../NavBar'
 import 'react-loading-skeleton/dist/skeleton.css'
 
-const pages = import.meta.glob('../../pages/*.jsx')
+const pages = import.meta.glob('../../pages/**/*.jsx')
 
-const dynamicRoutes = Object.entries(pages).map(([path, page]) => {
-  const componentName = path.split('/').pop().replace(/.jsx$/, '')
-  const routePath = componentName === 'Home' ? '/' : `/${componentName.toLowerCase()}`
-  const Component = lazy(page)
-  return {
-    path: routePath,
-    element: <Component />
-  }
-})
+const dynamicRoutes = flow(
+  () => Object.entries(pages),
+  (pagesEntries) => pagesEntries.reduce((collect, pagesEntry) => {
+    const [path, page] = pagesEntry
+    const fileName = path.match(/\.\/pages\/(.*)\.jsx$/)?.[1]
+    if (!fileName) {
+      return collect
+    }
+
+    const normalizedPathName = fileName.includes('$')
+      ? fileName.replace('$', ':')
+      : fileName.replace(/\/index/, '')
+
+    const Component = lazy(page)
+    collect.push({
+      path: fileName === 'index' ? '/' : `/${normalizedPathName.toLowerCase()}`,
+      element: <Component />
+    })
+    return collect
+  }, [])
+)()
 
 const withErrorElement = (routes) => routes.map(({ children, ...route }) => (
   {

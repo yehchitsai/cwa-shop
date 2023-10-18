@@ -9,11 +9,11 @@ import {
 import {
   key as selectedProductsStateKey,
   selectedProductsState
-} from '../state/selectedProducts'
-import useFishTypes from '../hooks/useFishTypes'
-import SkeletonHome from '../components/Skeleton/Home'
-import LazyImage from '../components/LazyImage'
-import ProductModel from '../components/Model/Product'
+} from '../../state/selectedProducts'
+import useFishTypes from '../../hooks/useFishTypes'
+import SkeletonHome from '../../components/Skeleton/Home'
+import LazyImage from '../../components/LazyImage'
+import ProductModel from '../../components/Model/Product'
 
 const productModelKey = 'productModel'
 
