@@ -133,12 +133,18 @@
       <td>localhost start dev server and mock api by `vite-plugin-mock`</td>
     </tr>
     <tr>
+      <td>npm run dev:mockapi</td>
+      <td>
+        localhost start dev server and mock api in promise object <strong>WITHOUT SEND REQUEST</strong>
+      </td>
+    </tr>
+    <tr>
       <td>npm run build</td>
       <td>build in production</td>
     </tr>
     <tr>
       <td>npm run build:gh</td>
-      <td>build in production for github page special environment</td>
+      <td>build in production for github page special environment(BrowerRoute not working)</td>
     </tr>
     <tr>
       <td>npm run lint</td>
