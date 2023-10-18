@@ -1,4 +1,4 @@
-import { isUndefined } from 'lodash-es'
+import { isEmpty } from 'lodash-es'
 import mockFetcher from './mockFetcher'
 
 const fetcher = async (config = {}, triggerArgs = {}) => {
@@ -8,7 +8,7 @@ const fetcher = async (config = {}, triggerArgs = {}) => {
   const url = `${host}${key}`
   const isHttpRequest = host.startsWith('http')
   const isAwsApi = key.startsWith('/v1')
-  const isGetRequest = isUndefined(body)
+  const isGetRequest = isEmpty(body)
   const newOptions = {
     ...(!isGetRequest && {
       body: JSON.stringify(body),
@@ -18,7 +18,7 @@ const fetcher = async (config = {}, triggerArgs = {}) => {
     }),
     ...options
   }
-  const request = (!isHttpRequest && isAwsApi)
+  const request = (window.IS_MOCK && window.IS_MOCK_AWS_API && !isHttpRequest && isAwsApi)
     ? Promise.reject(new Error('Skip no http aws api request'))
     : fetch(url, newOptions)
   return request

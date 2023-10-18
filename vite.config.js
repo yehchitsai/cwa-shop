@@ -13,7 +13,7 @@ const endpointFileName = 'index.html'
 export default ({ mode }) => {
   const isMock = !!process.env.MOCK
   const isMockAwsApi = !!process.env.MOCK_AWS_API
-  const modeEnv = loadEnv(mode, envDir)
+  const modeEnv = loadEnv(isMock ? 'mock' : mode, envDir)
   process.env = { ...process.env, ...modeEnv }
   const viteConfig = {
     base: './',
