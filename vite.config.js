@@ -47,27 +47,25 @@ export default ({ mode }) => {
         output: {
           entryFileNames: (assetInfo) => {
             const { name: entryName } = assetInfo
+            const file404 = `
+              <!DOCTYPE html>
+              <script>
+                console.log(window.location.pathname)
+                sessionStorage.setItem('redirectPath', window.location.pathname)
+                window.location.href = './'
+              </script>
+            `
             if (entryName === 'index.html') {
               fs.writeFileSync(
                 'dist/404.html',
-                `
-                  <!DOCTYPE html>
-                  <meta http-equiv="refresh" content="0; URL=./">
-                  <link rel="canonical" href="./">
-                `,
+                file404,
                 'utf-8'
               )
             } else {
               fs.mkdirSync(`dist/${entryName}`)
               fs.writeFileSync(
                 `dist/${entryName}/404.html`,
-                `
-                  <!DOCTYPE html>
-                  <script>
-                    console.log(window.location.pathname)
-                    window.location.href = './?path=' + window.location.pathname
-                  </script>
-                `,
+                file404,
                 'utf-8'
               )
             }
