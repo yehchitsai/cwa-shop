@@ -2,6 +2,7 @@ import clx from 'classnames'
 import { MdGTranslate, MdLogout } from 'react-icons/md'
 import { FaUserCircle } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
+import { keyBy } from 'lodash-es'
 import useOnInit from '../../hooks/useOnInit'
 
 const langs = [
@@ -9,6 +10,7 @@ const langs = [
   { label: '英文', value: 'en' },
   { label: '日文', value: 'jp' }
 ]
+const langsMap = keyBy(langs.map((lang) => lang.value))
 
 const HomeLogo = (props) => {
   const { fixed } = props
@@ -49,9 +51,28 @@ const Logout = (props) => {
   )
 }
 
+const getSelectLang = (i18n) => {
+  const systemLangsMap = keyBy(i18n.languages)
+  const currentLang = i18n.language
+  const preferLang = i18n.resolvedLanguage
+  const isCurrentLangInSystem = currentLang in systemLangsMap
+  const isCurrentLangInOptions = currentLang in langsMap
+  const isPerferLangInOptions = preferLang in langsMap
+  if (isCurrentLangInSystem && isCurrentLangInOptions) {
+    return currentLang
+  }
+
+  if (isPerferLangInOptions) {
+    return preferLang
+  }
+
+  return 'en'
+}
+
 const NavBar = (props) => {
   const { fixed } = props
   const { t, i18n } = useTranslation()
+  const defaultLang = getSelectLang(i18n)
 
   const onChangeLang = (e) => {
     const selectLang = e.target.value
@@ -59,7 +80,7 @@ const NavBar = (props) => {
   }
 
   useOnInit(() => {
-    document.querySelector(`input[type='radio'][value="${i18n.resolvedLanguage}"]`).checked = true
+    document.querySelector(`input[type='radio'][value="${defaultLang}"]`).checked = true
   })
 
   return (
