@@ -41,6 +41,10 @@ const Router = (props) => {
         {
           path: '/test',
           element: SkeletonHome
+        },
+        {
+          ...(routes.find((route) => route.path === '/') || routes[0]),
+          path: '/*'
         }
       ])
     }

@@ -61,7 +61,7 @@ export default ({ mode }) => {
                   window.location.href = window.location.href.replace(pathname, '/${name}')
                 }
 
-                sessionStorage.setItem('redirectPath', pathname.slice(0, -1))
+                sessionStorage.setItem('redirectPath', isFolderPath ? pathname.slice(0, -1) : pathname)
                 window.location.href = isFolderPath ? '../' : './'
               </script>
             `
