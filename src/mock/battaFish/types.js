@@ -1,5 +1,5 @@
 import {
-  isUndefined, times, random, flow, values, concat, keyBy
+  isUndefined, times, random, flow, values, concat, keyBy, get
 } from 'lodash-es'
 
 const TYPE_KEY = {
@@ -78,10 +78,17 @@ export default [
       } = JSON.parse(JSON.stringify(stringObject))
 
       if (!isUndefined(lang)) {
+        const convertedLang = ['en-US', 'en'].includes(lang)
+          ? 'en'
+          : lang
         const fishTypes = types.map(((type) => {
           return {
             ...type,
-            fishName: fishNameMapByLang[lang][type.fishType],
+            fishName: get(
+              fishNameMapByLang,
+              `${convertedLang}.${type.fishType}`,
+              get(fishNameMapByLang, `en.${type.fishType}`)
+            ),
             fishPrice: TYPE_PRICE[type.fishType]
           }
         }))
