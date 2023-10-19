@@ -1,3 +1,4 @@
+import fs from 'fs'
 import { resolve } from 'path'
 import { defineConfig, splitVendorChunkPlugin, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react-swc'
@@ -23,7 +24,7 @@ export default ({ mode }) => {
       'window.IS_MOCK': `${isMock}`,
       'window.IS_MOCK_AWS_API': `${isMockAwsApi}`
     },
-    root: 'src/sites',
+    root: 'src/sites/',
     plugins: [
       react(),
       splitVendorChunkPlugin(),
@@ -35,14 +36,43 @@ export default ({ mode }) => {
     build: {
       outDir,
       emptyOutDir: true,
-      assetsDir: 'assets',
+      // assetsDir: 'assets',
       rollupOptions: {
         input: Object.fromEntries(
           sync('src/sites/**/index.html').map((file) => [
             file.replace('src/sites/', '').replace('/index.html', ''),
             file
           ])
-        )
+        ),
+        output: {
+          entryFileNames: (assetInfo) => {
+            const { name: entryName } = assetInfo
+            if (entryName === 'index.html') {
+              fs.writeFileSync(
+                'dist/404.html',
+                `
+                  <!DOCTYPE html>
+                  <meta http-equiv="refresh" content="0; URL=./">
+                  <link rel="canonical" href="./">
+                `,
+                'utf-8'
+              )
+              return 'main-[hash].js'
+            }
+
+            fs.mkdirSync(`dist/${entryName}`)
+            fs.writeFileSync(
+              `dist/${entryName}/404.html`,
+              `
+                <!DOCTYPE html>
+                <meta http-equiv="refresh" content="0; URL=./">
+                <link rel="canonical" href="./">
+              `,
+              'utf-8'
+            )
+            return '[name]/main-[hash].js'
+          }
+        }
       }
     },
     server: {
