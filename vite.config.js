@@ -8,6 +8,12 @@ import { version, name } from './package.json'
 
 const outDir = resolve(__dirname, 'dist')
 const envDir = resolve(__dirname, 'environments')
+const entriesMap = Object.fromEntries(
+  sync('src/sites/**/index.html').map((file) => [
+    file.replace('src/sites/', '').replace('/index.html', ''),
+    file
+  ])
+)
 
 // https://vitejs.dev/config/
 export default ({ mode }) => {
@@ -38,21 +44,26 @@ export default ({ mode }) => {
       emptyOutDir: true,
       assetsDir: 'assets',
       rollupOptions: {
-        input: Object.fromEntries(
-          sync('src/sites/**/index.html').map((file) => [
-            file.replace('src/sites/', '').replace('/index.html', ''),
-            file
-          ])
-        ),
+        input: entriesMap,
         output: {
           entryFileNames: (assetInfo) => {
             const { name: entryName } = assetInfo
             const file404 = `
               <!DOCTYPE html>
               <script>
-                console.log(window.location.pathname)
-                sessionStorage.setItem('redirectPath', window.location.pathname)
-                window.location.href = './'
+                const pathname = window.location.pathname
+                const isFolderPath = pathname.endsWith('/')
+                const isRouteExist = (
+                  pathname.replace('/${name}', '').split('/').length <= 3
+                )
+                console.log(pathname)
+                if (!isRouteExist) {
+                  window.location.href = window.location.href.replace(pathname, '/${name}')
+                  return
+                }
+
+                sessionStorage.setItem('redirectPath', pathname.slice(0, -1))
+                window.location.href = isFolderPath ? '../' : './'
               </script>
             `
             if (entryName === 'index.html') {
