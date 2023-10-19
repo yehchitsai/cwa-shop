@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import clx from 'classnames'
 import { MdGTranslate, MdLogout } from 'react-icons/md'
 import { FaUserCircle } from 'react-icons/fa'
@@ -24,12 +23,12 @@ const HomeLogo = (props) => {
   }
 
   return (
-    <Link
-      to='/'
+    <a
+      href='/'
       className={className}
     >
       {`CWA ${t('shop')}`}
-    </Link>
+    </a>
   )
 }
 
@@ -44,7 +43,7 @@ const Logout = (props) => {
   }
 
   return (
-    <a href='../' className='btn btn-ghost'>
+    <a href='../example' className='btn btn-ghost'>
       {children}
     </a>
   )
