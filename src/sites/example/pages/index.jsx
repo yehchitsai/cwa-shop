@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { uniqueId } from 'lodash-es'
 import useCreate from '../../../hooks/useCreate'
 import useUpdate from '../../../hooks/useUpdate'
@@ -21,43 +22,49 @@ const Example = () => {
     isMutating: isMutatingUpdatedPost
   } = useUpdate(host)
   return (
-    <div className='m-4 flex flex-wrap md:flex-nowrap md:space-x-4'>
-      <div className='w-full md:w-1/2'>
-        <button
-          type='button'
-          className='btn my-10'
-          onClick={() => {
-            const url = '/posts'
-            createPost({ url, uniqId: uniqueId('ex-new'), ...newPost })
-          }}
-          disabled={isMutatingNewPost}
-        >
-          Click to send post request
-        </button>
+    <>
+      <div className='m-4 w-full'>
+        <Link to='/detail' className='btn btn-outline'>Detail</Link>
         <br />
-        <pre className='h-[50vh] rounded-xl bg-slate-400 p-2'>
-          {JSON.stringify(newPostData, null, 2)}
-        </pre>
       </div>
-      <div className='w-full md:w-1/2'>
-        <button
-          type='button'
-          className='btn my-10'
-          onClick={() => {
-            const uniqId = uniqueId()
-            const url = `/posts/${uniqId}`
-            updatePost({ url, uniqId: `ex-updated${uniqId}`, ...updatedPost })
-          }}
-          disabled={isMutatingUpdatedPost}
-        >
-          Click to send put request
-        </button>
-        <br />
-        <pre className='h-[50vh] rounded-xl bg-slate-400 p-2'>
-          {JSON.stringify(updatedPostData, null, 2)}
-        </pre>
+      <div className='m-4 flex flex-wrap md:flex-nowrap md:space-x-4'>
+        <div className='w-full md:w-1/2'>
+          <button
+            type='button'
+            className='btn my-10'
+            onClick={() => {
+              const url = '/posts'
+              createPost({ url, uniqId: uniqueId('ex-new'), ...newPost })
+            }}
+            disabled={isMutatingNewPost}
+          >
+            Click to send post request
+          </button>
+          <br />
+          <pre className='h-[50vh] rounded-xl bg-slate-400 p-2'>
+            {JSON.stringify(newPostData, null, 2)}
+          </pre>
+        </div>
+        <div className='w-full md:w-1/2'>
+          <button
+            type='button'
+            className='btn my-10'
+            onClick={() => {
+              const uniqId = uniqueId()
+              const url = `/posts/${uniqId}`
+              updatePost({ url, uniqId: `ex-updated${uniqId}`, ...updatedPost })
+            }}
+            disabled={isMutatingUpdatedPost}
+          >
+            Click to send put request
+          </button>
+          <br />
+          <pre className='h-[50vh] rounded-xl bg-slate-400 p-2'>
+            {JSON.stringify(updatedPostData, null, 2)}
+          </pre>
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 
