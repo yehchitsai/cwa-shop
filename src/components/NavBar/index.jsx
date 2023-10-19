@@ -59,7 +59,7 @@ const NavBar = (props) => {
   }
 
   useOnInit(() => {
-    document.querySelector(`input[type='radio'][value="${i18n.language}"]`).checked = true
+    document.querySelector(`input[type='radio'][value="${i18n.resolvedLanguage}"]`).checked = true
   })
 
   return (
