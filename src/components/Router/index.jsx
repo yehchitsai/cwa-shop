@@ -31,7 +31,7 @@ const Router = (props) => {
         const redirectPath = window.sessionStorage.getItem('redirectPath')
         if (!isEmpty(redirectPath)) {
           window.sessionStorage.removeItem('redirectPath')
-          return redirect(redirectPath.replace(window.location.pathname))
+          return redirect(`/${redirectPath.replace(window.location.pathname)}`)
         }
         return null
       },
