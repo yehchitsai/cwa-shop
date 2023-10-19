@@ -1,8 +1,10 @@
 import { Suspense } from 'react'
 import {
   createBrowserRouter,
-  RouterProvider
+  RouterProvider,
+  redirect
 } from 'react-router-dom'
+import { isEmpty } from 'lodash-es'
 import SkeletonHome from '../Skeleton/Home'
 import ErrorElement from './ErrorElement.jsx'
 import Layout from './Layout'
@@ -25,6 +27,14 @@ const Router = (props) => {
   const totalRoutes = [
     {
       element: <Layout />,
+      loader: () => {
+        const redirectPath = window.sessionStorage.getItem('redirectPath')
+        if (!isEmpty(redirectPath)) {
+          window.sessionStorage.removeItem('redirectPath')
+          return redirect(redirectPath.replace(window.location.pathname))
+        }
+        return null
+      },
       children: withErrorElement([
         ...routes,
         {
