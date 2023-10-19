@@ -29,9 +29,10 @@ const Router = (props) => {
       element: <Layout />,
       loader: () => {
         const redirectPath = window.sessionStorage.getItem('redirectPath')
-        if (!isEmpty(redirectPath)) {
+        if (!isEmpty(redirectPath) && redirectPath !== '111') {
           window.sessionStorage.removeItem('redirectPath')
-          return redirect(`/${redirectPath.replace(window.location.pathname)}`)
+          const nextPath = redirectPath.replace(window.location.pathname, '')
+          return redirect(nextPath.startsWith('/') ? nextPath : `/${nextPath}`)
         }
         return null
       },
