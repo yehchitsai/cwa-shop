@@ -36,7 +36,7 @@ export default ({ mode }) => {
     build: {
       outDir,
       emptyOutDir: true,
-      // assetsDir: 'assets',
+      assetsDir: 'assets',
       rollupOptions: {
         input: Object.fromEntries(
           sync('src/sites/**/index.html').map((file) => [
@@ -57,20 +57,22 @@ export default ({ mode }) => {
                 `,
                 'utf-8'
               )
-              return 'main-[hash].js'
+            } else {
+              fs.mkdirSync(`dist/${entryName}`)
+              fs.writeFileSync(
+                `dist/${entryName}/404.html`,
+                `
+                  <!DOCTYPE html>
+                  <script>
+                    console.log(window.location.pathname)
+                    window.location.href = './?path=' + window.location.pathname
+                  </script>
+                `,
+                'utf-8'
+              )
             }
 
-            fs.mkdirSync(`dist/${entryName}`)
-            fs.writeFileSync(
-              `dist/${entryName}/404.html`,
-              `
-                <!DOCTYPE html>
-                <meta http-equiv="refresh" content="0; URL=./">
-                <link rel="canonical" href="./">
-              `,
-              'utf-8'
-            )
-            return '[name]/main-[hash].js'
+            return 'assets/[name]-[hash].js'
           }
         }
       }

@@ -7,7 +7,7 @@
     "dev": "vite",
     "dev:mock": "MOCK=1 npm run dev",
     "dev:mockapi": "MOCK=1 MOCK_AWS_API=1 npm run dev",
-    "build": "vite build",
+    "build": "mkdir -p dist && vite build",
     "build:gh": "BASENAME=1 MOCK=1 MOCK_AWS_API=1 npm run build",
     "lint": "eslint . --ext .js,.cjs,.jsx",
     "lint:fix": "npm run lint -- --fix",
