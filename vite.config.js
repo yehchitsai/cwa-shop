@@ -58,6 +58,7 @@ export default ({ mode }) => {
                 )
                 console.log(pathname)
                 if (!isRouteExist) {
+                  sessionStorage.removeItem('redirectPath')
                   window.location.href = window.location.href.replace(pathname, '/${name}')
                 }
 
