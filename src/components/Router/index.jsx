@@ -24,9 +24,10 @@ const withErrorElement = (routes) => routes.map((item) => {
 
 const Router = (props) => {
   const { routes, basename = '/' } = props
+  const appBaseName = `${window.APP_BASENAME}${basename}`
   const totalRoutes = [
     {
-      element: <Layout />,
+      element: <Layout appBaseName={appBaseName} />,
       loader: () => {
         const redirectPath = window.sessionStorage.getItem('redirectPath')
         if (!isEmpty(redirectPath)) {
@@ -49,8 +50,8 @@ const Router = (props) => {
       ])
     }
   ]
-  console.log(totalRoutes, `${window.APP_BASENAME}${basename}`)
-  const router = createBrowserRouter(totalRoutes, { basename: `${window.APP_BASENAME}${basename}` })
+  console.log(totalRoutes, appBaseName)
+  const router = createBrowserRouter(totalRoutes, { basename: appBaseName })
   return (
     <Suspense
       fallback={(
