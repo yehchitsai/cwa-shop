@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react-swc'
 import { viteMockServe } from 'vite-plugin-mock'
 import { sync } from 'glob'
 import {
-  flow, orderBy, size, uniq
+  flow, isEmpty, orderBy, size, uniq
 } from 'lodash-es'
 import { version, name } from './package.json'
 
@@ -83,8 +83,7 @@ export default ({ mode }) => {
                 const isRouteExist = !!matchRoute
                 console.log(pathname, isRouteExist, matchRoute)
                 if (!isRouteExist) {
-                  console.log(window.location.href.replace(pathname, '/${name}'))
-                  window.location.href = window.location.href.replace(pathname, '/${name}')
+                  window.location.href = window.location.href.replace(pathname, '/${isEmpty(name) ? '' : `${name}/`}')
                 }
 
                 sessionStorage.setItem('redirectPath', isFolderPath ? pathname.slice(0, -1) : pathname)
