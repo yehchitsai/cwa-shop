@@ -84,12 +84,17 @@ export default ({ mode }) => {
                 const isRouteExist = !!matchRoute
                 console.log(pathname, isRouteExist, matchRoute)
                 if (!isRouteExist) {
-                  const nextPathName = window.location.href.replace(pathname, '${appBaseName}')
+                  const nextPathName = window.location.href
+                    .replace(window.location.search, '')
+                    .replace(pathname, '${appBaseName}')
+                  console.log(nextPathName)
                   window.location.href = nextPathName
                 } else {
-                  const nextPathName = window.location.href.replace(pathname, matchRoute)
-                  const storePathName = window.location.href.replace(nextPathName, '')
-                  sessionStorage.setItem('redirectPath', storePathName)
+                  const nextPathName = window.location.href
+                    .replace(window.location.search, '')
+                    .replace(pathname, matchRoute)
+                  const storePathName = window.location.href.replace()
+                  sessionStorage.setItem('redirectPath', pathname + window.location.search)
                   window.location.href = nextPathName
                 }
               </script>
