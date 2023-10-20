@@ -86,7 +86,7 @@ export default ({ mode }) => {
                 if (!isRouteExist) {
                   window.location.href = '${appBaseName}'.length === 0
                     ? window.location.href.replace(pathname, '/${appBaseName}')
-                    : window.location.href.replace(pathname, '/${appBaseName}/')
+                    : window.location.href.replace(pathname, '/${appBaseName}/index.html')
                 }
 
                 sessionStorage.setItem('redirectPath', isFolderPath ? pathname.slice(0, -1) : pathname)
