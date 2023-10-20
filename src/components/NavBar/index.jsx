@@ -13,20 +13,13 @@ const langs = [
 const langsMap = keyBy(langs.map((lang) => lang.value))
 
 const HomeLogo = (props) => {
-  const { fixed } = props
+  const { appBaseName } = props
   const { t } = useTranslation()
   const className = 'btn btn-ghost text-xl normal-case'
-  if (fixed) {
-    return (
-      <span className={className}>
-        {`CWA ${t('shop')}`}
-      </span>
-    )
-  }
 
   return (
     <a
-      href={`${window.location.href.replace(window.location.pathname, window.APP_BASENAME)}`}
+      href={window.location.href.replace(window.location.pathname, `${appBaseName}/`)}
       className={className}
     >
       {`CWA ${t('shop')}`}
@@ -35,17 +28,13 @@ const HomeLogo = (props) => {
 }
 
 const Logout = (props) => {
-  const { children, fixed } = props
-  if (fixed) {
-    return (
-      <div className='btn btn-ghost'>
-        {children}
-      </div>
-    )
-  }
+  const { children } = props
 
   return (
-    <a href='../example/' className='btn btn-ghost'>
+    <a
+      href={window.location.href.replace(window.location.pathname, `${window.APP_BASENAME}/`)}
+      className='btn btn-ghost'
+    >
       {children}
     </a>
   )
@@ -70,7 +59,7 @@ const getSelectLang = (i18n) => {
 }
 
 const NavBar = (props) => {
-  const { fixed } = props
+  const { fixed, appBaseName } = props
   const { t, i18n } = useTranslation()
   const defaultLang = getSelectLang(i18n)
 
@@ -92,7 +81,7 @@ const NavBar = (props) => {
       )}
     >
       <div className='flex-1'>
-        <HomeLogo fixed={fixed} />
+        <HomeLogo appBaseName={appBaseName} />
       </div>
       <div className='flex flex-1 justify-end'>
         <div className='flex items-stretch'>
@@ -132,7 +121,7 @@ const NavBar = (props) => {
               <FaUserCircle className='md:hidden' size='1.5em' />
             </div>
           </div>
-          <Logout fixed={fixed}>
+          <Logout>
             <MdLogout size='1.5em' />
           </Logout>
         </div>
