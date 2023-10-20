@@ -5,26 +5,27 @@ import react from '@vitejs/plugin-react-swc'
 import { viteMockServe } from 'vite-plugin-mock'
 import { sync } from 'glob'
 import {
-  flow, isEmpty, orderBy, size, uniq
+  flow, orderBy, size, uniq
 } from 'lodash-es'
 import { version, name } from './package.json'
 
 const appBaseName = process.env.BASENAME ? `/${name}` : ''
 const outDir = resolve(__dirname, 'dist')
 const envDir = resolve(__dirname, 'environments')
-const entries = sync('src/sites/**/index.html')
+const entriesDir = 'src/sites'
+const entries = sync(`${entriesDir}/**/index.html`)
 const entriesMap = Object.fromEntries(
   entries.map((entry) => {
-    return [entry.replace('src/sites/', '').replace('/index.html', ''), entry]
+    return [entry.replace(`${entriesDir}/`, '').replace('/index.html', ''), entry]
   })
 )
 const rootRoutesMap = Object.fromEntries(
   entries.map((entry) => {
-    return [entry.replace('src/sites', '').replace('index.html', ''), entry]
+    return [entry.replace(entriesDir, '').replace('index.html', ''), entry]
   })
 )
 const routes = flow(
-  () => sync('src/sites/**/index.jsx').reduce((collect, file) => {
+  () => sync(`${entriesDir}/**/index.jsx`).reduce((collect, file) => {
     const route = file.replace('src/sites', '').replace('index.jsx', '').replace(/pages\//g, '')
     if (route !== '/') {
       const isEntryRoute = route in rootRoutesMap
@@ -54,7 +55,7 @@ export default ({ mode }) => {
       'window.IS_MOCK': `${isMock}`,
       'window.IS_MOCK_AWS_API': `${isMockAwsApi}`
     },
-    root: 'src/sites/',
+    root: `${entriesDir}/`,
     plugins: [
       react(),
       splitVendorChunkPlugin(),
@@ -83,7 +84,9 @@ export default ({ mode }) => {
                 const isRouteExist = !!matchRoute
                 console.log(pathname, isRouteExist, matchRoute)
                 if (!isRouteExist) {
-                  window.location.href = window.location.href.replace(pathname, '/${isEmpty(name) ? '' : `${name}/`}')
+                  window.location.href = appBaseName.length === 0
+                    ? window.location.href.replace(pathname, '/${appBaseName}')
+                    : window.location.href.replace(pathname, '/${appBaseName}/')
                 }
 
                 sessionStorage.setItem('redirectPath', isFolderPath ? pathname.slice(0, -1) : pathname)
@@ -91,18 +94,10 @@ export default ({ mode }) => {
               </script>
             `
             if (entryName === 'index.html') {
-              fs.writeFileSync(
-                'dist/404.html',
-                file404,
-                'utf-8'
-              )
+              fs.writeFileSync('dist/404.html', file404, 'utf-8')
             } else {
               fs.mkdirSync(`dist/${entryName}`)
-              fs.writeFileSync(
-                `dist/${entryName}/404.html`,
-                file404,
-                'utf-8'
-              )
+              fs.writeFileSync(`dist/${entryName}/404.html`, file404, 'utf-8')
             }
 
             return 'assets/[name]-[hash].js'
