@@ -75,6 +75,7 @@ export default ({ mode }) => {
             const file404 = `
               <!DOCTYPE html>
               <script>
+                sessionStorage.removeItem('redirectPath')
                 const pathname = window.location.pathname
                 const isFolderPath = pathname.endsWith('/')
                 const matchRoute = ${JSON.stringify(routes)}
@@ -82,7 +83,7 @@ export default ({ mode }) => {
                 const isRouteExist = !!matchRoute
                 console.log(pathname, isRouteExist, matchRoute)
                 if (!isRouteExist) {
-                  sessionStorage.removeItem('redirectPath')
+                  console.log(window.location.href.replace(pathname, '/${name}'))
                   window.location.href = window.location.href.replace(pathname, '/${name}')
                 }
 
