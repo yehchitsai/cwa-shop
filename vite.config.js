@@ -88,7 +88,7 @@ export default ({ mode }) => {
                   window.location.href = nextPathName
                 } else {
                   const nextPathName = window.location.href.replace(pathname, matchRoute)
-                  const storePathName = window.location.href.replace(nextPathName, '/')
+                  const storePathName = window.location.href.replace(nextPathName, '')
                   sessionStorage.setItem('redirectPath', storePathName)
                   window.location.href = nextPathName
                 }
