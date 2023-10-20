@@ -85,11 +85,12 @@ export default ({ mode }) => {
                 console.log(pathname, isRouteExist, matchRoute)
                 if (!isRouteExist) {
                   const nextPathName = window.location.href.replace(pathname, '${appBaseName}')
-                  console.log(nextPathName)
                   window.location.href = nextPathName
                 } else {
-                  sessionStorage.setItem('redirectPath', isFolderPath ? pathname.slice(0, -1) : pathname)
-                  window.location.href = window.location.href.replace(pathname, matchRoute)
+                  const nextPathName = window.location.href.replace(pathname, matchRoute)
+                  const storePathName = window.location.href.replace(nextPathName, '/')
+                  sessionStorage.setItem('redirectPath', storePathName)
+                  window.location.href = nextPathName
                 }
               </script>
             `
