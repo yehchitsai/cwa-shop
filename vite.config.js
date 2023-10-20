@@ -4,16 +4,40 @@ import { defineConfig, splitVendorChunkPlugin, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import { viteMockServe } from 'vite-plugin-mock'
 import { sync } from 'glob'
+import {
+  flow, orderBy, size, uniq
+} from 'lodash-es'
 import { version, name } from './package.json'
 
+const appBaseName = process.env.BASENAME ? `/${name}` : ''
 const outDir = resolve(__dirname, 'dist')
 const envDir = resolve(__dirname, 'environments')
+const entries = sync('src/sites/**/index.html')
 const entriesMap = Object.fromEntries(
-  sync('src/sites/**/index.html').map((file) => [
-    file.replace('src/sites/', '').replace('/index.html', ''),
-    file
-  ])
+  entries.map((entry) => {
+    return [entry.replace('src/sites/', '').replace('/index.html', ''), entry]
+  })
 )
+const rootRoutesMap = Object.fromEntries(
+  entries.map((entry) => {
+    return [entry.replace('src/sites', '').replace('index.html', ''), entry]
+  })
+)
+const routes = flow(
+  () => sync('src/sites/**/index.jsx').reduce((collect, file) => {
+    const route = file.replace('src/sites', '').replace('index.jsx', '').replace(/pages\//g, '')
+    if (route !== '/') {
+      const isEntryRoute = route in rootRoutesMap
+      collect.push(
+        `${appBaseName}${isEntryRoute ? route : route.replace(/\/$/, '')}`
+      )
+    }
+    return collect
+  }, []),
+  uniq,
+  (uniqRoutes) => orderBy(uniqRoutes, size, 'desc'),
+  (sortedRoutes) => sortedRoutes.filter((sortedRoute) => sortedRoute.endsWith('/'))
+)()
 
 // https://vitejs.dev/config/
 export default ({ mode }) => {
@@ -26,7 +50,7 @@ export default ({ mode }) => {
     envDir,
     define: {
       'window.APP_VERSION': `"${version}"`,
-      'window.APP_BASENAME': `"${process.env.BASENAME ? `/${name}` : ''}"`,
+      'window.APP_BASENAME': `"${appBaseName}"`,
       'window.IS_MOCK': `${isMock}`,
       'window.IS_MOCK_AWS_API': `${isMockAwsApi}`
     },
@@ -53,17 +77,17 @@ export default ({ mode }) => {
               <script>
                 const pathname = window.location.pathname
                 const isFolderPath = pathname.endsWith('/')
-                const isRouteExist = (
-                  pathname.replace('/${name}', '').split('/').length <= 3
-                )
-                console.log(pathname)
+                const matchRoute = ${JSON.stringify(routes)}
+                  .find((route) => pathname.startsWith(route)) || ''
+                const isRouteExist = !!matchRoute
+                console.log(pathname, isRouteExist, matchRoute)
                 if (!isRouteExist) {
                   sessionStorage.removeItem('redirectPath')
                   window.location.href = window.location.href.replace(pathname, '/${name}')
                 }
 
                 sessionStorage.setItem('redirectPath', isFolderPath ? pathname.slice(0, -1) : pathname)
-                window.location.href = isFolderPath ? '../' : './'
+                window.location.href = window.location.href.replace(pathname, matchRoute)
               </script>
             `
             if (entryName === 'index.html') {
