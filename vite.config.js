@@ -84,15 +84,13 @@ export default ({ mode }) => {
                 const isRouteExist = !!matchRoute
                 console.log(pathname, isRouteExist, matchRoute)
                 if (!isRouteExist) {
-                  const nextPathName = '${appBaseName}'.length === 0
-                    ? window.location.href.replace(pathname, '/')
-                    : window.location.href.replace(pathname, '${appBaseName}/index.html')
+                  const nextPathName = window.location.href.replace(pathname, '${appBaseName}')
                   console.log(nextPathName)
                   window.location.href = nextPathName
+                } else {
+                  sessionStorage.setItem('redirectPath', isFolderPath ? pathname.slice(0, -1) : pathname)
+                  window.location.href = window.location.href.replace(pathname, matchRoute)
                 }
-
-                sessionStorage.setItem('redirectPath', isFolderPath ? pathname.slice(0, -1) : pathname)
-                window.location.href = window.location.href.replace(pathname, matchRoute)
               </script>
             `
             if (entryName === 'index.html') {
