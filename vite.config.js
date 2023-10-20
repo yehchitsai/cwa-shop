@@ -84,7 +84,7 @@ export default ({ mode }) => {
                 const isRouteExist = !!matchRoute
                 console.log(pathname, isRouteExist, matchRoute)
                 if (!isRouteExist) {
-                  window.location.href = appBaseName.length === 0
+                  window.location.href = '${appBaseName}'.length === 0
                     ? window.location.href.replace(pathname, '/${appBaseName}')
                     : window.location.href.replace(pathname, '/${appBaseName}/')
                 }
