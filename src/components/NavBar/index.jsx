@@ -45,7 +45,7 @@ const Logout = (props) => {
   }
 
   return (
-    <a href='../example' className='btn btn-ghost'>
+    <a href='../example/' className='btn btn-ghost'>
       {children}
     </a>
   )

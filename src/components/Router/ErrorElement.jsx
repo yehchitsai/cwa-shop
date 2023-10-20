@@ -2,7 +2,11 @@ import { useRouteError, Link } from 'react-router-dom'
 import { FaRoadCircleXmark } from 'react-icons/fa6'
 
 const ErrorElement = () => {
-  const error = useRouteError()
+  const error = useRouteError() || {}
+  const {
+    statusText,
+    message = 'page not found'
+  } = error
   console.error(error)
 
   return (
@@ -17,7 +21,7 @@ const ErrorElement = () => {
             Oops!
           </h1>
           <p className='py-3'>Sorry, an unexpected error has occurred.</p>
-          <p className='py-3'>{error.statusText || error.message}</p>
+          <p className='py-3'>{statusText || message}</p>
           <Link to='../'>
             <button type='button' className='btn btn-primary'>Back to home</button>
           </Link>

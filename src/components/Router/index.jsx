@@ -13,7 +13,7 @@ import 'react-loading-skeleton/dist/skeleton.css'
 
 const withErrorElement = (routes) => routes.map((item) => {
   const {
-    children, element: Comp, ...route
+    element: Comp, ...route
   } = item
   return {
     ...route,
@@ -43,8 +43,8 @@ const Router = (props) => {
           element: SkeletonHome
         },
         {
-          ...(routes.find((route) => route.path === '/') || routes[0]),
-          path: '/*'
+          path: '/*',
+          element: ErrorElement
         }
       ])
     }

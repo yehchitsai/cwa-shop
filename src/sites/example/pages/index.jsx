@@ -23,7 +23,7 @@ const Example = () => {
   } = useUpdate(host)
   return (
     <>
-      <div className='m-4 w-full'>
+      <div className='m-4'>
         <Link to='/detail' className='btn btn-outline'>Detail</Link>
         <br />
       </div>

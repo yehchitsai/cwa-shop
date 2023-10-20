@@ -16,7 +16,7 @@ const getRoutes = (pages) => {
         : fileName.replace(/\/index/, '')
 
       collect.push({
-        path: fileName === 'index' ? '/' : `/${normalizedPathName.toLowerCase()}`,
+        path: fileName === 'index' ? '/' : `/${normalizedPathName.toLowerCase()}/`,
         element: lazy(page)
       })
       return collect
