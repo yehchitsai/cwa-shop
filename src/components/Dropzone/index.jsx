@@ -10,11 +10,8 @@ const Dropzone = (props) => {
   const [rejections, setRejections] = useState([])
 
   const setFilesToInput = useCallback((newFiles) => {
-    const dt = new DataTransfer()
-    for (const newFile of newFiles) {
-      dt.items.add(newFile)
-    }
-    document.querySelector(`[name=${name}]`).files = dt.files
+    const fileDataList = newFiles.map((newFile) => newFile.url)
+    document.querySelector(`[name=${name}]`).value = JSON.stringify(fileDataList)
   }, [name])
 
   const onDrop = useCallback(async (acceptedFiles, fileRejections) => {
@@ -25,16 +22,11 @@ const Dropzone = (props) => {
       const isVideo = type === 'video/mp4'
       const commonInfo = { isVideo, name: fileName, file: acceptedFile }
       const newFile = new Promise((resolve) => {
-        if (!isVideo) {
-          const reader = new FileReader()
-          reader.readAsDataURL(acceptedFile)
-          reader.onloadend = () => {
-            const { result } = reader
-            resolve({ url: result, ...commonInfo })
-          }
-        } else {
-          const url = URL.createObjectURL(acceptedFile)
-          resolve({ url, ...commonInfo })
+        const reader = new FileReader()
+        reader.readAsDataURL(acceptedFile)
+        reader.onloadend = () => {
+          const { result } = reader
+          resolve({ url: result, ...commonInfo })
         }
       })
       newFiles.push(newFile)
@@ -45,9 +37,7 @@ const Dropzone = (props) => {
       return
     }
 
-    setFilesToInput(
-      allFiles.map((file) => file.file)
-    )
+    setFilesToInput(allFiles)
   }, [files, setFilesToInput])
 
   const {
@@ -60,7 +50,7 @@ const Dropzone = (props) => {
   const onRemoveFile = (targetIndex) => () => {
     const newFiles = files.filter((file, index) => index !== targetIndex)
     setFiles(newFiles)
-    setFilesToInput(newFiles.map((newFile) => newFile.file))
+    setFilesToInput(newFiles)
   }
 
   return (
@@ -173,9 +163,7 @@ const Dropzone = (props) => {
       </div>
       <input
         name={name}
-        type='file'
         className='hidden'
-        multiple
       />
     </>
   )
