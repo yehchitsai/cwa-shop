@@ -82,7 +82,7 @@ export default ({ mode }) => {
                 const matchRoute = ${JSON.stringify(routes)}
                   .find((route) => pathname.startsWith(route)) || ''
                 const isRouteExist = !!matchRoute
-                console.log(pathname, isRouteExist, matchRoute)
+                console.log(pathname, isRouteExist, matchRoute, '${entryName}')
                 if (!isRouteExist) {
                   const nextPathName = window.location.href
                     .replace(window.location.search, '')
