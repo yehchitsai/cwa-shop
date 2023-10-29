@@ -2,7 +2,7 @@ import useSWRMutation from 'swr/mutation'
 import qs from 'query-string'
 import { isEmpty } from 'lodash-es'
 
-const host = import.meta.env.VITE_AWS_DYNAMIC_HOST2
+const host = import.meta.env.VITE_AWS_DYNAMIC_HOST3
 const awsHostPrefix = import.meta.env.VITE_AWS_HOST_PREFIX
 
 const useFishInfo = (itemSerial) => {
