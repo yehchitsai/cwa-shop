@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { uniqueId } from 'lodash-es'
+import toast from 'react-hot-toast'
 import useCreate from '../../../hooks/useCreate'
 import useUpdate from '../../../hooks/useUpdate'
 
@@ -32,9 +33,11 @@ const Example = () => {
           <button
             type='button'
             className='btn my-10'
-            onClick={() => {
+            onClick={async () => {
+              const toastId = toast.loading('Creating...')
               const url = '/posts'
-              createPost({ url, uniqId: uniqueId('ex-new'), ...newPost })
+              await createPost({ url, uniqId: uniqueId('ex-new'), ...newPost }).then(console.log)
+              toast.success('Created', { id: toastId })
             }}
             disabled={isMutatingNewPost}
           >
@@ -49,10 +52,11 @@ const Example = () => {
           <button
             type='button'
             className='btn my-10'
-            onClick={() => {
-              const uniqId = uniqueId()
-              const url = `/posts/${uniqId}`
-              updatePost({ url, uniqId: `ex-updated${uniqId}`, ...updatedPost })
+            onClick={async () => {
+              const toastId = toast.loading('Updating...')
+              const url = '/posts/1'
+              await updatePost({ url, uniqId: 'ex-updated', ...updatedPost }).then(console.log)
+              toast.success('Updated', { id: toastId })
             }}
             disabled={isMutatingUpdatedPost}
           >

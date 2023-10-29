@@ -4,7 +4,7 @@ const host = window.IS_MOCK
   ? import.meta.env.VITE_LOCAL_MOCK_API_HOST
   : import.meta.env.VITE_MOCK_API_HOST
 
-const useGithubRepo = () => {
+const useUserData = () => {
   const { data = [], error, isLoading } = useSWR(() => ({ url: '/users', host }))
   return {
     data,
@@ -13,4 +13,4 @@ const useGithubRepo = () => {
   }
 }
 
-export default useGithubRepo
+export default useUserData

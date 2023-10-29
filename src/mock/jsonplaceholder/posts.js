@@ -1,3 +1,5 @@
+import getApiPrefix from '../../utils/getApiPrefix'
+
 const createPost = {
   id: 201,
   title: 'bar',
@@ -12,9 +14,13 @@ const updatePost = {
   userId: 1
 }
 
+const apiPrefix = getApiPrefix()
+const postUrl = `${apiPrefix}/posts`
+const putUrl = `${apiPrefix}/posts/1`
+
 export default [
   {
-    url: '/api/posts',
+    url: postUrl,
     method: 'post',
     timeout: 1500,
     response: () => ({
@@ -24,7 +30,7 @@ export default [
     })
   },
   {
-    url: '/api/posts/1',
+    url: putUrl,
     method: 'put',
     timeout: 1500,
     response: () => ({

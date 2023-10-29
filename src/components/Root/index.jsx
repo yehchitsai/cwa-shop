@@ -1,6 +1,7 @@
 import React from 'react'
 import { SWRConfig } from 'swr'
 import { RecoilRoot } from 'recoil'
+import { Toaster } from 'react-hot-toast'
 import fetcher from '../../utils/fetcher'
 import '../../i18n'
 import '../../index.css'
@@ -22,6 +23,7 @@ const Root = (props) => {
           {children}
         </RecoilRoot>
       </SWRConfig>
+      <Toaster />
     </React.StrictMode>
   )
 }

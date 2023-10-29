@@ -1,3 +1,5 @@
+import getApiPrefix from '../../utils/getApiPrefix'
+
 const users = [
   {
     id: 1,
@@ -47,9 +49,11 @@ const users = [
   }
 ]
 
+const url = `${getApiPrefix()}/users`
+
 export default [
   {
-    url: '/api/users',
+    url,
     method: 'get',
     timeout: 1500,
     response: () => ({

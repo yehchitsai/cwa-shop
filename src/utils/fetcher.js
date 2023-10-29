@@ -2,12 +2,14 @@ import { isEmpty } from 'lodash-es'
 import mockFetcher from './mockFetcher'
 
 const fetcher = async (config = {}, triggerArgs = {}) => {
+  console.log(window.TARGET_ENV)
+  const isForceDisableMock = !!(new URLSearchParams(window.location.search)).get('mock')
   const { arg: { url: keyFromTrigger = '', ...body } = {} } = triggerArgs
   const { host = '', url: keyFromGet = '', options = {} } = config
   const key = keyFromGet || keyFromTrigger
   const url = `${host}${key}`
   const isHttpRequest = host.startsWith('http')
-  const isAwsApi = key.startsWith('/v1')
+  const isAwsApi = key.startsWith(window.AWS_HOST_PREFIX)
   const isGetRequest = isEmpty(body)
   const newOptions = {
     ...(!isGetRequest && {
@@ -18,7 +20,12 @@ const fetcher = async (config = {}, triggerArgs = {}) => {
     }),
     ...options
   }
-  const request = (window.IS_MOCK && window.IS_MOCK_AWS_API && !isHttpRequest && isAwsApi)
+  const request = !isForceDisableMock && (
+    window.IS_MOCK &&
+    window.IS_MOCK_AWS_API &&
+    !isHttpRequest &&
+    isAwsApi
+  )
     ? Promise.reject(new Error('Skip no http aws api request'))
     : fetch(url, newOptions)
   return request
@@ -32,7 +39,7 @@ const fetcher = async (config = {}, triggerArgs = {}) => {
       return res.json()
     })
     .catch((e) => {
-      const isMockAwsApi = (window.IS_MOCK_AWS_API && key.startsWith('/v1'))
+      const isMockAwsApi = (window.IS_MOCK_AWS_API && key.startsWith(window.AWS_HOST_PREFIX))
       if (!window.IS_MOCK && !isMockAwsApi) {
         throw e
       }
