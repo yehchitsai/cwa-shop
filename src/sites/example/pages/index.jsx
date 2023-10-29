@@ -50,9 +50,8 @@ const Example = () => {
             type='button'
             className='btn my-10'
             onClick={() => {
-              const uniqId = uniqueId()
-              const url = `/posts/${uniqId}`
-              updatePost({ url, uniqId: `ex-updated${uniqId}`, ...updatedPost })
+              const url = '/posts/1'
+              updatePost({ url, uniqId: 'ex-updated', ...updatedPost })
             }}
             disabled={isMutatingUpdatedPost}
           >

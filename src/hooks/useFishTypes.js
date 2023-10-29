@@ -3,10 +3,11 @@ import qs from 'query-string'
 import { isEmpty, keyBy } from 'lodash-es'
 
 const host = import.meta.env.VITE_AWS_DYNAMIC_HOST1
+const awsHostPrefix = import.meta.env.VITE_AWS_HOST_PREFIX
 
 const useFishTypes = (lang) => {
   const params = { lang }
-  const url = isEmpty(lang) ? null : `/v1/battafish?${qs.stringify(params)}`
+  const url = isEmpty(lang) ? null : `${awsHostPrefix}/battafish?${qs.stringify(params)}`
   const {
     data = [], error, isLoading
   } = useSWR(() => ({ url, host }), { suspense: true })

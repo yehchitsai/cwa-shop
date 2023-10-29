@@ -7,7 +7,7 @@ const fetcher = async (config = {}, triggerArgs = {}) => {
   const key = keyFromGet || keyFromTrigger
   const url = `${host}${key}`
   const isHttpRequest = host.startsWith('http')
-  const isAwsApi = key.startsWith('/v1')
+  const isAwsApi = key.startsWith(window.AWS_HOST_PREFIX)
   const isGetRequest = isEmpty(body)
   const newOptions = {
     ...(!isGetRequest && {

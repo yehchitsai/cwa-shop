@@ -1,6 +1,6 @@
 import fs from 'fs'
 import { resolve } from 'path'
-import { defineConfig, splitVendorChunkPlugin, loadEnv } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import { viteMockServe } from 'vite-plugin-mock'
 import { sync } from 'glob'
@@ -9,7 +9,16 @@ import {
 } from 'lodash-es'
 import { version, name } from './package.json'
 
-const appBaseName = process.env.BASENAME ? `/${name}` : ''
+const {
+  BASENAME,
+  MOCK,
+  MOCK_AWS_API,
+  VITE_AWS_HOST_PREFIX: awsHostPrefix
+} = process.env
+const appBaseName = BASENAME ? `/${name}` : ''
+const isMock = !!MOCK
+const isMockAwsApi = !!MOCK_AWS_API
+
 const outDir = resolve(__dirname, 'dist')
 const envDir = resolve(__dirname, 'environments')
 const entriesDir = 'src/sites'
@@ -42,8 +51,6 @@ const routes = flow(
 
 // https://vitejs.dev/config/
 export default ({ mode }) => {
-  const isMock = !!process.env.MOCK
-  const isMockAwsApi = !!process.env.MOCK_AWS_API
   const modeEnv = loadEnv(isMock ? 'mock' : mode, envDir)
   process.env = { ...process.env, ...modeEnv }
   const viteConfig = {
@@ -52,13 +59,13 @@ export default ({ mode }) => {
     define: {
       'window.APP_VERSION': `"${version}"`,
       'window.APP_BASENAME': `"${appBaseName}"`,
+      'window.AWS_HOST_PREFIX': `"${awsHostPrefix}"`,
       'window.IS_MOCK': `${isMock}`,
       'window.IS_MOCK_AWS_API': `${isMockAwsApi}`
     },
     root: `${entriesDir}/`,
     plugins: [
       react(),
-      splitVendorChunkPlugin(),
       viteMockServe({
         mockPath: './src/mock',
         localEnabled: isMock
@@ -113,11 +120,11 @@ export default ({ mode }) => {
     },
     server: {
       proxy: {
-        '/api': {
-          target: isMock ? process.env.VITE_LOCAL_MOCK_API_HOST : process.env.VITE_MOCK_API_HOST,
+        [awsHostPrefix]: {
+          // target: isMock ? process.env.VITE_LOCAL_MOCK_API_HOST : process.env.VITE_MOCK_API_HOST,
           changeOrigin: true,
           secure: false,
-          rewrite: (path) => path.replace(/^\/api/, '')
+          rewrite: (path) => path.replace(new RegExp(`^${awsHostPrefix}`), '')
         }
       }
     }

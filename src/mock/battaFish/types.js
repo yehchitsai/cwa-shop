@@ -65,9 +65,17 @@ const getFishInfo = (itemSerial) => ({
   itemVideos: []
 })
 
+let apiPrefix
+if (typeof window === 'object') {
+  apiPrefix = window.VITE_AWS_HOST_PREFIX
+} else {
+  apiPrefix = process.env.VITE_AWS_HOST_PREFIX
+}
+const url = `${apiPrefix}/battafish`
+
 export default [
   {
-    url: '/api/v1/battafish',
+    url,
     method: 'get',
     timeout: 1500,
     response: ({ query: stringObject }) => {
