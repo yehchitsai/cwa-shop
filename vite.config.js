@@ -10,6 +10,7 @@ import {
 import { version, name } from './package.json'
 
 const {
+  NODE_ENV,
   BASENAME,
   MOCK,
   MOCK_AWS_API,
@@ -52,6 +53,7 @@ const routes = flow(
 // https://vitejs.dev/config/
 export default ({ mode }) => {
   const modeEnv = loadEnv(isMock ? 'mock' : mode, envDir)
+  const targetEnv = loadEnv(NODE_ENV === 'production' ? 'production' : 'development', envDir)
   process.env = { ...process.env, ...modeEnv }
   const viteConfig = {
     base: './',
@@ -61,7 +63,8 @@ export default ({ mode }) => {
       'window.APP_BASENAME': `"${appBaseName}"`,
       'window.AWS_HOST_PREFIX': `"${awsHostPrefix}"`,
       'window.IS_MOCK': `${isMock}`,
-      'window.IS_MOCK_AWS_API': `${isMockAwsApi}`
+      'window.IS_MOCK_AWS_API': `${isMockAwsApi}`,
+      'window.TARGET_ENV': `${JSON.stringify(targetEnv)}`
     },
     root: `${entriesDir}/`,
     plugins: [

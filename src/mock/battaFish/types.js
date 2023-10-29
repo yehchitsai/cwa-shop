@@ -1,6 +1,7 @@
 import {
   isUndefined, times, random, flow, values, concat, keyBy, get
 } from 'lodash-es'
+import getApiPrefix from '../../utils/getApiPrefix'
 
 const TYPE_KEY = {
   A: 'FF1301L',
@@ -65,13 +66,7 @@ const getFishInfo = (itemSerial) => ({
   itemVideos: []
 })
 
-let apiPrefix
-if (typeof window === 'object') {
-  apiPrefix = window.VITE_AWS_HOST_PREFIX
-} else {
-  apiPrefix = process.env.VITE_AWS_HOST_PREFIX
-}
-const url = `${apiPrefix}/battafish`
+const url = `${getApiPrefix()}/bettafish`
 
 export default [
   {
@@ -100,20 +95,20 @@ export default [
             fishPrice: TYPE_PRICE[type.fishType]
           }
         }))
-        return fishTypes
+        return { message: 'success', results: fishTypes }
       }
 
       if (!isUndefined(fishType)) {
         const fishData = fishDataMap[fishType]
-        return fishData
+        return { message: 'success', results: fishData }
       }
 
       if (!isUndefined(itemSerial)) {
         const fishData = getFishInfo(itemSerial)
-        return fishData
+        return { message: 'success', results: fishData }
       }
 
-      return []
+      return { message: 'success', results: [] }
     }
   }
 ]
