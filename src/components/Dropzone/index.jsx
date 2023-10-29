@@ -5,7 +5,9 @@ import clx from 'classnames'
 import { isEmpty } from 'lodash-es'
 
 const Dropzone = (props) => {
-  const { className, accept, name } = props
+  const {
+    className, accept, name, disabled
+  } = props
   const [files, setFiles] = useState([])
   const [rejections, setRejections] = useState([])
 
@@ -45,7 +47,9 @@ const Dropzone = (props) => {
     getInputProps,
     isDragActive,
     open
-  } = useDropzone({ onDrop, accept, noClick: true })
+  } = useDropzone({
+    onDrop, accept, noClick: true, disabled
+  })
 
   const onRemoveFile = (targetIndex) => () => {
     const newFiles = files.filter((file, index) => index !== targetIndex)
@@ -82,6 +86,7 @@ const Dropzone = (props) => {
                         type='button'
                         onClick={open}
                         className='btn btn-outline mx-4'
+                        disabled={disabled}
                       >
                         click
                       </button>
@@ -152,6 +157,7 @@ const Dropzone = (props) => {
                 type='button'
                 className='btn btn-square btn-error btn-outline btn-sm absolute bottom-4 right-4'
                 onClick={onRemoveFile(index)}
+                disabled={disabled}
               >
                 <MdDelete
                   size='1.2em'

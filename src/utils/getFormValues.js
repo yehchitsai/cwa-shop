@@ -1,4 +1,4 @@
-import { flow, isEmpty, keyBy } from 'lodash-es'
+import { isEmpty, keyBy } from 'lodash-es'
 
 const getFormValues = (target, fields = [], fileFields = []) => {
   const fileFieldMap = keyBy(fileFields)
@@ -13,10 +13,7 @@ const getFormValues = (target, fields = [], fileFields = []) => {
           fieldValue = []
           break
         }
-        fieldValue = flow(
-          () => JSON.parse(value),
-          (dataUrlList) => dataUrlList.map((dataUrl) => dataUrl.replace(/data.*;base64,/, ''))
-        )()
+        fieldValue = JSON.parse(value)
         break
       }
       default:
