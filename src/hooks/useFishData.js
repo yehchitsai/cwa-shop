@@ -1,6 +1,6 @@
 import useSWR from 'swr'
 import qs from 'query-string'
-import { isEmpty } from 'lodash-es'
+import { get, isEmpty } from 'lodash-es'
 import getApiHost from '../utils/getApiHost'
 
 const host = getApiHost('VITE_AWS_DYNAMIC_HOST2')
@@ -10,10 +10,9 @@ const useFishData = (fishType) => {
   const params = { fishType }
   const url = isEmpty(fishType) ? null : `${awsHostPrefix}/bettafish?${qs.stringify(params)}`
   const {
-    data: {
-      results: data = []
-    } = {}, error, isLoading
+    data: defaultData = [], error, isLoading
   } = useSWR(() => ({ url, host }), { suspense: true })
+  const data = get(defaultData, 'results', defaultData)
   return {
     data,
     isLoading,
