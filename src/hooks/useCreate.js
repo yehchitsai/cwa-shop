@@ -1,6 +1,6 @@
 import useSWRMutation from 'swr/mutation'
 
-const useCreatePost = (host) => {
+const useCreate = (host) => {
   const options = {
     method: 'POST'
   }
@@ -15,4 +15,4 @@ const useCreatePost = (host) => {
   }
 }
 
-export default useCreatePost
+export default useCreate

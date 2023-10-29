@@ -1,6 +1,6 @@
 import useSWRMutation from 'swr/mutation'
 
-const useUpdatePost = (host) => {
+const useUpdate = (host) => {
   const options = {
     method: 'PUT'
   }
@@ -15,4 +15,4 @@ const useUpdatePost = (host) => {
   }
 }
 
-export default useUpdatePost
+export default useUpdate
