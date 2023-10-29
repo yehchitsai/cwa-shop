@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { MdOutlineCloudUpload, MdDelete, MdError } from 'react-icons/md'
 import clx from 'classnames'
@@ -6,15 +6,16 @@ import { isEmpty } from 'lodash-es'
 
 const Dropzone = (props) => {
   const {
-    className, accept, name, disabled
+    className, accept, name, disabled, state
   } = props
-  const [files, setFiles] = useState([])
+  const [files, setFiles] = state
   const [rejections, setRejections] = useState([])
+  const [filesValue, setFilesValue] = useState('')
 
   const setFilesToInput = useCallback((newFiles) => {
     const fileDataList = newFiles.map((newFile) => newFile.url)
-    document.querySelector(`[name=${name}]`).value = JSON.stringify(fileDataList)
-  }, [name])
+    setFilesValue(JSON.stringify(fileDataList))
+  }, [setFilesValue])
 
   const onDrop = useCallback(async (acceptedFiles, fileRejections) => {
     setRejections(fileRejections)
@@ -40,7 +41,7 @@ const Dropzone = (props) => {
     }
 
     setFilesToInput(allFiles)
-  }, [files, setFilesToInput])
+  }, [files, setFiles, setFilesToInput])
 
   const {
     getRootProps,
@@ -56,6 +57,15 @@ const Dropzone = (props) => {
     setFiles(newFiles)
     setFilesToInput(newFiles)
   }
+
+  useEffect(() => {
+    if (!isEmpty(files)) {
+      return
+    }
+
+    setRejections([])
+    setFilesValue('')
+  }, [files])
 
   return (
     <>
@@ -170,6 +180,8 @@ const Dropzone = (props) => {
       <input
         name={name}
         className='hidden'
+        value={filesValue}
+        readOnly
       />
     </>
   )

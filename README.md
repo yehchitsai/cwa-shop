@@ -210,3 +210,22 @@
     </tr>
   </tbody>
 </table>
+
+<h2 id='query-string'>query string</h2>
+
+<table width="100%">
+  <thead>
+    <tr>
+      <th>variable</th>
+      <th>description</th>
+      <th>example</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>MOCK</td>
+      <td>using MOCK=0 in url will force disabled api mock, useful in gh-page website (default all request in mock mode)</td>
+      <td>https://sky172839465.github.io/cwa-shop/internal?MOCK=0</td>
+    </tr>
+  </tbody>
+</table>

@@ -36,6 +36,7 @@ module.exports = {
     'react/jsx-uses-react': 'off',
     'react/function-component-definition': 'off',
     'react/no-array-index-key': 'off',
+    'react/button-has-type': [1, { button: true, submit: true, reset: true }],
     'operator-linebreak': ['off', 'none'],
     'import/extensions': [0],
     'import/no-extraneous-dependencies': [0],

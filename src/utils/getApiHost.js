@@ -1,5 +1,5 @@
 const getApiHost = (key) => {
-  const isForceDisableMock = (new URLSearchParams(window.location.search)).get('mock') === '1'
+  const isForceDisableMock = (new URLSearchParams(window.location.search)).get('MOCK') === '0'
   if (isForceDisableMock) {
     return window.TARGET_ENV[key]
   }

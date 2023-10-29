@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import {
   concat, get, pick, values
 } from 'lodash-es'
@@ -44,7 +44,18 @@ const Product = () => {
     () => get(fishTypes, '0.value'),
     [fishTypes]
   )
+  const imageState = useState([])
+  const videoState = useState([])
+  const setImagesValue = imageState[1]
+  const setVideosValue = videoState[1]
+  const resetBtn = useRef()
   const isMutating = (isMutatingNewFishData || isMutatingUpdatedFishData)
+
+  const clearForm = () => {
+    resetBtn.current.click()
+    setImagesValue([])
+    setVideosValue([])
+  }
 
   const onSubmit = async (e) => {
     e.preventDefault()
@@ -65,6 +76,7 @@ const Product = () => {
     })
     const [newParams, ...updateParamsList] = paramsList
     console.log(formValues, paramsList)
+
     const toastId = toast.loading('Creating...')
     const [createError, createRes] = await safeAwait(createFishData(newParams))
     if (createError) {
@@ -79,6 +91,7 @@ const Product = () => {
     }
 
     toast.success('Finish!', { id: toastId })
+    clearForm()
     console.log({ createRes, updateRes })
   }
 
@@ -128,6 +141,7 @@ const Product = () => {
         </label>
         <Dropzone
           name={FORM.IMAGES}
+          state={imageState}
           accept={ACCEPT.IMAGE}
           disabled={isMutating}
         />
@@ -137,11 +151,19 @@ const Product = () => {
         </label>
         <Dropzone
           name={FORM.VIDEOS}
+          state={videoState}
           accept={ACCEPT.VIDEO}
           disabled={isMutating}
         />
         <br />
         <div className='text-right'>
+          <button
+            ref={resetBtn}
+            type='reset'
+            className='hidden'
+          >
+            reset
+          </button>
           <button
             type='submit'
             className='btn btn-outline'
