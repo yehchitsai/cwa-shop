@@ -202,7 +202,7 @@
     </tr>
     <tr>
       <td>MOCK_AWS_API</td>
-      <td>mock aws api (url start with `/v1`)</td>
+      <td>mock aws api url start with `/${VITE_AWS_HOST_PREFIX}`(variable from env file)</td>
     </tr>
     <tr>
       <td>BASENAME</td>
