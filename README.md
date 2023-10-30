@@ -91,6 +91,14 @@
       <td>swr</td>
       <td>request status management</td>
     </tr>
+    <tr>
+      <td>formik</td>
+      <td>control form flow</td>
+    </tr>
+    <tr>
+      <td>yup</td>
+      <td>form validation using in formik</td>
+    </tr>
   </tbody>
     <thead>
     <tr>
