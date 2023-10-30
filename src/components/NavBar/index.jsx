@@ -6,9 +6,9 @@ import { keyBy } from 'lodash-es'
 import useOnInit from '../../hooks/useOnInit'
 
 const langs = [
-  { label: '中文', value: 'zh-TW' },
-  { label: '英文', value: 'en' },
-  { label: '日文', value: 'jp' }
+  { label: '中文繁體', value: 'zh-TW' },
+  { label: 'English', value: 'en' },
+  { label: '日本語', value: 'jp' }
 ]
 const langsMap = keyBy(langs.map((lang) => lang.value))
 

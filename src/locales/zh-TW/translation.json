@@ -1,5 +1,10 @@
 {
   "user": "使用者",
   "shop": "商店",
-  "currency": "TWD"
+  "currency": "TWD",
+  "fishType": "商品分類",
+  "tankNo": "魚缸編號",
+  "pictures": "圖片",
+  "video": "影片",
+  "newItem": "新增"
 }
