@@ -2,12 +2,18 @@ import { useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { MdOutlineCloudUpload, MdDelete, MdError } from 'react-icons/md'
 import clx from 'classnames'
-import { get, isEmpty } from 'lodash-es'
+import {
+  flow, get, isEmpty, keyBy
+} from 'lodash-es'
 import { Field, useFormikContext } from 'formik'
+import { filesize as getFileSize } from 'filesize'
+
+// default max 6 MB
+const DEFAULT_MAX_SIZE = 6
 
 const Dropzone = (props) => {
   const {
-    className, accept, name, disabled
+    className, accept, name, disabled, maxSize = DEFAULT_MAX_SIZE
   } = props
   const { values, setFieldValue } = useFormikContext()
   const rejectField = `${name}Error`
@@ -15,13 +21,33 @@ const Dropzone = (props) => {
   const rejections = get(values, rejectField, [])
 
   const onDrop = useCallback(async (acceptedFiles, fileRejections) => {
-    setFieldValue(rejectField, fileRejections)
     if (isEmpty(acceptedFiles)) {
+      setFieldValue(rejectField, fileRejections)
       return
     }
 
+    const rejectionsBySize = flow(
+      () => acceptedFiles.filter((acceptedFile) => {
+        const {
+          value: fileSize
+        } = getFileSize(acceptedFile.size, { exponent: 2, output: 'object' })
+        return fileSize > maxSize
+      }),
+      (rejectedFiles) => rejectedFiles.map((rejectedFile) => ({
+        file: rejectedFile,
+        errors: [{ code: -1, message: `File size exceed limit ${maxSize} MB` }]
+      }))
+    )()
+    setFieldValue(rejectField, [...fileRejections, ...rejectionsBySize])
+
     const newFiles = []
-    for (const acceptedFile of acceptedFiles) {
+    const filesWithoutExceedLimit = flow(
+      () => keyBy(rejectionsBySize, 'file.path'),
+      (rejectedMapByFilePath) => acceptedFiles.filter((acceptedFile) => {
+        return !(acceptedFile.path in rejectedMapByFilePath)
+      })
+    )()
+    for (const acceptedFile of filesWithoutExceedLimit) {
       const { name: fileName, type } = acceptedFile
       const isVideo = type === 'video/mp4'
       const commonInfo = { isVideo, name: fileName, file: acceptedFile }
@@ -37,7 +63,7 @@ const Dropzone = (props) => {
     }
     const allFiles = [...files, ...await Promise.all(newFiles)]
     setFieldValue(name, allFiles)
-  }, [files, rejectField, name, setFieldValue])
+  }, [files, rejectField, name, maxSize, setFieldValue])
 
   const {
     getRootProps,
@@ -98,24 +124,41 @@ const Dropzone = (props) => {
       {!isEmpty(rejections) && (
         <div className='alert alert-error my-4 flex flex-wrap'>
           <div className='flex'>
-            <MdError size='1.5em' />
+            <MdError size='1.5em' className='mr-2' />
             <span className='flex'>{' Some files get rejected'}</span>
           </div>
           <br />
           <div className='flex w-full'>
-            {rejections.map((rejection) => {
-              const { file, errors } = rejection
-              return (
-                <li key={file.path}>
-                  {`${file.path} - ${file.size} bytes`}
-                  <ul>
-                    {errors.map((e) => (
-                      <li key={e.code}>{e.message}</li>
-                    ))}
-                  </ul>
-                </li>
-              )
-            })}
+            <ol>
+              {rejections.map((rejection) => {
+                const { file, errors = [] } = rejection
+                console.log(errors)
+                const isExceedLimit = errors[0].code === -1
+                const fileSize = getFileSize(file.size, {
+                  // 2 MB, 1 KB
+                  exponent: isExceedLimit ? 2 : 1,
+                  standard: 'jedec'
+                })
+                return (
+                  <div
+                    key={file.path}
+                    className='collapse'
+                  >
+                    <input type='checkbox' name={file.path} checked readOnly />
+                    <div className='collapse-title min-h-0 text-xl font-medium'>
+                      {`${file.path} - ${fileSize}`}
+                    </div>
+                    <div className='collapse-content'>
+                      <ul>
+                        {errors.map((e, index) => (
+                          <li key={index}>{e.message}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )
+              })}
+            </ol>
           </div>
         </div>
       )}

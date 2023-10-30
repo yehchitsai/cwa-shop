@@ -16,6 +16,7 @@ import useCreate from '../../../hooks/useCreate'
 import Dropzone from '../../../components/Dropzone'
 import ACCEPT from '../../../components/Dropzone/accept'
 import FormRow from '../../../components/Form/FormRow'
+import FocusError from '../../../components/Form/FocusError'
 
 const putImageHost = getApiHost('VITE_AWS_DYNAMIC_HOST4')
 const putImageEndPoint = `${import.meta.env.VITE_AWS_HOST_PREFIX}/putimage`
@@ -196,6 +197,7 @@ const Product = () => {
               </button>
             </div>
           </div>
+          <FocusError />
         </Form>
       )}
     </Formik>
