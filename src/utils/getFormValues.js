@@ -1,28 +1,28 @@
-import { isEmpty, keyBy } from 'lodash-es'
+import {
+  get, isEmpty, keyBy, keys, map
+} from 'lodash-es'
 
-const getFormValues = (target, fields = [], fileFields = []) => {
+const getFormValues = (formValues, fileFields = []) => {
   const fileFieldMap = keyBy(fileFields)
-  const formData = new FormData(target)
-  const formValues = {}
+  const fields = keys(formValues)
+  const convertedFormValues = {}
   for (const field of fields) {
-    let fieldValue = formData.getAll(field)
-    const [value] = fieldValue
+    let fieldValue = formValues[field]
     switch (true) {
       case (field in fileFieldMap): {
-        if (isEmpty(value)) {
+        if (isEmpty(fieldValue)) {
           fieldValue = []
           break
         }
-        fieldValue = JSON.parse(value)
+        fieldValue = map(fieldValue, (item) => get(item, 'url'))
         break
       }
       default:
-        fieldValue = value
         break
     }
-    formValues[field] = fieldValue
+    convertedFormValues[field] = fieldValue
   }
-  return formValues
+  return convertedFormValues
 }
 
 export default getFormValues
