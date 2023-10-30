@@ -1,6 +1,6 @@
 import { useMemo, useRef } from 'react'
 import {
-  concat, get, pick
+  concat, get, isEmpty, pick
 } from 'lodash-es'
 import { useTranslation } from 'react-i18next'
 import { MdAdd } from 'react-icons/md'
@@ -8,6 +8,7 @@ import clx from 'classnames'
 import toast from 'react-hot-toast'
 import safeAwait from 'safe-await'
 import { Formik, Field, Form } from 'formik'
+import * as Yup from 'yup'
 import getFormValues from '../../../utils/getFormValues'
 import getApiHost from '../../../utils/getApiHost'
 import useFishTypes from '../../../hooks/useFishTypes'
@@ -29,6 +30,21 @@ const ACTION = {
   NEW: 'new',
   UPDATE: 'update'
 }
+
+const validationSchema = Yup.object().shape({
+  [FORM.TYPE]: Yup.string().required('Miss type!'),
+  [FORM.ITEM_SERIAL]: Yup.string().required('Miss itemSerial!'),
+  [FORM.IMAGES]: Yup.array().when(FORM.VIDEOS, {
+    is: isEmpty,
+    then: () => Yup.array().min(1, 'images or videos field can\'t be empty'),
+    otherwise: () => Yup.array()
+  }),
+  [FORM.VIDEOS]: Yup.array().when(FORM.IMAGES, {
+    is: isEmpty,
+    then: () => Yup.array().min(1, 'videos or images field can\'t be empty'),
+    otherwise: () => Yup.array()
+  })
+}, [FORM.IMAGES, FORM.VIDEOS])
 
 const Product = () => {
   const { t, i18n } = useTranslation()
@@ -98,83 +114,90 @@ const Product = () => {
         [FORM.IMAGES]: [],
         [FORM.VIDEOS]: []
       }}
+      validationSchema={validationSchema}
       onSubmit={onSubmit}
     >
-      <Form>
-        <div className='m-auto flex w-full flex-col max-lg:m-auto max-lg:max-w-2xl max-sm:min-w-full max-sm:p-4 sm:p-12 lg:max-w-5xl'>
-          <FormRow
-            label={`${t('fishType')}`}
-            required
-          >
-            <Field
-              as='select'
-              name={FORM.TYPE}
-              className={clx(
-                'select select-bordered w-full lg:max-w-xs'
-              )}
-              disabled={isMutating}
+      {({ errors, touched }) => (
+        <Form>
+          <div className='m-auto flex w-full flex-col max-lg:m-auto max-lg:max-w-2xl max-sm:min-w-full max-sm:p-4 sm:p-12 lg:max-w-5xl'>
+            <FormRow
+              label={`${t('fishType')}`}
+              error={touched[FORM.TYPE] && errors[FORM.TYPE]}
+              required
             >
-              <option value={-1} disabled>Select fish type</option>
-              {fishTypes.map((type) => {
-                const { label, value } = type
-                return (
-                  <option value={value} key={value}>
-                    {label}
-                  </option>
-                )
-              })}
-            </Field>
-          </FormRow>
-          <FormRow
-            label={`${t('tankNo')}`}
-            required
-          >
-            <Field
-              type='text'
-              name={FORM.ITEM_SERIAL}
-              placeholder='Type here'
-              className='input input-bordered w-full lg:max-w-xs'
-              autoComplete='off'
-              disabled={isMutating}
-            />
-          </FormRow>
-          <FormRow
-            label={`${t('pictures')}`}
-          >
-            <Dropzone
-              name={FORM.IMAGES}
-              accept={ACCEPT.IMAGE}
-              disabled={isMutating}
-            />
-          </FormRow>
-          <FormRow
-            label={`${t('video')}`}
-          >
-            <Dropzone
-              name={FORM.VIDEOS}
-              accept={ACCEPT.VIDEO}
-              disabled={isMutating}
-            />
-          </FormRow>
-          <div className='text-right'>
-            <button
-              ref={resetBtn}
-              type='reset'
-              className='hidden'
+              <Field
+                as='select'
+                name={FORM.TYPE}
+                className={clx(
+                  'select select-bordered w-full lg:max-w-xs'
+                )}
+                disabled={isMutating}
+              >
+                <option value={-1} disabled>Select fish type</option>
+                {fishTypes.map((type) => {
+                  const { label, value } = type
+                  return (
+                    <option value={value} key={value}>
+                      {label}
+                    </option>
+                  )
+                })}
+              </Field>
+            </FormRow>
+            <FormRow
+              label={`${t('tankNo')}`}
+              error={touched[FORM.ITEM_SERIAL] && errors[FORM.ITEM_SERIAL]}
+              required
             >
-              reset
-            </button>
-            <button
-              type='submit'
-              className='btn btn-outline'
-              disabled={isMutating}
+              <Field
+                type='text'
+                name={FORM.ITEM_SERIAL}
+                placeholder='Type here'
+                className='input input-bordered w-full lg:max-w-xs'
+                autoComplete='off'
+                disabled={isMutating}
+              />
+            </FormRow>
+            <FormRow
+              label={`${t('pictures')}`}
+              error={touched[FORM.IMAGES] && errors[FORM.IMAGES]}
             >
-              <MdAdd size='1.5em' />
-              {`${t('newItem')}`}
-            </button>
+              <Dropzone
+                name={FORM.IMAGES}
+                accept={ACCEPT.IMAGE}
+                disabled={isMutating}
+              />
+            </FormRow>
+            <FormRow
+              label={`${t('video')}`}
+              error={touched[FORM.VIDEOS] && errors[FORM.VIDEOS]}
+            >
+              <Dropzone
+                name={FORM.VIDEOS}
+                accept={ACCEPT.VIDEO}
+                disabled={isMutating}
+              />
+            </FormRow>
+            <div className='text-right'>
+              <button
+                ref={resetBtn}
+                type='reset'
+                className='hidden'
+              >
+                reset
+              </button>
+              <button
+                type='submit'
+                className='btn btn-outline'
+                disabled={isMutating}
+              >
+                <MdAdd size='1.5em' />
+                {`${t('newItem')}`}
+              </button>
+            </div>
           </div>
-        </div>
-      </Form>
+        </Form>
+      )}
     </Formik>
   )
 }
