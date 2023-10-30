@@ -1,24 +1,25 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { MdOutlineCloudUpload, MdDelete, MdError } from 'react-icons/md'
 import clx from 'classnames'
-import { isEmpty } from 'lodash-es'
+import { get, isEmpty } from 'lodash-es'
+import { Field, useFormikContext } from 'formik'
 
 const Dropzone = (props) => {
   const {
-    className, accept, name, disabled, state
+    className, accept, name, disabled
   } = props
-  const [files, setFiles] = state
-  const [rejections, setRejections] = useState([])
-  const [filesValue, setFilesValue] = useState('')
-
-  const setFilesToInput = useCallback((newFiles) => {
-    const fileDataList = newFiles.map((newFile) => newFile.url)
-    setFilesValue(JSON.stringify(fileDataList))
-  }, [setFilesValue])
+  const { values, setFieldValue } = useFormikContext()
+  const rejectField = `${name}Error`
+  const files = get(values, name, [])
+  const rejections = get(values, rejectField, [])
 
   const onDrop = useCallback(async (acceptedFiles, fileRejections) => {
-    setRejections(fileRejections)
+    setFieldValue(rejectField, fileRejections)
+    if (isEmpty(acceptedFiles)) {
+      return
+    }
+
     const newFiles = []
     for (const acceptedFile of acceptedFiles) {
       const { name: fileName, type } = acceptedFile
@@ -35,13 +36,8 @@ const Dropzone = (props) => {
       newFiles.push(newFile)
     }
     const allFiles = [...files, ...await Promise.all(newFiles)]
-    setFiles(allFiles)
-    if (isEmpty(acceptedFiles)) {
-      return
-    }
-
-    setFilesToInput(allFiles)
-  }, [files, setFiles, setFilesToInput])
+    setFieldValue(name, allFiles)
+  }, [files, rejectField, name, setFieldValue])
 
   const {
     getRootProps,
@@ -54,18 +50,8 @@ const Dropzone = (props) => {
 
   const onRemoveFile = (targetIndex) => () => {
     const newFiles = files.filter((file, index) => index !== targetIndex)
-    setFiles(newFiles)
-    setFilesToInput(newFiles)
+    setFieldValue(name, newFiles)
   }
-
-  useEffect(() => {
-    if (!isEmpty(files)) {
-      return
-    }
-
-    setRejections([])
-    setFilesValue('')
-  }, [files])
 
   return (
     <>
@@ -177,11 +163,9 @@ const Dropzone = (props) => {
           )
         })}
       </div>
-      <input
+      <Field
         name={name}
         className='hidden'
-        value={filesValue}
-        readOnly
       />
     </>
   )
