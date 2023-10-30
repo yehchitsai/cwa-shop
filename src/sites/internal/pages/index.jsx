@@ -30,7 +30,7 @@ const ACTION = {
 }
 
 const Product = () => {
-  const { i18n } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { fishTypes } = useFishTypes(i18n.language)
   const {
     trigger: createFishData,
@@ -100,7 +100,7 @@ const Product = () => {
       <div className='m-auto flex w-full flex-col max-lg:m-auto max-lg:max-w-2xl max-sm:min-w-full max-sm:p-4 sm:p-12 lg:max-w-5xl'>
         <div className='form-control w-full'>
           <label className='label'>
-            <span className='label-text'>商品分類</span>
+            <span className='label-text'>{`${t('fishType')}`}</span>
           </label>
           <select
             name={FORM.TYPE}
@@ -124,7 +124,7 @@ const Product = () => {
         <br />
         <div className='form-control w-full'>
           <label className='label'>
-            <span className='label-text'>魚缸編號</span>
+            <span className='label-text'>{`${t('tankNo')}`}</span>
           </label>
           <input
             type='text'
@@ -137,7 +137,7 @@ const Product = () => {
         </div>
         <br />
         <label className='label'>
-          <span className='label-text'>圖片</span>
+          <span className='label-text'>{`${t('pictures')}`}</span>
         </label>
         <Dropzone
           name={FORM.IMAGES}
@@ -147,7 +147,7 @@ const Product = () => {
         />
         <br />
         <label className='label'>
-          <span className='label-text'>影片</span>
+          <span className='label-text'>{`${t('video')}`}</span>
         </label>
         <Dropzone
           name={FORM.VIDEOS}
@@ -170,7 +170,7 @@ const Product = () => {
             disabled={isMutating}
           >
             <MdAdd size='1.5em' />
-            {' 新增'}
+            {`${t('newItem')}`}
           </button>
         </div>
       </div>

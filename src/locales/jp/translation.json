@@ -1,5 +1,10 @@
 {
   "user": "ユーザー",
   "shop": "店",
-  "currency": "JPY"
+  "currency": "JPY",
+  "fishType": "魚の種類",
+  "tankNo": "水槽番号",
+  "pictures": "写真",
+  "video": "ビデオ",
+  "newItem": "新規"
 }

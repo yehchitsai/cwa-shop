@@ -1,5 +1,10 @@
 {
   "user": "user",
   "shop": "SHOP",
-  "currency": "USD"
+  "currency": "USD",
+  "fishType": "Fish Type",
+  "tankNo": "Tank Number",
+  "pictures": "Pictures",
+  "video": "Video",
+  "newItem": "New item"
 }
