@@ -18,7 +18,7 @@ import ACCEPT from '../../../components/Dropzone/accept'
 import FormRow from '../../../components/Form/FormRow'
 import FocusError from '../../../components/Form/FocusError'
 
-const putImageHost = getApiHost('VITE_AWS_DYNAMIC_HOST4')
+const putImageHost = getApiHost('PUT_IMAGE_HOST')
 const putImageEndPoint = `${import.meta.env.VITE_AWS_HOST_PREFIX}/putimage`
 
 const FORM = {
