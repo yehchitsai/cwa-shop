@@ -13,6 +13,7 @@ import Layout from './Layout'
 import NavBar from '../NavBar'
 import 'react-loading-skeleton/dist/skeleton.css'
 
+const loginUrl = import.meta.env.VITE_LOGIN_URL
 const host = getApiHost('VITE_AWS_CHECK_AUTHORIZE')
 const awsHostPrefix = import.meta.env.VITE_AWS_HOST_PREFIX
 const authConfig = {
@@ -46,10 +47,20 @@ const Router = (props) => {
         }
 
         return isAuthRoutes
-          ? fetcher(authConfig).catch((e) => {
-            console.log(e)
-            return { message: 'ERROR' }
-          })
+          ? fetcher(authConfig)
+            .then((res) => {
+              if (res.message === 'Unauthorized') {
+                throw new Error(res.message)
+              }
+              return res
+            })
+            .catch((e) => {
+              console.log(e)
+              window.location.href = (
+                window.location.href.replace(window.location.pathname, `${window.APP_BASENAME}/${loginUrl}`)
+              )
+              return { message: 'ERROR' }
+            })
           : ({ message: 'NO USER' })
       },
       children: withErrorElement([
