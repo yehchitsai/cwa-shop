@@ -1,4 +1,4 @@
-import { isEmpty } from 'lodash-es'
+import { get, isEmpty } from 'lodash-es'
 import mockFetcher from './mockFetcher'
 import getSearchValuesFromUrl from './getSearchValuesFromUrl'
 
@@ -10,6 +10,8 @@ const TOKEN_KEY = {
 let TMP_TOKEN = {}
 
 const TOKEN_KEYS = [TOKEN_KEY.TOKEN_TYPE, TOKEN_KEY.ACCESS_TOKEN]
+
+const removeTokens = () => TOKEN_KEYS.map((key) => window.localStorage.removeItem(key))
 
 const getAuthorization = () => {
   let Authorization = {}
@@ -30,7 +32,7 @@ const getAuthorization = () => {
         [TOKEN_KEY.TOKEN_TYPE]: tokenTypeFromStorage,
         [TOKEN_KEY.ACCESS_TOKEN]: accessTokenFromStorage
       }
-      TOKEN_KEYS.map((key) => window.localStorage.removeItem(key))
+      removeTokens()
       break
     }
     case isUrlSearchTokenExist: {
@@ -60,6 +62,14 @@ const beforeUnloadHandler = () => {
     TOKEN_KEYS.map((key) => window.localStorage.setItem(key, TMP_TOKEN[key]))
   }
 }
+window.addEventListener('visibilitychange', (event) => {
+  const visibilityState = get(event, 'target.visibilityState', 'visible')
+  if (visibilityState === 'hidden') {
+    beforeUnloadHandler()
+  } else {
+    removeTokens()
+  }
+})
 window.addEventListener('beforeunload', beforeUnloadHandler)
 
 const fetcher = async (config = {}, triggerArgs = {}) => {
