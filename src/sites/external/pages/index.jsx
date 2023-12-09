@@ -3,28 +3,35 @@ import {
   useMemo,
   useState
 } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useLoaderData, useSearchParams } from 'react-router-dom'
 import { useRecoilState } from 'recoil'
 import { useTranslation } from 'react-i18next'
 import { MdShoppingCart } from 'react-icons/md'
+import toast from 'react-hot-toast'
 import {
-  filter, get
+  find, flow, get, isEmpty, keyBy, map, reduce
 } from 'lodash-es'
+import safeAwait from 'safe-await'
 import clx from 'classnames'
 import {
-  key as selectedProductsStateKey,
   selectedProductsState
 } from '../../../state/selectedProducts'
 import useFishTypes from '../../../hooks/useFishTypes'
 import useFishData from '../../../hooks/useFishData'
+import useCreate from '../../../hooks/useCreate'
+import getApiHost from '../../../utils/getApiHost'
 import Card from '../../../components/Card'
 import ProductModel from '../../../components/Model/Product'
 import SkeletonHome from '../../../components/Skeleton/Home'
 import Drawer from '../../../components/Drawer'
 import CartItems from '../../../components/CartItems'
 import CartBottomItems from '../../../components/CartBottomItems'
+import useOnInit from '../../../hooks/useOnInit'
 
 const productModelKey = 'productModel'
+
+const preOrderHost = getApiHost('VITE_AWS_FISH_PREORDER')
+const preOrderEndPoint = `${import.meta.env.VITE_AWS_HOST_PREFIX}/bettafishpreorder`
 
 const SelectSection = () => {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -73,6 +80,10 @@ const CardsSection = (props) => {
   const [searchParams] = useSearchParams()
   const { i18n } = useTranslation()
   const { fishTypes } = useFishTypes(i18n.language)
+  const {
+    trigger: reserveByItemSerial,
+    isMutating: isReserving
+  } = useCreate(preOrderHost)
   const fishType = useMemo(
     () => searchParams.get('fishType') || get(fishTypes, '0.value'),
     [searchParams, fishTypes]
@@ -80,7 +91,9 @@ const CardsSection = (props) => {
   const {
     data: fishData
   } = useFishData(fishType)
+  const [reservedMap, setReservedMap] = useState({})
   const [selectProducts, setSelectProducts] = useRecoilState(selectedProductsState)
+  const defaultSelectProducts = useLoaderData()
 
   const openProductModal = (newTargetProduct) => async () => {
     setTargetProduct({ ...newTargetProduct, fishType })
@@ -88,29 +101,80 @@ const CardsSection = (props) => {
     document.querySelector(`#${productModelKey}`).showModal()
   }
 
-  const onSelectProduct = (product) => (e) => {
+  const onSelectProduct = (product) => async (e) => {
+    const toastId = toast.loading('Updating...')
     const isSelected = e.target.checked
+    const targetItemSerial = product.itemSerial
     let newSelectProducts = [...selectProducts]
+    let newRemoveProducts = []
     if (isSelected) {
       newSelectProducts = [...selectProducts, { ...product, fishType }]
     } else {
-      newSelectProducts = filter(selectProducts, (selectProduct) => {
-        return selectProduct.itemSerial !== product.itemSerial
-      })
+      const { add, remove } = reduce(selectProducts, (collect, selectProduct) => {
+        const isAdd = (selectProduct.itemSerial !== targetItemSerial)
+        if (isAdd) {
+          collect.add.push(selectProduct)
+        } else {
+          collect.remove.push(selectProduct)
+        }
+        return collect
+      }, { add: [], remove: [] })
+      newSelectProducts = add
+      newRemoveProducts = remove
     }
-    window.localStorage.setItem(selectedProductsStateKey, JSON.stringify(newSelectProducts))
+    const reserveItemSerials = map(newSelectProducts, 'itemSerial')
+    const clearItemSerials = map(newRemoveProducts, 'itemSerial')
+    const [reserveError, reserveData] = await safeAwait(reserveByItemSerial({
+      url: preOrderEndPoint,
+      fishType,
+      reserveItemSerials,
+      clearItemSerials
+    }))
+    if (reserveError) {
+      setSelectProducts(selectProducts)
+      toast.error(`Error! ${reserveError.message}`, { id: toastId })
+      return false
+    }
+
+    const {
+      done,
+      reason = 'unknow update status'
+    } = flow(
+      () => get(reserveData, 'results'),
+      (results) => find(results, { itemSerial: targetItemSerial }) || {}
+    )()
+    const isSuccess = (done === 1)
+    const statusToast = isSuccess ? toast.success : toast.error
+    if (done === 0) {
+      newSelectProducts = newSelectProducts.filter((newSelectProduct) => {
+        return newSelectProduct.itemSerial !== targetItemSerial
+      })
+      setReservedMap({ ...reservedMap, [targetItemSerial]: targetItemSerial })
+    }
     setSelectProducts(newSelectProducts)
+    statusToast(`${targetItemSerial} ${reason}`, { id: toastId })
+    return isSuccess ? isEmpty(clearItemSerials) : false
   }
 
-  return fishData.map((item) => (
-    <Card
-      key={item.itemSerial}
-      item={item}
-      onImageClick={openProductModal(item)}
-      onSelectProduct={onSelectProduct}
-      selectProducts={selectProducts}
-    />
-  ))
+  useOnInit(() => {
+    setSelectProducts(defaultSelectProducts)
+  })
+
+  const defaultSelectProductMap = keyBy(defaultSelectProducts, 'itemSerial')
+  return fishData.map((item) => {
+    const { itemSerial } = item
+    const defaultIsSelect = (itemSerial in defaultSelectProductMap)
+    return (
+      <Card
+        key={itemSerial}
+        item={item}
+        onImageClick={openProductModal(item)}
+        onSelectProduct={onSelectProduct}
+        defaultIsSelect={defaultIsSelect}
+        isReserving={isReserving || (itemSerial in reservedMap)}
+      />
+    )
+  })
 }
 
 const Home = () => {

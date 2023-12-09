@@ -1,15 +1,24 @@
+import { useState } from 'react'
 import LazyImage from '../LazyImage'
 
 const Card = (props) => {
   const {
     onImageClick,
     onSelectProduct,
+    defaultIsSelect = false,
     item = {},
-    selectProducts
+    isReserving
   } = props
   const {
     itemSerial, imageURL
   } = item
+  const [isSelected, setIsSelected] = useState(defaultIsSelect)
+
+  const onChange = async (e) => {
+    const isSelect = await onSelectProduct(item)(e)
+    setIsSelected(isSelect)
+  }
+
   return (
     <div className='p-4 max-xl:w-1/2 max-sm:w-full xl:w-1/3'>
       <div className='card bg-base-100 shadow-xl'>
@@ -39,10 +48,9 @@ const Card = (props) => {
                 <input
                   type='checkbox'
                   className='checkbox-primary checkbox mr-2'
-                  onChange={onSelectProduct(item)}
-                  checked={selectProducts.find((selectProduct) => {
-                    return item.itemSerial === selectProduct.itemSerial
-                  })}
+                  onChange={onChange}
+                  checked={isSelected}
+                  disabled={isReserving}
                 />
                 <span className='label-text'>ADD TO CART</span>
               </label>
