@@ -23,6 +23,7 @@ const ProductModel = (props) => {
   const {
     trigger,
     data: {
+      // itemVideos = [],
       itemImages = []
     } = {},
     isLoading,
