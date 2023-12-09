@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Formik, Field, Form } from 'formik'
 import qs from 'query-string'
 
@@ -7,6 +8,10 @@ const FORM = {
 }
 
 const Login = () => {
+  useEffect(() => {
+    [FORM.TOKEN_TYPE, FORM.ACCESS_TOKEN].map((key) => window.localStorage.removeItem(key))
+  }, [])
+
   return (
     <div className='hero min-h-screen bg-base-200'>
       <div className='hero-content flex-col lg:flex-row-reverse'>

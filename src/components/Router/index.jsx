@@ -47,13 +47,20 @@ const Router = (props) => {
         }
 
         return isAuthRoutes
-          ? fetcher(authConfig).catch((e) => {
-            console.log(e)
-            setTimeout(() => {
-              window.location.href = loginUrl
-            }, 3000)
-            return { message: 'ERROR' }
-          })
+          ? fetcher(authConfig)
+            .then((res) => {
+              if (res.message === 'Unauthorized') {
+                throw new Error(res.message)
+              }
+              return res
+            })
+            .catch((e) => {
+              console.log(e)
+              window.location.href = (
+                window.location.href.replace(window.location.pathname, `${window.APP_BASENAME}/${loginUrl}`)
+              )
+              return { message: 'ERROR' }
+            })
           : ({ message: 'NO USER' })
       },
       children: withErrorElement([
