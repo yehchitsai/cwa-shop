@@ -32,6 +32,8 @@ const withErrorElement = (routes) => routes.map((item) => {
   }
 })
 
+const defaultAuth = { message: 'NO USER' }
+let tmpAuth = { ...defaultAuth }
 const Router = (props) => {
   const { routes, basename = '/', isAuthRoutes = true } = props
   const appBaseName = `${window.APP_BASENAME}${basename}`
@@ -47,21 +49,24 @@ const Router = (props) => {
         }
 
         return isAuthRoutes
-          ? fetcher(authConfig)
-            .then((res) => {
-              if (res.message === 'Unauthorized') {
-                throw new Error(res.message)
-              }
-              return res
-            })
-            .catch((e) => {
-              console.log(e)
-              window.location.href = (
-                window.location.href.replace(window.location.pathname, `${window.APP_BASENAME}/${loginUrl}`)
-              )
-              return { message: 'ERROR' }
-            })
-          : ({ message: 'NO USER' })
+          ? isEmpty(tmpAuth)
+            ? fetcher(authConfig)
+              .then((res) => {
+                if (res.message === 'Unauthorized') {
+                  throw new Error(res.message)
+                }
+                tmpAuth = res
+                return res
+              })
+              .catch((e) => {
+                console.log(e)
+                window.location.href = (
+                  window.location.href.replace(window.location.pathname, `${window.APP_BASENAME}/${loginUrl}`)
+                )
+                return { message: 'ERROR' }
+              })
+            : tmpAuth
+          : defaultAuth
       },
       children: withErrorElement([
         ...routes,

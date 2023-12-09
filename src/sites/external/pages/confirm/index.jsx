@@ -7,7 +7,6 @@ import {
   flow, get, size, sumBy, groupBy, reduce
 } from 'lodash-es'
 import {
-  key as selectedProductsStateKey,
   selectedProductsState
 } from '../../../../state/selectedProducts'
 import useFishTypes from '../../../../hooks/useFishTypes'
@@ -47,12 +46,10 @@ const Confirm = () => {
       return selectedProduct.itemSerial !== product.itemSerial
     })
     setSelectedProducts(newSelectedProducts)
-    window.localStorage.setItem(selectedProductsStateKey, JSON.stringify(newSelectedProducts))
   }
 
   const onRemoveAll = () => {
     setSelectedProducts([])
-    window.localStorage.removeItem(selectedProductsStateKey)
   }
 
   if (isLoading) {

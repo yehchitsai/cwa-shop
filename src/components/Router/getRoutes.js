@@ -1,7 +1,7 @@
 import { lazy } from 'react'
 import { flow } from 'lodash-es'
 
-const getRoutes = (pages) => {
+const getRoutes = (pages, loader = null) => {
   const routes = flow(
     () => Object.entries(pages),
     (pagesEntries) => pagesEntries.reduce((collect, pagesEntry) => {
@@ -15,9 +15,11 @@ const getRoutes = (pages) => {
         ? fileName.replace('$', ':')
         : fileName.replace(/\/index/, '')
 
+      const isIndex = fileName === 'index'
       collect.push({
-        path: fileName === 'index' ? '/' : `/${normalizedPathName.toLowerCase()}/`,
-        element: lazy(page)
+        path: isIndex ? '/' : `/${normalizedPathName.toLowerCase()}/`,
+        element: lazy(page),
+        loader
       })
       return collect
     }, [])

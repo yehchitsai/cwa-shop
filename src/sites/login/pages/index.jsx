@@ -13,7 +13,7 @@ const Login = () => {
   }, [])
 
   return (
-    <div className='hero min-h-screen bg-base-200'>
+    <div className='hero fixed top-0 z-0 min-h-screen bg-base-200'>
       <div className='hero-content flex-col lg:flex-row-reverse'>
         <div className='card w-full max-w-sm shrink-0 bg-base-100 shadow-2xl'>
           <Formik
