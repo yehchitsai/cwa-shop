@@ -132,7 +132,7 @@ const CardsSection = (props) => {
     }))
     if (reserveError) {
       setSelectProducts(selectProducts)
-      toast.error(`Error! ${reserveError.message}`, { id: toastId })
+      toast.error(`Error! No.${targetItemSerial} ${reserveError.message}`, { id: toastId })
       return false
     }
 
@@ -152,7 +152,7 @@ const CardsSection = (props) => {
       setReservedMap({ ...reservedMap, [targetItemSerial]: targetItemSerial })
     }
     setSelectProducts(newSelectProducts)
-    statusToast(`${targetItemSerial} ${reason}`, { id: toastId })
+    statusToast(`No.${targetItemSerial} ${reason}`, { id: toastId })
     return isSuccess ? isEmpty(clearItemSerials) : false
   }
 
