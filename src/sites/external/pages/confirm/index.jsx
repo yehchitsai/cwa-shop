@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useRecoilState } from 'recoil'
 import { useTranslation } from 'react-i18next'
 import { MdDelete } from 'react-icons/md'
+import { useLoaderData } from 'react-router-dom'
 import {
   flow, get, size, sumBy, groupBy, reduce
 } from 'lodash-es'
@@ -10,6 +11,7 @@ import {
   selectedProductsState
 } from '../../../../state/selectedProducts'
 import useFishTypes from '../../../../hooks/useFishTypes'
+import useOnInit from '../../../../hooks/useOnInit'
 import SkeletonHome from '../../../../components/Skeleton/Home'
 import LazyImage from '../../../../components/LazyImage'
 import ProductModel from '../../../../components/Model/Product'
@@ -22,6 +24,7 @@ const Confirm = () => {
   const [selectedProducts, setSelectedProducts] = useRecoilState(selectedProductsState)
   const [targetProduct, setTargetProduct] = useState({})
   const [isProductModalOpen, setIsProductModalOpen] = useState(false)
+  const defaultSelectedProducts = useLoaderData()
   const selectedTypes = flow(
     () => groupBy(selectedProducts, (selectedProduct) => selectedProduct.fishType),
     (groupedProducts) => reduce(groupedProducts, (data, products, fishType) => {
@@ -51,6 +54,10 @@ const Confirm = () => {
   const onRemoveAll = () => {
     setSelectedProducts([])
   }
+
+  useOnInit(() => {
+    setSelectedProducts(defaultSelectedProducts)
+  })
 
   if (isLoading) {
     return (
