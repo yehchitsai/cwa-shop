@@ -13,6 +13,7 @@ import Layout from './Layout'
 import NavBar from '../NavBar'
 import 'react-loading-skeleton/dist/skeleton.css'
 
+const loginUrl = import.meta.env.VITE_LOGIN_URL
 const host = getApiHost('VITE_AWS_CHECK_AUTHORIZE')
 const awsHostPrefix = import.meta.env.VITE_AWS_HOST_PREFIX
 const authConfig = {
@@ -48,6 +49,9 @@ const Router = (props) => {
         return isAuthRoutes
           ? fetcher(authConfig).catch((e) => {
             console.log(e)
+            setTimeout(() => {
+              window.location.href = loginUrl
+            }, 3000)
             return { message: 'ERROR' }
           })
           : ({ message: 'NO USER' })

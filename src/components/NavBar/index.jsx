@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { get, keyBy } from 'lodash-es'
 import useOnInit from '../../hooks/useOnInit'
 
+const logoutUrl = import.meta.env.VITE_LOGOUT_URL
 const langs = [
   { label: '中文繁體', value: 'zh-TW' },
   { label: 'English', value: 'en' },
@@ -33,7 +34,13 @@ const Logout = (props) => {
 
   return (
     <a
-      href={window.location.href.replace(window.location.pathname, `${window.APP_BASENAME}/`)}
+      href={
+        window.IS_MOCK
+          ? window.location.href
+            .replace(window.location.pathname, `${window.APP_BASENAME}/${logoutUrl}`)
+            .replace(window.location.search, '')
+          : logoutUrl
+    }
       className='btn btn-ghost'
     >
       {children}
