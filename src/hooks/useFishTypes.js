@@ -3,10 +3,12 @@ import qs from 'query-string'
 import { get, isEmpty, keyBy } from 'lodash-es'
 import getApiHost from '../utils/getApiHost'
 
-const host = getApiHost('NO_AUTH_FISH_TYPE_HOST')
+const nonAuthHost = getApiHost('VITE_AWS_NO_AUTH_FISH_TYPE_HOST')
+const authHost = getApiHost('VITE_AWS_AUTH_FISH_TYPE_HOST')
 const awsHostPrefix = import.meta.env.VITE_AWS_HOST_PREFIX
 
-const useFishTypes = (lang) => {
+const useFishTypes = (lang, isAuthRequired = true) => {
+  const host = isAuthRequired ? authHost : nonAuthHost
   const params = { lang }
   const url = isEmpty(lang) ? null : `${awsHostPrefix}/bettafish?${qs.stringify(params)}`
   const {
