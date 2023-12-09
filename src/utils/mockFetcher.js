@@ -24,21 +24,27 @@ const getMockData = () => {
   return cachedMockData
 }
 
-const mockFetcher = async (key, authorization = {}, body = {}) => {
+const mockFetcher = async (key, authorization = {}, options = {}) => {
   // prod build mock data 拿不到 Vite env variable
   // 所以額外在 mock 時判斷有 undefined 取代掉
   const mockData = getMockData()
   const [endpoint, queryString] = key.split('?')
+  const { body, method = '' } = options
   const {
     response = () => [],
     timeout = 0
-  } = find(mockData, (item) => item.url.includes(endpoint)) || {}
+  } = find(mockData, (item) => {
+    return (
+      item.url.includes(endpoint) &&
+      (body ? (item.method === method.toLowerCase()) : true)
+    )
+  }) || {}
   const resp = new Promise((resolve) => {
     delay(() => {
       const headers = {
         authorization: authorization.Authorization
       }
-      const data = response({ query: qs.parse(queryString), headers, body })
+      const data = response({ query: qs.parse(queryString), headers, ...options })
       resolve(data)
     }, timeout)
   })

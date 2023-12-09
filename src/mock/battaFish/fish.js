@@ -158,7 +158,7 @@ export default [
       const {
         reserveItemSerials = [],
         clearItemSerials = []
-      } = JSON.parse(JSON.stringify(body))
+      } = JSON.parse(body)
       const reserveMap = keyBy(reserveItemSerials)
       const results = [...reserveItemSerials, ...clearItemSerials]
         .map((itemSerial) => {
