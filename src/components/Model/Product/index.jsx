@@ -40,7 +40,7 @@ const ProductModel = (props) => {
   } = get(fishTypeMap, fishType, {})
 
   const scrollToOtherImage = (targetIndex) => {
-    document.querySelector(`#${id} img[src="${itemImages[targetIndex]}"]`).scrollIntoView()
+    document.querySelector(`#${id} img[src="${itemImages[targetIndex].productImg}"]`).scrollIntoView()
   }
 
   const onClickEsc = useCallback(async (e) => {
