@@ -122,7 +122,7 @@ const fetcher = async (config = {}, triggerArgs = {}) => {
         'Fetch data failed, mock mode will will using mock data instead.',
         { url, options, error: e.toString() }
       )
-      return mockFetcher(key, authorization)
+      return mockFetcher(key, authorization, body)
     })
 }
 
