@@ -19,6 +19,7 @@ import {
 import useFishTypes from '../../../hooks/useFishTypes'
 import useFishData from '../../../hooks/useFishData'
 import useCreate from '../../../hooks/useCreate'
+import useOnInit from '../../../hooks/useOnInit'
 import getApiHost from '../../../utils/getApiHost'
 import Card from '../../../components/Card'
 import ProductModel from '../../../components/Model/Product'
@@ -26,7 +27,6 @@ import SkeletonHome from '../../../components/Skeleton/Home'
 import Drawer from '../../../components/Drawer'
 import CartItems from '../../../components/CartItems'
 import CartBottomItems from '../../../components/CartBottomItems'
-import useOnInit from '../../../hooks/useOnInit'
 
 const productModelKey = 'productModel'
 
@@ -92,8 +92,8 @@ const CardsSection = (props) => {
     data: fishData
   } = useFishData(fishType)
   const [reservedMap, setReservedMap] = useState({})
-  const [selectProducts, setSelectProducts] = useRecoilState(selectedProductsState)
-  const defaultSelectProducts = useLoaderData()
+  const [selectedProducts, setSelectedProducts] = useRecoilState(selectedProductsState)
+  const defaultSelectedProducts = useLoaderData()
 
   const openProductModal = (newTargetProduct) => async () => {
     setTargetProduct({ ...newTargetProduct, fishType })
@@ -105,12 +105,12 @@ const CardsSection = (props) => {
     const toastId = toast.loading('Updating...')
     const isSelected = e.target.checked
     const targetItemSerial = product.itemSerial
-    let newSelectProducts = [...selectProducts]
+    let newSelectProducts = [...selectedProducts]
     let newRemoveProducts = []
     if (isSelected) {
-      newSelectProducts = [...selectProducts, { ...product, fishType }]
+      newSelectProducts = [...selectedProducts, { ...product, fishType }]
     } else {
-      const { add, remove } = reduce(selectProducts, (collect, selectProduct) => {
+      const { add, remove } = reduce(selectedProducts, (collect, selectProduct) => {
         const isAdd = (selectProduct.itemSerial !== targetItemSerial)
         if (isAdd) {
           collect.add.push(selectProduct)
@@ -131,7 +131,7 @@ const CardsSection = (props) => {
       clearItemSerials
     }))
     if (reserveError) {
-      setSelectProducts(selectProducts)
+      setSelectedProducts(selectedProducts)
       toast.error(`Error! No.${targetItemSerial} ${reserveError.message}`, { id: toastId })
       return false
     }
@@ -151,16 +151,16 @@ const CardsSection = (props) => {
       })
       setReservedMap({ ...reservedMap, [targetItemSerial]: targetItemSerial })
     }
-    setSelectProducts(newSelectProducts)
+    setSelectedProducts(newSelectProducts)
     statusToast(`No.${targetItemSerial} ${reason}`, { id: toastId })
     return isSuccess ? isEmpty(clearItemSerials) : false
   }
 
   useOnInit(() => {
-    setSelectProducts(defaultSelectProducts)
+    setSelectedProducts(defaultSelectedProducts)
   })
 
-  const defaultSelectProductMap = keyBy(defaultSelectProducts, 'itemSerial')
+  const defaultSelectProductMap = keyBy(defaultSelectedProducts, 'itemSerial')
   return fishData.map((item) => {
     const { itemSerial } = item
     const defaultIsSelect = (itemSerial in defaultSelectProductMap)
