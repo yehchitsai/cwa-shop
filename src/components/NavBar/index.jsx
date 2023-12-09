@@ -1,8 +1,9 @@
+import { useLoaderData } from 'react-router-dom'
 import clx from 'classnames'
 import { MdGTranslate, MdLogout } from 'react-icons/md'
 import { FaUserCircle } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
-import { keyBy } from 'lodash-es'
+import { get, keyBy } from 'lodash-es'
 import useOnInit from '../../hooks/useOnInit'
 
 const langs = [
@@ -38,6 +39,11 @@ const Logout = (props) => {
       {children}
     </a>
   )
+}
+
+const User = () => {
+  const loaderData = useLoaderData()
+  return get(loaderData, 'message', 'ERROR')
 }
 
 const getSelectLang = (i18n) => {
@@ -117,7 +123,9 @@ const NavBar = (props) => {
               className='tooltip tooltip-bottom'
               data-tip={`v${window.APP_VERSION}`}
             >
-              <span className='max-sm:hidden'>{t('user')}</span>
+              <span className='max-sm:hidden'>
+                {fixed ? t('user') : <User />}
+              </span>
               <FaUserCircle className='md:hidden' size='1.5em' />
             </div>
           </div>

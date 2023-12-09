@@ -8,6 +8,6 @@ const dynamicRoutes = getRoutes(pages)
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Root>
-    <Router routes={dynamicRoutes} basename='/example' />
+    <Router routes={dynamicRoutes} basename='/example' isAuthRoutes={false} />
   </Root>
 )

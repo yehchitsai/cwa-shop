@@ -2,22 +2,25 @@ import { isEmpty } from 'lodash-es'
 import mockFetcher from './mockFetcher'
 
 const fetcher = async (config = {}, triggerArgs = {}) => {
-  const isForceDisableMock = (new URLSearchParams(window.location.search)).get('MOCK') === '0'
+  const urlSearch = new URLSearchParams(window.location.search)
+  const [tokenType, accessToken] = ['token_type', 'access_token'].map((key) => urlSearch.get(key))
+  const isForceDisableMock = urlSearch.get('MOCK') === '0'
   const { arg: { url: keyFromTrigger = '', ...body } = {} } = triggerArgs
   const { host = '', url: keyFromGet = '', options = {} } = config
+  const { header = {}, ...restOptions } = options
   const key = keyFromGet || keyFromTrigger
   const url = `${host}${key}`
   const isHttpRequest = host.startsWith('http')
   const isAwsApi = key.startsWith(window.AWS_HOST_PREFIX)
   const isGetRequest = isEmpty(body)
   const newOptions = {
-    ...(!isGetRequest && {
-      body: JSON.stringify(body),
-      headers: {
-        'Content-type': 'application/json; charset=UTF-8'
-      }
+    headers: new Headers({
+      'Content-type': 'application/json; charset=UTF-8',
+      Authorization: `${tokenType} ${accessToken}`,
+      ...header
     }),
-    ...options
+    ...(!isGetRequest && { body: JSON.stringify(body) }),
+    ...restOptions
   }
   const request = !isForceDisableMock && (
     window.IS_MOCK &&
