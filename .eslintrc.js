@@ -25,6 +25,7 @@ module.exports = {
     'no-console': 'off',
     'no-unused-expressions': ['error', { allowShortCircuit: true, allowTernary: true }],
     'no-restricted-syntax': 'off',
+    'no-nested-ternary': 'off',
     'arrow-body-style': 'off',
     semi: [2, 'never'],
     'comma-dangle': ['error', 'never'],

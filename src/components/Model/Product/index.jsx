@@ -119,7 +119,11 @@ const ProductModel = (props) => {
         defaultOpen
       >
         <div className='carousel w-full items-center rounded-none bg-slate-100 max-md:h-full md:h-[100vh]'>
-          {itemImages.map((imgUrl, index) => {
+          {itemImages.map((itemImage = {}, index) => {
+            const {
+              // zoomedImg: imgUrl,
+              productImg: imgUrl
+            } = itemImage
             const prevIndex = index - 1
             const nextIndex = index + 1
             return (

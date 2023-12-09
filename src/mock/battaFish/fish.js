@@ -1,5 +1,5 @@
 import {
-  times, random, flow, values, concat, keyBy, get
+  times, random, flow, values, concat, keyBy, get, map, size, sum
 } from 'lodash-es'
 import getApiPrefix from '../../utils/getApiPrefix'
 
@@ -36,13 +36,23 @@ const fishNameMapByLang = {
   }
 }
 
+const videos = [
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+  'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+  'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
+]
+
+const getFakeImage = (width, height, text) => {
+  return `https://fakeimg.pl/${width}x${height}/?text=${text}&font=lobster&font_size=50`
+}
+
 const getFishData = (type) => times(random(10, 20), (index) => {
   const itemPrice = TYPE_PRICE[type]
   const itemSerial = `${itemPrice + index}`
   return {
     itemSerial,
     itemPrice,
-    imageURL: `https://fakeimg.pl/640x640/?text=Batta${itemSerial}&font=lobster&font_size=50`
+    imageURL: getFakeImage(600, 400, `Batta${itemSerial}`)
   }
 })
 const fishDataMap = {
@@ -58,12 +68,16 @@ const totalFishDataMapByItemSerial = flow(
 )()
 const getFishInfo = (itemSerial) => ({
   itemImages: [
-    totalFishDataMapByItemSerial[itemSerial].imageURL,
-    ...times(random(1, 4), (index) => {
-      return `https://fakeimg.pl/1280x640/?text=Batta${itemSerial}-item${index}&font=lobster&font_size=50`
+    ...times(random(3, 6), (index) => {
+      const text = `Batta${itemSerial}-item${index}`
+      return {
+        thumbnailImg: totalFishDataMapByItemSerial[itemSerial].imageURL,
+        productImg: getFakeImage(1200, 800, text),
+        zoomedImg: getFakeImage(2400, 1600, text)
+      }
     })
   ],
-  itemVideos: []
+  itemVideos: (+itemSerial % 2 === 0) ? [] : [{ productVideo: videos[random(0, 2)] }]
 })
 
 export default [
@@ -79,7 +93,7 @@ export default [
       const convertedLang = ['en-US', 'en'].includes(lang)
         ? 'en'
         : lang
-      const fishTypes = types.map(((type) => {
+      const results = types.map(((type) => {
         return {
           ...type,
           fishName: get(
@@ -90,7 +104,7 @@ export default [
           fishPrice: TYPE_PRICE[type.fishType]
         }
       }))
-      return { message: 'success', results: fishTypes }
+      return { message: 'success', results }
     }
   },
   {
@@ -101,8 +115,8 @@ export default [
       const {
         fishType
       } = JSON.parse(JSON.stringify(stringObject))
-      const fishData = fishDataMap[fishType]
-      return { message: 'success', results: fishData }
+      const results = fishDataMap[fishType]
+      return { message: 'success', results }
     }
   },
   {
@@ -113,8 +127,8 @@ export default [
       const {
         itemSerial
       } = JSON.parse(JSON.stringify(stringObject))
-      const fishData = getFishInfo(itemSerial)
-      return { message: 'success', results: fishData }
+      const results = getFishInfo(itemSerial)
+      return { message: 'success', results }
     }
   },
   {
@@ -122,18 +136,68 @@ export default [
     method: 'get',
     timeout: 1500,
     response: () => {
-      const fishData = {
+      const results = {
         [TYPE_KEY.A]: {
           items: get(fishDataMap, TYPE_KEY.A).slice(0, 3).map((item) => item.itemSerial)
         },
         [TYPE_KEY.B]: {
-          items: []
+          items: get(fishDataMap, TYPE_KEY.B).slice(1, 5).map((item) => item.itemSerial)
         },
         [TYPE_KEY.C]: {
           items: get(fishDataMap, TYPE_KEY.C).slice(2, 7).map((item) => item.itemSerial)
         }
       }
-      return { message: 'success', results: fishData }
+      return { message: 'success', results }
+    }
+  },
+  {
+    url: `${getApiPrefix()}/bettafishpreorder`,
+    method: 'post',
+    timeout: 1500,
+    response: ({ body }) => {
+      const {
+        reserveItemSerials = [],
+        clearItemSerials = []
+      } = JSON.parse(JSON.stringify(body))
+      const reserveMap = keyBy(reserveItemSerials)
+      const results = [...reserveItemSerials, ...clearItemSerials]
+        .map((itemSerial) => {
+          const isSuccess = (+itemSerial % 2) === 0
+          return {
+            itemSerial,
+            done: isSuccess ? 1 : 0,
+            reason: isSuccess
+              ? (itemSerial in reserveMap) ? 'booked' : 'cleared'
+              : 'booked by other'
+          }
+        })
+      return { message: 'success', results }
+    }
+  },
+  {
+    url: `${getApiPrefix()}/fishorder`,
+    method: 'post',
+    timeout: 1500,
+    response: () => {
+      const result = [TYPE_KEY.A, TYPE_KEY.B, TYPE_KEY.C]
+        .map(getFishData)
+        .map((fishData) => fishData.slice(0, random(3, 6)))
+        .map((fishData) => {
+          const items = map(fishData, 'itemSerial')
+          const unitPrice = get(fishData, '0.itemPrice', '0')
+          const subTotal = size(items) * unitPrice
+          return { items, unitPrice, subTotal }
+        })
+      const [resultA, resultB, resultC] = result
+      const results = {
+        [TYPE_KEY.A]: resultA,
+        [TYPE_KEY.B]: resultB,
+        [TYPE_KEY.C]: resultC,
+        orderTotalQuantity: sum(map(result, (typeItem) => size(typeItem.items))),
+        orderTotalPrice: sum(map(result, (typeItem) => size(typeItem.subTotal))),
+        currency: 'TWD'
+      }
+      return { message: 'success', results }
     }
   }
 ]
