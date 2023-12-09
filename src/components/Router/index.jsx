@@ -5,11 +5,20 @@ import {
   redirect
 } from 'react-router-dom'
 import { isEmpty } from 'lodash-es'
+import fetcher from '../../utils/fetcher'
+import getApiHost from '../../utils/getApiHost'
 import SkeletonHome from '../Skeleton/Home'
 import ErrorElement from './ErrorElement.jsx'
 import Layout from './Layout'
 import NavBar from '../NavBar'
 import 'react-loading-skeleton/dist/skeleton.css'
+
+const host = getApiHost('VITE_AWS_CHECK_AUTHORIZE')
+const awsHostPrefix = import.meta.env.VITE_AWS_HOST_PREFIX
+const authConfig = {
+  host,
+  url: `${awsHostPrefix}/checkAuthorize`
+}
 
 const withErrorElement = (routes) => routes.map((item) => {
   const {
@@ -23,7 +32,7 @@ const withErrorElement = (routes) => routes.map((item) => {
 })
 
 const Router = (props) => {
-  const { routes, basename = '/' } = props
+  const { routes, basename = '/', isAuthRoutes = true } = props
   const appBaseName = `${window.APP_BASENAME}${basename}`
   const totalRoutes = [
     {
@@ -35,7 +44,13 @@ const Router = (props) => {
           const nextPath = redirectPath.replace(window.location.pathname, '')
           return redirect(nextPath.startsWith('/') ? nextPath : `/${nextPath}`)
         }
-        return null
+
+        return isAuthRoutes
+          ? fetcher(authConfig).catch((e) => {
+            console.log(e)
+            return { message: 'ERROR' }
+          })
+          : ({ message: 'NO USER' })
       },
       children: withErrorElement([
         ...routes,
@@ -50,7 +65,7 @@ const Router = (props) => {
       ])
     }
   ]
-  console.log(totalRoutes, appBaseName)
+  // console.log(totalRoutes, appBaseName)
   const router = createBrowserRouter(totalRoutes, { basename: appBaseName })
   return (
     <Suspense
