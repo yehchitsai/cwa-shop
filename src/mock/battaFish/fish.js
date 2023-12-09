@@ -1,5 +1,5 @@
 import {
-  isUndefined, times, random, flow, values, concat, keyBy, get
+  times, random, flow, values, concat, keyBy, get
 } from 'lodash-es'
 import getApiPrefix from '../../utils/getApiPrefix'
 
@@ -66,49 +66,74 @@ const getFishInfo = (itemSerial) => ({
   itemVideos: []
 })
 
-const url = `${getApiPrefix()}/bettafish`
-
 export default [
   {
-    url,
+    url: `${getApiPrefix()}/bettafish`,
     method: 'get',
     timeout: 1500,
     response: ({ query: stringObject }) => {
       const {
-        lang,
-        fishType,
-        itemSerial
+        lang
       } = JSON.parse(JSON.stringify(stringObject))
 
-      if (!isUndefined(lang)) {
-        const convertedLang = ['en-US', 'en'].includes(lang)
-          ? 'en'
-          : lang
-        const fishTypes = types.map(((type) => {
-          return {
-            ...type,
-            fishName: get(
-              fishNameMapByLang,
-              `${convertedLang}.${type.fishType}`,
-              get(fishNameMapByLang, `en.${type.fishType}`)
-            ),
-            fishPrice: TYPE_PRICE[type.fishType]
-          }
-        }))
-        return { message: 'success', results: fishTypes }
+      const convertedLang = ['en-US', 'en'].includes(lang)
+        ? 'en'
+        : lang
+      const fishTypes = types.map(((type) => {
+        return {
+          ...type,
+          fishName: get(
+            fishNameMapByLang,
+            `${convertedLang}.${type.fishType}`,
+            get(fishNameMapByLang, `en.${type.fishType}`)
+          ),
+          fishPrice: TYPE_PRICE[type.fishType]
+        }
+      }))
+      return { message: 'success', results: fishTypes }
+    }
+  },
+  {
+    url: `${getApiPrefix()}/bettafishinfo`,
+    method: 'get',
+    timeout: 1500,
+    response: ({ query: stringObject }) => {
+      const {
+        fishType
+      } = JSON.parse(JSON.stringify(stringObject))
+      const fishData = fishDataMap[fishType]
+      return { message: 'success', results: fishData }
+    }
+  },
+  {
+    url: `${getApiPrefix()}/bettafishserialinfo`,
+    method: 'get',
+    timeout: 1500,
+    response: ({ query: stringObject }) => {
+      const {
+        itemSerial
+      } = JSON.parse(JSON.stringify(stringObject))
+      const fishData = getFishInfo(itemSerial)
+      return { message: 'success', results: fishData }
+    }
+  },
+  {
+    url: `${getApiPrefix()}/bettafishpreorder`,
+    method: 'get',
+    timeout: 1500,
+    response: () => {
+      const fishData = {
+        [TYPE_KEY.A]: {
+          items: get(fishDataMap, TYPE_KEY.A).slice(0, 3).map((item) => item.itemSerial)
+        },
+        [TYPE_KEY.B]: {
+          items: []
+        },
+        [TYPE_KEY.C]: {
+          items: get(fishDataMap, TYPE_KEY.C).slice(2, 7).map((item) => item.itemSerial)
+        }
       }
-
-      if (!isUndefined(fishType)) {
-        const fishData = fishDataMap[fishType]
-        return { message: 'success', results: fishData }
-      }
-
-      if (!isUndefined(itemSerial)) {
-        const fishData = getFishInfo(itemSerial)
-        return { message: 'success', results: fishData }
-      }
-
-      return { message: 'success', results: [] }
+      return { message: 'success', results: fishData }
     }
   }
 ]
