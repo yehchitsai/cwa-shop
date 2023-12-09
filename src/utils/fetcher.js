@@ -43,7 +43,8 @@ const fetcher = async (config = {}, triggerArgs = {}) => {
     .catch((e) => {
       const isMockAwsApi = (window.IS_MOCK_AWS_API && key.startsWith(window.AWS_HOST_PREFIX))
       if (!window.IS_MOCK && !isMockAwsApi) {
-        throw e
+        console.log(e)
+        throw new Error('發生錯誤')
       }
 
       console.log(
