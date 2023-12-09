@@ -4,7 +4,13 @@ import Root from '../components/Root'
 
 const links = flow(
   () => keys(import.meta.glob('./**/index.html')),
-  (paths) => paths.filter((path) => path !== './index.html'),
+  (paths) => paths.filter((path) => {
+    return (
+      path !== './index.html' &&
+      // login 只有在 mock 環境露出
+      (window.IS_MOCK ? true : !path.includes('./login'))
+    )
+  }),
   (filteredPaths) => filteredPaths.map((path) => path.replace('./', '/').replace('index.html', '')),
   (endpoints) => endpoints.map((endpoint) => ({ url: `${window.APP_BASENAME}${endpoint}`, name: endpoint.replace(/\//g, '') }))
 )()
