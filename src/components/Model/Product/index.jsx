@@ -1,12 +1,16 @@
-import { useEffect, useCallback, useState } from 'react'
+import {
+  useEffect, useCallback, useState, useRef
+} from 'react'
 import clx from 'classnames'
 // import { useTranslation } from 'react-i18next'
 import { MdArrowForwardIos, MdArrowBackIosNew, MdOpenInNew } from 'react-icons/md'
 import Skeleton from 'react-loading-skeleton'
-import { delay, get } from 'lodash-es'
+import { delay, get, isEmpty } from 'lodash-es'
 import Slider from 'react-slick'
+import videojs from 'video.js'
 import useFishInfo from '../../../hooks/useFishInfo'
 import LazyImage from '../../LazyImage'
+import Video from '../../Video'
 import Model from '../index'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
@@ -33,6 +37,20 @@ const SliderArrow = (props) => {
   )
 }
 
+const getVideoJsOptions = (itemVideos) => {
+  return {
+    autoplay: false,
+    controls: true,
+    fill: true,
+    responsive: true,
+    fluid: true,
+    sources: [{
+      src: get(itemVideos, '[0].productVideo'),
+      type: 'video/mp4'
+    }]
+  }
+}
+
 const ProductModel = (props) => {
   const {
     id, visible, onClose, product = {}
@@ -44,13 +62,18 @@ const ProductModel = (props) => {
   const {
     trigger,
     data: {
-      // itemVideos = [],
+      itemVideos = [],
       itemImages = []
     } = {},
     isLoading,
     isMutating
   } = useFishInfo(itemSerial)
-  const [slideIndex, setSlideIndex] = useState(1)
+  const [slideIndex, setSlideIndex] = useState(0)
+  const playerRef = useRef(null)
+  const isOpenNewTabBtnVisible = !(
+    !isEmpty(itemVideos) &&
+    slideIndex === 0
+  )
   // const { i18n, t } = useTranslation()
   // const {
   //   fishTypeMap
@@ -60,8 +83,30 @@ const ProductModel = (props) => {
   //   fishPrice
   // } = get(fishTypeMap, fishType, {})
 
+  const stopPlayer = () => {
+    if (!playerRef.current) {
+      return
+    }
+
+    playerRef.current.pause()
+  }
+
   const onSlideChange = (index) => {
+    stopPlayer()
     setSlideIndex(index)
+  }
+
+  const onPlayerReady = (player) => {
+    playerRef.current = player
+
+    // You can handle player events here, for example:
+    player.on('waiting', () => {
+      videojs.log('player is waiting')
+    })
+
+    player.on('dispose', () => {
+      videojs.log('player will dispose')
+    })
   }
 
   const onClickEsc = useCallback(async (e) => {
@@ -69,6 +114,7 @@ const ProductModel = (props) => {
       return
     }
 
+    stopPlayer()
     await delay(() => Promise.resolve(), 100)
     onClose()
   }, [onClose])
@@ -124,7 +170,7 @@ const ProductModel = (props) => {
     >
       <Slider
         className='top-[50%] translate-y-[-50%]'
-        dotsClass='slick-dots bottom-5'
+        dotsClass='slick-dots bottom-[0.8rem!important]'
         prevArrow={(
           <SliderArrow customClassName='left-2'>
             <MdArrowBackIosNew size='1.5em' />
@@ -142,6 +188,16 @@ const ProductModel = (props) => {
         infinite
         dots
       >
+        {!isEmpty(itemVideos) && (
+          <div className='max-h-[100vh] max-w-full'>
+            <div className='m-auto max-w-screen-lg'>
+              <Video
+                options={getVideoJsOptions(itemVideos)}
+                onReady={onPlayerReady}
+              />
+            </div>
+          </div>
+        )}
         {itemImages.map((itemImage = {}) => {
           const {
             productImg: imgUrl
@@ -157,14 +213,16 @@ const ProductModel = (props) => {
           )
         })}
       </Slider>
-      <a
-        target='_blank'
-        rel='noreferrer noopener'
-        className='btn btn-circle fixed bottom-2 right-2'
-        href={`${get(itemImages, `${slideIndex}.zoomedImg`)}`}
-      >
-        <MdOpenInNew size='1.5rem' />
-      </a>
+      {isOpenNewTabBtnVisible && (
+        <a
+          target='_blank'
+          rel='noreferrer noopener'
+          className='btn btn-circle fixed bottom-2 right-2'
+          href={`${get(itemImages, `${slideIndex}.zoomedImg`)}`}
+        >
+          <MdOpenInNew size='1.5rem' />
+        </a>
+      )}
     </Model>
   )
 }
