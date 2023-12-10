@@ -1,13 +1,37 @@
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useState } from 'react'
 import clx from 'classnames'
 // import { useTranslation } from 'react-i18next'
+import { MdArrowForwardIos, MdArrowBackIosNew, MdOpenInNew } from 'react-icons/md'
 import Skeleton from 'react-loading-skeleton'
-import { size, delay } from 'lodash-es'
+import { delay, get } from 'lodash-es'
+import Slider from 'react-slick'
 import useFishInfo from '../../../hooks/useFishInfo'
 import LazyImage from '../../LazyImage'
-import Model from '..'
+import Model from '../index'
+import 'slick-carousel/slick/slick.css'
+import 'slick-carousel/slick/slick-theme.css'
 
 const ESC_KEY_CODE = 27
+
+const SliderArrow = (props) => {
+  const {
+    customClassName, style, onClick, children
+  } = props
+  return (
+    <button
+      type='button'
+      className={clx(
+        customClassName,
+        'fixed top-[46%]',
+        'btn btn-circle glass btn-md text-center pl-[0.8rem] z-10'
+      )}
+      style={style}
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  )
+}
 
 const ProductModel = (props) => {
   const {
@@ -26,6 +50,7 @@ const ProductModel = (props) => {
     isLoading,
     isMutating
   } = useFishInfo(itemSerial)
+  const [slideIndex, setSlideIndex] = useState(1)
   // const { i18n, t } = useTranslation()
   // const {
   //   fishTypeMap
@@ -34,10 +59,9 @@ const ProductModel = (props) => {
   //   fishName,
   //   fishPrice
   // } = get(fishTypeMap, fishType, {})
-  const maxIndex = size(itemImages) - 1
 
-  const scrollToOtherImage = (targetIndex) => {
-    document.querySelector(`#${id} img[src="${itemImages[targetIndex].productImg}"]`).scrollIntoView()
+  const onSlideChange = (index) => {
+    setSlideIndex(index)
   }
 
   const onClickEsc = useCallback(async (e) => {
@@ -98,49 +122,49 @@ const ProductModel = (props) => {
       isCloseBtnVisible={false}
       onClose={onClose}
     >
-      <div className='carousel w-full items-center rounded-none bg-slate-100 max-md:h-full md:h-[100vh]'>
-        {itemImages.map((itemImage = {}, index) => {
+      <Slider
+        className='top-[50%] translate-y-[-50%]'
+        dotsClass='slick-dots bottom-5'
+        prevArrow={(
+          <SliderArrow customClassName='left-2'>
+            <MdArrowBackIosNew size='1.5em' />
+          </SliderArrow>
+        )}
+        nextArrow={(
+          <SliderArrow customClassName='right-2'>
+            <MdArrowForwardIos size='1.5em' />
+          </SliderArrow>
+        )}
+        afterChange={onSlideChange}
+        slidesToShow={1}
+        slidesToScroll={1}
+        speed={500}
+        infinite
+        dots
+      >
+        {itemImages.map((itemImage = {}) => {
           const {
-            // zoomedImg: imgUrl,
             productImg: imgUrl
           } = itemImage
-          const prevIndex = index - 1
-          const nextIndex = index + 1
           return (
-            <div
+            <LazyImage
+              src={imgUrl}
               key={imgUrl}
-              className='carousel-item relative flex h-full w-full items-center justify-center'
-            >
-              <button
-                type='button'
-                className={clx(
-                  'btn btn-circle glass absolute left-4 z-10',
-                  { hidden: prevIndex === -1 }
-                )}
-                onClick={() => scrollToOtherImage(prevIndex)}
-              >
-                ❮
-              </button>
-              <LazyImage
-                src={imgUrl}
-                className='m-auto max-h-full object-scale-down'
-                alt='Carousel component'
-                loaderClassName='translate-x-[-100%] z-0 w-[100vw] h-[80vh]'
-              />
-              <button
-                type='button'
-                className={clx(
-                  'btn btn-circle glass absolute right-4 z-10',
-                  { hidden: nextIndex > maxIndex }
-                )}
-                onClick={() => scrollToOtherImage(nextIndex)}
-              >
-                ❯
-              </button>
-            </div>
+              className='m-auto max-h-screen object-scale-down'
+              alt='Carousel component'
+              loaderClassName='translate-x-[-100%] z-0 w-[100vw] h-[80vh]'
+            />
           )
         })}
-      </div>
+      </Slider>
+      <a
+        target='_blank'
+        rel='noreferrer noopener'
+        className='btn btn-circle fixed bottom-2 right-2'
+        href={`${get(itemImages, `${slideIndex}.zoomedImg`)}`}
+      >
+        <MdOpenInNew size='1.5rem' />
+      </a>
     </Model>
   )
 }
