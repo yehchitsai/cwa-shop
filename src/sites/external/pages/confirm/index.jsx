@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useRecoilState } from 'recoil'
+import { useRecoilState, useSetRecoilState } from 'recoil'
 import { useTranslation } from 'react-i18next'
 import { MdDelete } from 'react-icons/md'
 import { useLoaderData, useNavigate } from 'react-router-dom'
@@ -8,9 +8,8 @@ import safeAwait from 'safe-await'
 import {
   flow, get, size, sumBy, groupBy, reduce, map, find
 } from 'lodash-es'
-import {
-  selectedProductsState
-} from '../../../../state/selectedProducts'
+import { selectedProductsState } from '../../../../state/selectedProducts'
+import { orderDataState } from '../../../../state/orderData'
 import getApiHost from '../../../../utils/getApiHost'
 import useFishTypes from '../../../../hooks/useFishTypes'
 import useOnInit from '../../../../hooks/useOnInit'
@@ -21,8 +20,8 @@ import ProductModel from '../../../../components/Model/Product'
 
 const preOrderHost = getApiHost('VITE_AWS_FISH_PREORDER')
 const preOrderEndPoint = `${import.meta.env.VITE_AWS_HOST_PREFIX}/bettafishpreorder`
-// const orderHost = getApiHost('VITE_AWS_FISH_ORDER')
-// const orderEndPoint = `${import.meta.env.VITE_AWS_HOST_PREFIX}/fishorder`
+const orderHost = getApiHost('VITE_AWS_FISH_ORDER')
+const orderEndPoint = `${import.meta.env.VITE_AWS_HOST_PREFIX}/fishorder`
 
 const productModelKey = 'productModel'
 
@@ -31,11 +30,12 @@ const Confirm = () => {
   const { t, i18n } = useTranslation()
   const { fishTypeMap, isLoading } = useFishTypes(i18n.language)
   const [selectedProducts, setSelectedProducts] = useRecoilState(selectedProductsState)
+  const setOrderData = useSetRecoilState(orderDataState)
   const [targetProduct, setTargetProduct] = useState({})
   const [isProductModalOpen, setIsProductModalOpen] = useState(false)
   const defaultSelectedProducts = useLoaderData()
   const { trigger: reserveByItemSerial, isMutating: isReserving } = useCreate(preOrderHost)
-  // const { trigger: orderByItemSerial, isMutating: isOrdering } = useCreate(orderHost)
+  const { trigger: orderByItemSerial, isMutating: isOrdering } = useCreate(orderHost)
   const selectedTypes = flow(
     () => groupBy(selectedProducts, (selectedProduct) => selectedProduct.fishType),
     (groupedProducts) => reduce(groupedProducts, (data, products, fishType) => {
@@ -109,6 +109,23 @@ const Confirm = () => {
     setTimeout(() => navigate('../'), 3000)
   }
 
+  const onOrder = async () => {
+    const toastId = toast.loading('Ordering...')
+    const orderItems = map(selectedProducts, 'itemSerial')
+    const [orderError, orderData] = await safeAwait(orderByItemSerial({
+      url: orderEndPoint,
+      orderItems
+    }))
+    if (orderError) {
+      toast.error(`Error! ${orderError.message}`, { id: toastId })
+      return
+    }
+
+    toast.success('Order complete!', { id: toastId })
+    setOrderData(get(orderData, 'results', {}))
+    navigate('/complete')
+  }
+
   useOnInit(() => {
     setSelectedProducts(defaultSelectedProducts)
   })
@@ -119,6 +136,7 @@ const Confirm = () => {
     )
   }
 
+  const isUpdating = (isReserving || isOrdering)
   return (
     <>
       <div
@@ -161,7 +179,7 @@ const Confirm = () => {
                       type='button'
                       className='btn btn-square btn-error btn-outline'
                       onClick={onRemove(selectedProduct)}
-                      disabled={isReserving}
+                      disabled={isUpdating}
                     >
                       <MdDelete size='1.5em' />
                     </button>
@@ -193,6 +211,8 @@ const Confirm = () => {
                 <button
                   type='button'
                   className='btn btn-success btn-outline'
+                  disabled={isUpdating}
+                  onClick={onOrder}
                 >
                   Submit cart
                 </button>
@@ -201,6 +221,7 @@ const Confirm = () => {
                   type='button'
                   className='btn btn-error btn-outline'
                   onClick={onRemoveAll}
+                  disabled={isUpdating}
                 >
                   Remove all
                 </button>
