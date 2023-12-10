@@ -1,5 +1,5 @@
 import {
-  times, random, flow, values, concat, keyBy, get, map, size, sum
+  times, random, flow, values, concat, keyBy, get, map, size, sum, isString
 } from 'lodash-es'
 import getApiPrefix from '../../utils/getApiPrefix'
 
@@ -158,7 +158,7 @@ export default [
       const {
         reserveItemSerials = [],
         clearItemSerials = []
-      } = JSON.parse(body)
+      } = isString(body) ? JSON.parse(body) : body
       const reserveMap = keyBy(reserveItemSerials)
       const results = [...reserveItemSerials, ...clearItemSerials]
         .map((itemSerial) => {
