@@ -1,5 +1,5 @@
 import {
-  times, random, flow, values, concat, keyBy, get, map, size, sum
+  times, random, flow, values, concat, keyBy, get, map, size, sum, isString
 } from 'lodash-es'
 import getApiPrefix from '../../utils/getApiPrefix'
 
@@ -158,7 +158,7 @@ export default [
       const {
         reserveItemSerials = [],
         clearItemSerials = []
-      } = JSON.parse(body)
+      } = isString(body) ? JSON.parse(body) : body
       const reserveMap = keyBy(reserveItemSerials)
       const results = [...reserveItemSerials, ...clearItemSerials]
         .map((itemSerial) => {
@@ -194,7 +194,7 @@ export default [
         [TYPE_KEY.B]: resultB,
         [TYPE_KEY.C]: resultC,
         orderTotalQuantity: sum(map(result, (typeItem) => size(typeItem.items))),
-        orderTotalPrice: sum(map(result, (typeItem) => size(typeItem.subTotal))),
+        orderTotalPrice: sum(map(result, (typeItem) => typeItem.subTotal)),
         currency: 'TWD'
       }
       return { message: 'success', results }

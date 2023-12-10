@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next'
 import { MdShoppingCart } from 'react-icons/md'
 import toast from 'react-hot-toast'
 import {
-  find, flow, get, isEmpty, keyBy, map, reduce
+  find, flow, get, isEmpty, keyBy, map, reduce, size
 } from 'lodash-es'
 import safeAwait from 'safe-await'
 import clx from 'classnames'
@@ -195,13 +195,10 @@ const Home = () => {
       )}
       openIcon={MdShoppingCart}
       drawerContentClassName={clx(
-        // { 'm-0 p-0 w-full overflow-y-hidden': isContentLoading }
         'm-0 p-0 w-full overflow-y-hidden'
       )}
+      indicator={size(selectProducts)}
       overlay
-      // indicator={2}
-      isRoot
-      rwd
     >
       <div
         className={clx(

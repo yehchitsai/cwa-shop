@@ -1,46 +1,112 @@
-import { useEffect, useCallback } from 'react'
+import {
+  useEffect, useCallback, useState, useRef
+} from 'react'
 import clx from 'classnames'
-import { useTranslation } from 'react-i18next'
+// import { useTranslation } from 'react-i18next'
+import { MdArrowForwardIos, MdArrowBackIosNew, MdOpenInNew } from 'react-icons/md'
 import Skeleton from 'react-loading-skeleton'
-import { LuArrowRightFromLine, LuArrowLeftFromLine } from 'react-icons/lu'
-import { size, delay, get } from 'lodash-es'
+import { delay, get, isEmpty } from 'lodash-es'
+import Slider from 'react-slick'
+import videojs from 'video.js'
 import useFishInfo from '../../../hooks/useFishInfo'
-import Drawer from '../../Drawer'
 import LazyImage from '../../LazyImage'
-import Model from '..'
-import useFishTypes from '../../../hooks/useFishTypes'
+import Video from '../../Video'
+import Model from '../index'
+import 'slick-carousel/slick/slick.css'
+import 'slick-carousel/slick/slick-theme.css'
 
 const ESC_KEY_CODE = 27
+
+const SliderArrow = (props) => {
+  const {
+    customClassName, style, onClick, children
+  } = props
+  return (
+    <button
+      type='button'
+      className={clx(
+        customClassName,
+        'fixed top-[46%]',
+        'btn btn-circle glass btn-md text-center pl-[0.8rem] z-10'
+      )}
+      style={style}
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  )
+}
+
+const getVideoJsOptions = (itemVideos) => {
+  return {
+    autoplay: false,
+    controls: true,
+    fill: true,
+    responsive: true,
+    fluid: true,
+    sources: [{
+      src: get(itemVideos, '[0].productVideo'),
+      type: 'video/mp4'
+    }]
+  }
+}
 
 const ProductModel = (props) => {
   const {
     id, visible, onClose, product = {}
   } = props
   const {
-    itemSerial,
-    fishType
+    // fishType,
+    itemSerial
   } = product
   const {
     trigger,
     data: {
-      // itemVideos = [],
+      itemVideos = [],
       itemImages = []
     } = {},
     isLoading,
     isMutating
   } = useFishInfo(itemSerial)
-  const { i18n, t } = useTranslation()
-  const {
-    fishTypeMap
-  } = useFishTypes(i18n.language)
-  const maxIndex = size(itemImages) - 1
-  const {
-    fishName,
-    fishPrice
-  } = get(fishTypeMap, fishType, {})
+  const [slideIndex, setSlideIndex] = useState(0)
+  const playerRef = useRef(null)
+  const isOpenNewTabBtnVisible = !(
+    !isEmpty(itemVideos) &&
+    slideIndex === 0
+  )
+  // const { i18n, t } = useTranslation()
+  // const {
+  //   fishTypeMap
+  // } = useFishTypes(i18n.language)
+  // const {
+  //   fishName,
+  //   fishPrice
+  // } = get(fishTypeMap, fishType, {})
 
-  const scrollToOtherImage = (targetIndex) => {
-    document.querySelector(`#${id} img[src="${itemImages[targetIndex].productImg}"]`).scrollIntoView()
+  const stopPlayer = () => {
+    if (!playerRef.current) {
+      return
+    }
+
+    playerRef.current.pause()
+  }
+
+  const onSlideChange = (index) => {
+    stopPlayer()
+    setSlideIndex(index)
+  }
+
+  const onPlayerReady = (player) => {
+    playerRef.current = player
+
+    // You can handle player events here, for example:
+    player.on('waiting', () => {
+      videojs.log('player is waiting')
+    })
+
+    player.on('dispose', () => {
+      videojs.log('player will dispose')
+    })
   }
 
   const onClickEsc = useCallback(async (e) => {
@@ -48,6 +114,7 @@ const ProductModel = (props) => {
       return
     }
 
+    stopPlayer()
     await delay(() => Promise.resolve(), 100)
     onClose()
   }, [onClose])
@@ -101,68 +168,61 @@ const ProductModel = (props) => {
       isCloseBtnVisible={false}
       onClose={onClose}
     >
-      <Drawer
-        id='productInfoSidebar'
-        key={itemSerial}
-        className='bg-slate-100/50'
-        items={(
-          <>
-            <li><span className='p-1'>{`id: ${itemSerial}`}</span></li>
-            <li><span className='p-1'>{`type: ${fishName}`}</span></li>
-            <li><span className='p-1'>{`price: ${fishPrice} ${t('currency')}`}</span></li>
-          </>
+      <Slider
+        className='top-[50%] translate-y-[-50%]'
+        dotsClass='slick-dots bottom-[0.8rem!important]'
+        prevArrow={(
+          <SliderArrow customClassName='left-2'>
+            <MdArrowBackIosNew size='1.5em' />
+          </SliderArrow>
         )}
-        openIcon={LuArrowLeftFromLine}
-        closeIcon={LuArrowRightFromLine}
-        overlay={false}
-        isRoot={false}
-        rwd={false}
-        defaultOpen
+        nextArrow={(
+          <SliderArrow customClassName='right-2'>
+            <MdArrowForwardIos size='1.5em' />
+          </SliderArrow>
+        )}
+        afterChange={onSlideChange}
+        slidesToShow={1}
+        slidesToScroll={1}
+        speed={500}
+        infinite
+        dots
       >
-        <div className='carousel w-full items-center rounded-none bg-slate-100 max-md:h-full md:h-[100vh]'>
-          {itemImages.map((itemImage = {}, index) => {
-            const {
-              // zoomedImg: imgUrl,
-              productImg: imgUrl
-            } = itemImage
-            const prevIndex = index - 1
-            const nextIndex = index + 1
-            return (
-              <div
-                key={imgUrl}
-                className='carousel-item relative flex h-full w-full items-center justify-center'
-              >
-                <button
-                  type='button'
-                  className={clx(
-                    'btn btn-circle glass absolute left-4 z-10',
-                    { hidden: prevIndex === -1 }
-                  )}
-                  onClick={() => scrollToOtherImage(prevIndex)}
-                >
-                  ❮
-                </button>
-                <LazyImage
-                  src={imgUrl}
-                  className='m-auto max-h-full object-scale-down'
-                  alt='Carousel component'
-                  loaderClassName='translate-x-[-100%] z-0 w-[100vw] h-[80vh]'
-                />
-                <button
-                  type='button'
-                  className={clx(
-                    'btn btn-circle glass absolute right-4 z-10',
-                    { hidden: nextIndex > maxIndex }
-                  )}
-                  onClick={() => scrollToOtherImage(nextIndex)}
-                >
-                  ❯
-                </button>
-              </div>
-            )
-          })}
-        </div>
-      </Drawer>
+        {!isEmpty(itemVideos) && (
+          <div className='max-h-[100vh] max-w-full'>
+            <div className='m-auto max-w-screen-lg'>
+              <Video
+                options={getVideoJsOptions(itemVideos)}
+                onReady={onPlayerReady}
+              />
+            </div>
+          </div>
+        )}
+        {itemImages.map((itemImage = {}) => {
+          const {
+            productImg: imgUrl
+          } = itemImage
+          return (
+            <LazyImage
+              src={imgUrl}
+              key={imgUrl}
+              className='m-auto max-h-screen object-scale-down'
+              alt='Carousel component'
+              loaderClassName='translate-x-[-100%] z-0 w-[100vw] h-[80vh]'
+            />
+          )
+        })}
+      </Slider>
+      {isOpenNewTabBtnVisible && (
+        <a
+          target='_blank'
+          rel='noreferrer noopener'
+          className='btn btn-circle fixed bottom-2 right-2'
+          href={`${get(itemImages, `${slideIndex}.zoomedImg`)}`}
+        >
+          <MdOpenInNew size='1.5rem' />
+        </a>
+      )}
     </Model>
   )
 }
