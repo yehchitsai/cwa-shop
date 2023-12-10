@@ -12,7 +12,7 @@ const withBadgeBtn = (indicator, component) => {
     <div className='indicator fixed bottom-2 right-2'>
       <span
         className={clx(
-          'badge indicator-item badge-secondary bottom-2 right-2 fixed'
+          'badge indicator-item badge-primary top-[-2.5rem] right-[2.5rem] absolute'
         )}
       >
         {indicator}
