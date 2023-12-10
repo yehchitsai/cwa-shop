@@ -195,13 +195,10 @@ const Home = () => {
       )}
       openIcon={MdShoppingCart}
       drawerContentClassName={clx(
-        // { 'm-0 p-0 w-full overflow-y-hidden': isContentLoading }
         'm-0 p-0 w-full overflow-y-hidden'
       )}
       overlay
       // indicator={2}
-      isRoot
-      rwd
     >
       <div
         className={clx(

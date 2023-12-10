@@ -3,7 +3,7 @@ import { MdOutlineClose } from 'react-icons/md'
 import clx from 'classnames'
 import { isUndefined } from 'lodash-es'
 
-const withBadgeBtn = (indicator, isRoot, component) => {
+const withBadgeBtn = (indicator, component) => {
   if (!indicator) {
     return component
   }
@@ -12,9 +12,7 @@ const withBadgeBtn = (indicator, isRoot, component) => {
     <div className='indicator fixed bottom-2 right-2'>
       <span
         className={clx(
-          'badge indicator-item badge-secondary bottom-2 right-2',
-          { absolute: !isRoot },
-          { fixed: isRoot }
+          'badge indicator-item badge-secondary bottom-2 right-2 fixed'
         )}
       >
         {indicator}
@@ -35,8 +33,6 @@ const Drawer = (props) => {
     overlay = false,
     indicator = false,
     defaultOpen = false,
-    isRoot = false,
-    rwd = true,
     className,
     drawerContentClassName
   } = props
@@ -46,8 +42,7 @@ const Drawer = (props) => {
   return (
     <div
       className={clx(
-        'drawer drawer-end max-sm:h-full',
-        { 'lg:drawer-open': rwd }
+        'drawer drawer-end max-sm:h-full lg:drawer-open'
       )}
     >
       <input
@@ -65,15 +60,11 @@ const Drawer = (props) => {
         {children}
         {withBadgeBtn(
           indicator,
-          isRoot,
           (
             <label
               htmlFor={id}
               className={clx(
-                'btn btn-square glass btn-outline drawer-button bottom-2 right-2',
-                { absolute: !isRoot },
-                { fixed: isRoot },
-                { 'lg:hidden': rwd },
+                'btn btn-square glass btn-outline drawer-button bottom-2 right-2 fixed lg:hidden',
                 { hidden: isOpen }
               )}
               onClick={() => setIsOpen(true)}
@@ -85,8 +76,7 @@ const Drawer = (props) => {
       </div>
       <div
         className={clx(
-          'drawer-side max-sm:flex max-sm:flex-wrap',
-          { 'md:top-[64px] md:h-[calc(100vh-64px)] max-md:z-10': isRoot }
+          'drawer-side max-sm:flex max-sm:flex-wrap md:top-[64px] md:h-[calc(100vh-64px)] max-md:z-10'
         )}
       >
         {
@@ -95,8 +85,7 @@ const Drawer = (props) => {
               htmlFor={id}
               aria-label='close sidebar'
               className={clx(
-                'drawer-overlay',
-                { 'lg:hidden': rwd }
+                'drawer-overlay lg:hidden'
               )}
               onClick={() => setIsOpen(false)}
             />
@@ -113,15 +102,13 @@ const Drawer = (props) => {
           {/* Sidebar content here */}
           <li
             className={clx(
-              'max-lg:mb-14',
-              { 'mb-14': !isRoot }
+              'max-lg:mb-14'
             )}
           >
             <label
               htmlFor={id}
               className={clx(
-                'btn btn-square btn-outline drawer-button absolute left-2',
-                { 'lg:hidden': rwd }
+                'btn btn-square btn-outline drawer-button absolute left-2 lg:hidden'
               )}
               onClick={() => setIsOpen(false)}
             >

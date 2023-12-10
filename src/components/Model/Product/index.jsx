@@ -1,14 +1,11 @@
 import { useEffect, useCallback } from 'react'
 import clx from 'classnames'
-import { useTranslation } from 'react-i18next'
+// import { useTranslation } from 'react-i18next'
 import Skeleton from 'react-loading-skeleton'
-import { LuArrowRightFromLine, LuArrowLeftFromLine } from 'react-icons/lu'
-import { size, delay, get } from 'lodash-es'
+import { size, delay } from 'lodash-es'
 import useFishInfo from '../../../hooks/useFishInfo'
-import Drawer from '../../Drawer'
 import LazyImage from '../../LazyImage'
 import Model from '..'
-import useFishTypes from '../../../hooks/useFishTypes'
 
 const ESC_KEY_CODE = 27
 
@@ -17,8 +14,8 @@ const ProductModel = (props) => {
     id, visible, onClose, product = {}
   } = props
   const {
-    itemSerial,
-    fishType
+    // fishType,
+    itemSerial
   } = product
   const {
     trigger,
@@ -29,15 +26,15 @@ const ProductModel = (props) => {
     isLoading,
     isMutating
   } = useFishInfo(itemSerial)
-  const { i18n, t } = useTranslation()
-  const {
-    fishTypeMap
-  } = useFishTypes(i18n.language)
+  // const { i18n, t } = useTranslation()
+  // const {
+  //   fishTypeMap
+  // } = useFishTypes(i18n.language)
+  // const {
+  //   fishName,
+  //   fishPrice
+  // } = get(fishTypeMap, fishType, {})
   const maxIndex = size(itemImages) - 1
-  const {
-    fishName,
-    fishPrice
-  } = get(fishTypeMap, fishType, {})
 
   const scrollToOtherImage = (targetIndex) => {
     document.querySelector(`#${id} img[src="${itemImages[targetIndex].productImg}"]`).scrollIntoView()
@@ -101,68 +98,49 @@ const ProductModel = (props) => {
       isCloseBtnVisible={false}
       onClose={onClose}
     >
-      <Drawer
-        id='productInfoSidebar'
-        key={itemSerial}
-        className='bg-slate-100/50'
-        items={(
-          <>
-            <li><span className='p-1'>{`id: ${itemSerial}`}</span></li>
-            <li><span className='p-1'>{`type: ${fishName}`}</span></li>
-            <li><span className='p-1'>{`price: ${fishPrice} ${t('currency')}`}</span></li>
-          </>
-        )}
-        openIcon={LuArrowLeftFromLine}
-        closeIcon={LuArrowRightFromLine}
-        overlay={false}
-        isRoot={false}
-        rwd={false}
-        defaultOpen
-      >
-        <div className='carousel w-full items-center rounded-none bg-slate-100 max-md:h-full md:h-[100vh]'>
-          {itemImages.map((itemImage = {}, index) => {
-            const {
-              // zoomedImg: imgUrl,
-              productImg: imgUrl
-            } = itemImage
-            const prevIndex = index - 1
-            const nextIndex = index + 1
-            return (
-              <div
-                key={imgUrl}
-                className='carousel-item relative flex h-full w-full items-center justify-center'
+      <div className='carousel w-full items-center rounded-none bg-slate-100 max-md:h-full md:h-[100vh]'>
+        {itemImages.map((itemImage = {}, index) => {
+          const {
+            // zoomedImg: imgUrl,
+            productImg: imgUrl
+          } = itemImage
+          const prevIndex = index - 1
+          const nextIndex = index + 1
+          return (
+            <div
+              key={imgUrl}
+              className='carousel-item relative flex h-full w-full items-center justify-center'
+            >
+              <button
+                type='button'
+                className={clx(
+                  'btn btn-circle glass absolute left-4 z-10',
+                  { hidden: prevIndex === -1 }
+                )}
+                onClick={() => scrollToOtherImage(prevIndex)}
               >
-                <button
-                  type='button'
-                  className={clx(
-                    'btn btn-circle glass absolute left-4 z-10',
-                    { hidden: prevIndex === -1 }
-                  )}
-                  onClick={() => scrollToOtherImage(prevIndex)}
-                >
-                  ❮
-                </button>
-                <LazyImage
-                  src={imgUrl}
-                  className='m-auto max-h-full object-scale-down'
-                  alt='Carousel component'
-                  loaderClassName='translate-x-[-100%] z-0 w-[100vw] h-[80vh]'
-                />
-                <button
-                  type='button'
-                  className={clx(
-                    'btn btn-circle glass absolute right-4 z-10',
-                    { hidden: nextIndex > maxIndex }
-                  )}
-                  onClick={() => scrollToOtherImage(nextIndex)}
-                >
-                  ❯
-                </button>
-              </div>
-            )
-          })}
-        </div>
-      </Drawer>
+                ❮
+              </button>
+              <LazyImage
+                src={imgUrl}
+                className='m-auto max-h-full object-scale-down'
+                alt='Carousel component'
+                loaderClassName='translate-x-[-100%] z-0 w-[100vw] h-[80vh]'
+              />
+              <button
+                type='button'
+                className={clx(
+                  'btn btn-circle glass absolute right-4 z-10',
+                  { hidden: nextIndex > maxIndex }
+                )}
+                onClick={() => scrollToOtherImage(nextIndex)}
+              >
+                ❯
+              </button>
+            </div>
+          )
+        })}
+      </div>
     </Model>
   )
 }
