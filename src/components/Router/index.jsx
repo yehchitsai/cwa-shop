@@ -33,7 +33,7 @@ const withErrorElement = (routes) => routes.map((item) => {
 })
 
 const defaultAuth = { message: 'NO USER' }
-let tmpAuth = { ...defaultAuth }
+let tmpAuth = {}
 const Router = (props) => {
   const { routes, basename = '/', isAuthRoutes = true } = props
   const appBaseName = `${window.APP_BASENAME}${basename}`
