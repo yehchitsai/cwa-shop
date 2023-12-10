@@ -194,7 +194,7 @@ export default [
         [TYPE_KEY.B]: resultB,
         [TYPE_KEY.C]: resultC,
         orderTotalQuantity: sum(map(result, (typeItem) => size(typeItem.items))),
-        orderTotalPrice: sum(map(result, (typeItem) => size(typeItem.subTotal))),
+        orderTotalPrice: sum(map(result, (typeItem) => typeItem.subTotal)),
         currency: 'TWD'
       }
       return { message: 'success', results }
