@@ -39,7 +39,7 @@ const Login = () => {
                 <div className='form-control mt-6'>
                   <a
                     className='btn btn-primary'
-                    href={window.location.href.replace(window.location.pathname, `${window.APP_BASENAME}/external/?${qs.stringify(values)}`)}
+                    href={window.location.href.replace(window.location.pathname, `${window.APP_BASENAME}/external/#${qs.stringify(values)}`)}
                   >
                     Login
                   </a>
