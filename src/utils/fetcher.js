@@ -93,7 +93,6 @@ const fetcher = async (config = {}, triggerArgs = {}) => {
       ...authorization,
       ...header
     }),
-    mode: 'no-cors',
     ...(!isGetRequest && { body: JSON.stringify(body) }),
     ...restOptions
   }
