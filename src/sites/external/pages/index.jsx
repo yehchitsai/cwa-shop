@@ -202,7 +202,7 @@ const Home = () => {
     >
       <div
         className={clx(
-          'max-lg:m-auto max-lg:max-w-2xl max-sm:min-w-full lg:max-w-5xl max-sm:p-4 sm:p-12'
+          'm-auto max-lg:max-w-2xl max-sm:min-w-full lg:max-w-5xl max-sm:p-4 sm:p-12'
         )}
       >
         <div className='flex flex-wrap'>
