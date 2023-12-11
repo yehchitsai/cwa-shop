@@ -26,8 +26,12 @@ const getAuthorization = () => {
   const isStorageTokenExist = !!(tokenTypeFromStorage && accessTokenFromStorage)
   const isUrlSearchTokenExist = !!(tokenTypeFromUrl && accessTokenFromUrl)
   switch (true) {
-    case isTempTokenExist: {
-      Authorization = TMP_TOKEN
+    case isUrlSearchTokenExist: {
+      Authorization = {
+        [TOKEN_KEY.TOKEN_TYPE]: tokenTypeFromUrl,
+        [TOKEN_KEY.ACCESS_TOKEN]: accessTokenFromUrl
+      }
+      window.history.replaceState(null, '', window.location.pathname + window.location.search)
       break
     }
     case isStorageTokenExist: {
@@ -38,12 +42,8 @@ const getAuthorization = () => {
       removeTokens()
       break
     }
-    case isUrlSearchTokenExist: {
-      Authorization = {
-        [TOKEN_KEY.TOKEN_TYPE]: tokenTypeFromUrl,
-        [TOKEN_KEY.ACCESS_TOKEN]: accessTokenFromUrl
-      }
-      window.history.replaceState(null, '', window.location.pathname + window.location.search)
+    case isTempTokenExist: {
+      Authorization = TMP_TOKEN
       break
     }
     default:
@@ -93,6 +93,7 @@ const fetcher = async (config = {}, triggerArgs = {}) => {
       ...authorization,
       ...header
     }),
+    mode: 'no-cors',
     ...(!isGetRequest && { body: JSON.stringify(body) }),
     ...restOptions
   }
