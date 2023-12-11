@@ -18,7 +18,10 @@ const getAuthorization = () => {
   const [
     tokenTypeFromStorage, accessTokenFromStorage
   ] = TOKEN_KEYS.map((key) => window.localStorage.getItem(key))
-  const [tokenTypeFromUrl, accessTokenFromUrl] = getSearchValuesFromUrl(TOKEN_KEYS)
+  const [tokenTypeFromUrl, accessTokenFromUrl] = getSearchValuesFromUrl(
+    TOKEN_KEYS,
+    window.location.hash.replace('#', '?')
+  )
   const isTempTokenExist = !isEmpty(TMP_TOKEN)
   const isStorageTokenExist = !!(tokenTypeFromStorage && accessTokenFromStorage)
   const isUrlSearchTokenExist = !!(tokenTypeFromUrl && accessTokenFromUrl)
@@ -40,7 +43,7 @@ const getAuthorization = () => {
         [TOKEN_KEY.TOKEN_TYPE]: tokenTypeFromUrl,
         [TOKEN_KEY.ACCESS_TOKEN]: accessTokenFromUrl
       }
-      window.history.replaceState(null, '', window.location.pathname)
+      window.history.replaceState(null, '', window.location.pathname + window.location.search)
       break
     }
     default:
