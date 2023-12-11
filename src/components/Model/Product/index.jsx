@@ -70,10 +70,8 @@ const ProductModel = (props) => {
   } = useFishInfo(itemSerial)
   const [slideIndex, setSlideIndex] = useState(0)
   const playerRef = useRef(null)
-  const isOpenNewTabBtnVisible = !(
-    !isEmpty(itemVideos) &&
-    slideIndex === 0
-  )
+  const isVideoExist = !isEmpty(itemVideos)
+  const isOpenNewTabBtnVisible = !(isVideoExist && slideIndex === 0)
   // const { i18n, t } = useTranslation()
   // const {
   //   fishTypeMap
@@ -218,7 +216,7 @@ const ProductModel = (props) => {
           target='_blank'
           rel='noreferrer noopener'
           className='btn btn-circle fixed bottom-2 right-2'
-          href={`${get(itemImages, `${slideIndex}.zoomedImg`)}`}
+          href={`${get(itemImages, `${slideIndex + (isVideoExist ? 1 : 0)}.zoomedImg`)}`}
         >
           <MdOpenInNew size='1.5rem' />
         </a>
