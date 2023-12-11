@@ -86,7 +86,7 @@ const fetcher = async (config = {}, triggerArgs = {}) => {
   const authorization = getAuthorization()
   const newOptions = {
     headers: new Headers({
-      'Content-type': 'application/json; charset=UTF-8',
+      'Content-type': 'application/json',
       ...authorization,
       ...header
     }),
