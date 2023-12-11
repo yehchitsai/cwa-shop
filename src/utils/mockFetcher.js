@@ -45,6 +45,7 @@ const mockFetcher = async (key, authorization = {}, options = {}) => {
         authorization: authorization.Authorization
       }
       const data = response({ query: qs.parse(queryString), headers, body })
+      console.log({ apiEndpoint: key, responseData: data })
       resolve(data)
     }, timeout)
   })
