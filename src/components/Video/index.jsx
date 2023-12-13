@@ -13,7 +13,11 @@ const Video = (props) => {
       // The Video.js player needs to be _inside_ the component el for React 18 Strict Mode.
       const videoElement = document.createElement('video-js')
 
-      videoElement.classList.add('vjs-big-play-centered')
+      videoElement.classList.add(
+        'vjs-big-play-centered',
+        'p-[0!important]',
+        'h-[90vh!important]'
+      )
       videoRef.current.appendChild(videoElement)
 
       let player
