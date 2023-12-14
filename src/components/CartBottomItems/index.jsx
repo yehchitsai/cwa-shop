@@ -8,7 +8,7 @@ import {
 import useFishTypes from '../../hooks/useFishTypes'
 
 const CartBottomItems = (props) => {
-  const { i18n, t } = useTranslation()
+  const { i18n } = useTranslation()
   const {
     fishTypeMap
   } = useFishTypes(i18n.language)
