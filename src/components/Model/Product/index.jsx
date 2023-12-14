@@ -183,7 +183,7 @@ const ProductModel = (props) => {
             productImg: imgUrl
           } = itemImage
           return (
-            <div className='h-[80vh]' key={index}>
+            <div className='h-[80vh] max-sm:overflow-y-hidden' key={index}>
               <div className='max-sm:flex max-sm:h-[80vh]'>
                 <LazyImage
                   src={imgUrl}
