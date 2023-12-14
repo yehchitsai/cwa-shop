@@ -160,6 +160,14 @@ const CardsSection = (props) => {
     setSelectedProducts(defaultSelectedProducts)
   })
 
+  if (isEmpty(fishData)) {
+    return (
+      <div className='mt-20 h-[70vh] w-full text-center'>
+        No Fish Data
+      </div>
+    )
+  }
+
   const defaultSelectProductMap = keyBy(defaultSelectedProducts, 'itemSerial')
   return fishData.map((item) => {
     const { itemSerial } = item
