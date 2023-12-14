@@ -23,7 +23,7 @@ const getFishDataConfig = (fishType) => ({
 
 const pages = import.meta.glob('./pages/**/index.jsx')
 const tmpSelectedFishData = {}
-const dynamicRoutes = getRoutes(pages, async () => {
+const loader = async () => {
   const { pathname } = window.location
   const tmpData = get(tmpSelectedFishData, pathname)
   if (!isEmpty(tmpData)) {
@@ -61,7 +61,12 @@ const dynamicRoutes = getRoutes(pages, async () => {
   const selectedFishData = filter(fishData, (item) => item.itemSerial in preOrderItemSerialMap)
   tmpSelectedFishData[pathname] = selectedFishData
   return selectedFishData
-})
+}
+const loaderMap = {
+  index: loader,
+  'confirm/index': loader
+}
+const dynamicRoutes = getRoutes(pages, loaderMap)
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Root>
