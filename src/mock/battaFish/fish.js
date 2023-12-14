@@ -101,7 +101,8 @@ export default [
             `${convertedLang}.${type.fishType}`,
             get(fishNameMapByLang, `en.${type.fishType}`)
           ),
-          fishPrice: TYPE_PRICE[type.fishType]
+          fishPrice: TYPE_PRICE[type.fishType],
+          currency: 'TWD'
         }
       }))
       return { message: 'success', results }
