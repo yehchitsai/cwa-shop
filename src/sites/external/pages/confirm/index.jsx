@@ -136,7 +136,9 @@ const Confirm = () => {
   }
 
   useOnInit(() => {
-    setSelectedProducts(defaultSelectedProducts)
+    if (isEmpty(selectedProducts)) {
+      setSelectedProducts(defaultSelectedProducts)
+    }
   })
 
   if (isLoading) {
@@ -145,6 +147,7 @@ const Confirm = () => {
     )
   }
 
+  console.log({ selectedProducts })
   const isUpdating = (isReserving || isOrdering)
   return (
     <>
