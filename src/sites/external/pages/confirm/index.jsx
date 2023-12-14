@@ -6,7 +6,7 @@ import { useLoaderData, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import safeAwait from 'safe-await'
 import {
-  flow, get, size, sumBy, groupBy, reduce, map, find
+  flow, get, size, sumBy, groupBy, reduce, map, find, set, isEmpty, round
 } from 'lodash-es'
 import { selectedProductsState } from '../../../../state/selectedProducts'
 import { orderDataState } from '../../../../state/orderData'
@@ -27,7 +27,7 @@ const productModelKey = 'productModel'
 
 const Confirm = () => {
   const navigate = useNavigate()
-  const { t, i18n } = useTranslation()
+  const { i18n } = useTranslation()
   const { fishTypeMap, isLoading } = useFishTypes(i18n.language)
   const [selectedProducts, setSelectedProducts] = useRecoilState(selectedProductsState)
   const setOrderData = useSetRecoilState(orderDataState)
@@ -36,15 +36,24 @@ const Confirm = () => {
   const defaultSelectedProducts = useLoaderData()
   const { trigger: reserveByItemSerial, isMutating: isReserving } = useCreate(preOrderHost)
   const { trigger: orderByItemSerial, isMutating: isOrdering } = useCreate(orderHost)
-  const selectedTypes = flow(
+  const { currency, data: selectedTypes } = flow(
     () => groupBy(selectedProducts, (selectedProduct) => selectedProduct.fishType),
-    (groupedProducts) => reduce(groupedProducts, (data, products, fishType) => {
-      data.push({
+    (groupedProducts) => reduce(groupedProducts, (collect, products, fishType) => {
+      if (isEmpty(collect.currency)) {
+        set(collect, 'currency', get(fishTypeMap, `${fishType}.currency`))
+      }
+      collect.data.push({
         fishName: get(fishTypeMap, `${fishType}.fishName`),
         count: size(products)
       })
-      return data
-    }, [])
+      return collect
+    }, { data: [], currency: '' })
+  )()
+  const totalPrice = flow(
+    () => sumBy(selectedProducts, (selectedProduct) => {
+      return +(get(fishTypeMap, `${selectedProduct.fishType}.fishPrice`))
+    }),
+    (summaryPrice) => round(summaryPrice, 2)
   )()
 
   const openProductModal = (newTargetProduct) => async () => {
@@ -156,24 +165,26 @@ const Confirm = () => {
           <tbody>
             {selectedProducts.map((selectedProduct, index) => {
               const {
-                imageURL, itemSerial, itemPrice, fishType
+                imageURL, itemSerial, fishType
               } = selectedProduct
-              const { fishName } = get(fishTypeMap, fishType, {})
+              const { fishName, fishPrice } = get(fishTypeMap, fishType, {})
               return (
                 <tr key={index}>
                   <th>{index + 1}</th>
                   <th>
-                    <LazyImage
-                      src={imageURL}
-                      className='mask mask-square m-0 h-20 w-20 cursor-pointer'
-                      alt={fishName}
-                      loaderClassName='mask mask-square w-20 h-20'
-                      onClick={openProductModal(selectedProduct)}
-                    />
+                    <div className='h-20 w-20'>
+                      <LazyImage
+                        src={imageURL}
+                        className='mask mask-square m-0 h-20 w-20 cursor-pointer'
+                        alt={fishName}
+                        loaderClassName='mask mask-square w-20 h-20'
+                        onClick={openProductModal(selectedProduct)}
+                      />
+                    </div>
                   </th>
                   <td>{fishName}</td>
                   <td>{itemSerial}</td>
-                  <td>{`${itemPrice} ${t('currency')}`}</td>
+                  <td>{`${fishPrice} ${currency}`}</td>
                   <th>
                     <button
                       type='button'
@@ -205,7 +216,7 @@ const Confirm = () => {
                 ))}
               </td>
               <td>
-                {`${sumBy(selectedProducts, (selectedProduct) => (get(fishTypeMap, `${selectedProduct.fishType}.fishPrice`)))} ${t('currency')}`}
+                {`${totalPrice} ${currency}`}
               </td>
               <th className='space-y-2'>
                 <button
