@@ -1,7 +1,7 @@
 import { lazy } from 'react'
-import { flow } from 'lodash-es'
+import { flow, get } from 'lodash-es'
 
-const getRoutes = (pages, loader = null) => {
+const getRoutes = (pages, loaderMap = {}) => {
   const routes = flow(
     () => Object.entries(pages),
     (pagesEntries) => pagesEntries.reduce((collect, pagesEntry) => {
@@ -19,7 +19,7 @@ const getRoutes = (pages, loader = null) => {
       collect.push({
         path: isIndex ? '/' : `/${normalizedPathName.toLowerCase()}/`,
         element: lazy(page),
-        loader
+        loader: get(loaderMap, fileName, null)
       })
       return collect
     }, [])
