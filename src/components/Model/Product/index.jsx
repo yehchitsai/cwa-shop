@@ -5,9 +5,10 @@ import clx from 'classnames'
 // import { useTranslation } from 'react-i18next'
 import { MdArrowForwardIos, MdArrowBackIosNew, MdOpenInNew } from 'react-icons/md'
 import Skeleton from 'react-loading-skeleton'
-import { delay, get, isEmpty } from 'lodash-es'
+import {
+  delay, get, isEmpty
+} from 'lodash-es'
 import Slider from 'react-slick'
-import videojs from 'video.js'
 import useFishInfo from '../../../hooks/useFishInfo'
 import LazyImage from '../../LazyImage'
 import Video from '../../Video'
@@ -81,30 +82,12 @@ const ProductModel = (props) => {
   //   fishPrice
   // } = get(fishTypeMap, fishType, {})
 
-  const stopPlayer = () => {
-    if (!playerRef.current) {
-      return
-    }
-
-    playerRef.current.pause()
-  }
-
   const onSlideChange = (index) => {
-    stopPlayer()
     setSlideIndex(index)
   }
 
   const onPlayerReady = (player) => {
     playerRef.current = player
-
-    // You can handle player events here, for example:
-    player.on('waiting', () => {
-      videojs.log('player is waiting')
-    })
-
-    player.on('dispose', () => {
-      videojs.log('player will dispose')
-    })
   }
 
   const onClickEsc = useCallback(async (e) => {
@@ -112,7 +95,6 @@ const ProductModel = (props) => {
       return
     }
 
-    stopPlayer()
     await delay(() => Promise.resolve(), 100)
     onClose()
   }, [onClose])
@@ -196,18 +178,22 @@ const ProductModel = (props) => {
             </div>
           </div>
         )}
-        {itemImages.map((itemImage = {}) => {
+        {itemImages.map((itemImage = {}, index) => {
           const {
             productImg: imgUrl
           } = itemImage
           return (
-            <LazyImage
-              src={imgUrl}
-              key={imgUrl}
-              className='m-auto max-h-screen object-scale-down'
-              alt='Carousel component'
-              loaderClassName='translate-x-[-100%] z-0 w-[100vw] h-[80vh]'
-            />
+            <div className='h-[90vh]' key={index}>
+              <div className='max-sm:flex max-sm:h-[90vh]'>
+                <LazyImage
+                  src={imgUrl}
+                  key={imgUrl}
+                  className='m-auto max-h-screen object-scale-down'
+                  alt='Carousel component'
+                  loaderClassName='translate-x-[-100%] z-0 w-[100vw] h-[80vh]'
+                />
+              </div>
+            </div>
           )
         })}
       </Slider>

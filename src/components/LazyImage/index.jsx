@@ -6,7 +6,7 @@ import { ErrorBoundary } from 'react-error-boundary'
 
 const fallbackRender = (props) => {
   const { error } = props
-  console.log(error)
+  // console.log(error)
 
   return (
     <div className='block w-full bg-black py-10 text-center text-white'>
