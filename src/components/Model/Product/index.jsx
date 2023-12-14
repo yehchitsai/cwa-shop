@@ -143,6 +143,7 @@ const ProductModel = (props) => {
       id={id}
       className={clx(
         'h-full min-h-full w-full max-w-[100vw] rounded-none p-0',
+        'max-sm:overflow-y-hidden',
         { hidden: !visible }
       )}
       isCloseBtnVisible={false}
@@ -183,7 +184,7 @@ const ProductModel = (props) => {
             productImg: imgUrl
           } = itemImage
           return (
-            <div className='h-[80vh] max-sm:overflow-y-hidden' key={index}>
+            <div className='h-[80vh]' key={index}>
               <div className='max-sm:flex max-sm:h-[80vh]'>
                 <LazyImage
                   src={imgUrl}
