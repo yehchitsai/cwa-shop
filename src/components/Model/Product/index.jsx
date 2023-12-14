@@ -86,7 +86,7 @@ const ProductModel = (props) => {
       return
     }
 
-    playerRef.current.pause()
+    playerRef.current.pause && playerRef.current.pause()
   }
 
   const onSlideChange = (index) => {
