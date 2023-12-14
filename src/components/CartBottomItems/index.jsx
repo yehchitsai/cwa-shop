@@ -16,13 +16,14 @@ const CartBottomItems = (props) => {
   const selectedSize = size(items)
   const isNoProductSelected = selectedSize === 0
   const totalPrice = sumBy(items, (item) => get(fishTypeMap, `${item.fishType}.fishPrice`))
+  const currency = get(fishTypeMap, `${get(items, '0.fishType')}.currency`)
   return (
     <>
       <li key='totalCount'>
         <span>{`Total count: ${selectedSize}`}</span>
       </li>
       <li key='totalPrice'>
-        <span>{`Total price: ${totalPrice} ${t('currency')}`}</span>
+        <span>{`Total price: ${totalPrice} ${currency}`}</span>
       </li>
       <Link to='/confirm'>
         <button
