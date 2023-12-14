@@ -61,7 +61,9 @@ const Router = (props) => {
               .catch((e) => {
                 console.log(e)
                 window.location.href = (
-                  window.location.href.replace(window.location.pathname, `${window.APP_BASENAME}/${loginUrl}`)
+                  isEmpty(window.APP_BASENAME)
+                    ? loginUrl
+                    : window.location.href.replace(window.location.pathname, `${window.APP_BASENAME}/${loginUrl}`)
                 )
                 return { message: 'ERROR' }
               })
