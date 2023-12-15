@@ -3,6 +3,7 @@ import {
   concat, filter, flow, get, isEmpty, keyBy, keys, map, values
 } from 'lodash-es'
 import safeAwait from 'safe-await'
+import { preload } from 'swr'
 import getApiHost from '../../utils/getApiHost'
 import fetcher from '../../utils/fetcher'
 import Router from '../../components/Router'
@@ -30,7 +31,7 @@ const loader = async () => {
     return tmpData
   }
 
-  const [preOrderError, preOrderResp] = await safeAwait(fetcher(preorderConfig))
+  const [preOrderError, preOrderResp] = await safeAwait(preload(preorderConfig, fetcher))
   if (preOrderError) {
     console.log(preOrderError)
     return []
@@ -46,7 +47,7 @@ const loader = async () => {
   const [fishDataError, fishDataList] = await safeAwait(Promise.all(
     keys(preOrder)
       .map((fishType) => {
-        return fetcher(getFishDataConfig(fishType))
+        return preload(getFishDataConfig(fishType), fetcher)
           .then((fishDataResp) => {
             return get(fishDataResp, 'results', []).map((result) => ({ ...result, fishType }))
           })

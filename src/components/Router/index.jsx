@@ -5,6 +5,7 @@ import {
   redirect
 } from 'react-router-dom'
 import { isEmpty } from 'lodash-es'
+import { preload } from 'swr'
 import fetcher from '../../utils/fetcher'
 import getApiHost from '../../utils/getApiHost'
 import SkeletonHome from '../Skeleton/Home'
@@ -50,7 +51,7 @@ const Router = (props) => {
 
         return isAuthRoutes
           ? isEmpty(tmpAuth)
-            ? fetcher(authConfig)
+            ? preload(authConfig, fetcher)
               .then((res) => {
                 if (res.message === 'Unauthorized') {
                   throw new Error(res.message)
