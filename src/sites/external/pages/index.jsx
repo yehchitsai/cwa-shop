@@ -3,7 +3,9 @@ import {
   useMemo,
   useState
 } from 'react'
-import { useLoaderData, useSearchParams } from 'react-router-dom'
+import {
+  Await, useLoaderData, useAsyncValue, useSearchParams
+} from 'react-router-dom'
 import { useRecoilState } from 'recoil'
 import { useTranslation } from 'react-i18next'
 import { MdShoppingCart } from 'react-icons/md'
@@ -89,11 +91,12 @@ const CardsSection = (props) => {
     [searchParams, fishTypes]
   )
   const {
-    data: fishData
+    data: fishData,
+    isLoading
   } = useFishData(fishType)
   const [reservedMap, setReservedMap] = useState({})
   const [selectedProducts, setSelectedProducts] = useRecoilState(selectedProductsState)
-  const defaultSelectedProducts = useLoaderData()
+  const selectedFishData = useAsyncValue()
 
   const openProductModal = (newTargetProduct) => async () => {
     setTargetProduct({ ...newTargetProduct, fishType })
@@ -157,7 +160,7 @@ const CardsSection = (props) => {
   }
 
   useOnInit(() => {
-    setSelectedProducts(defaultSelectedProducts)
+    setSelectedProducts(selectedFishData)
   })
 
   if (isEmpty(fishData)) {
@@ -168,7 +171,13 @@ const CardsSection = (props) => {
     )
   }
 
-  const defaultSelectProductMap = keyBy(defaultSelectedProducts, 'itemSerial')
+  if (isLoading) {
+    return (
+      <SkeletonHome className='h-[70vh]' />
+    )
+  }
+
+  const defaultSelectProductMap = keyBy(selectedFishData, 'itemSerial')
   return fishData.map((item) => {
     const { itemSerial } = item
     const defaultIsSelect = (itemSerial in defaultSelectProductMap)
@@ -189,6 +198,7 @@ const Home = () => {
   const [isProductModalOpen, setIsProductModalOpen] = useState(false)
   const [targetProduct, setTargetProduct] = useState({})
   const [selectProducts] = useRecoilState(selectedProductsState)
+  const data = useLoaderData()
 
   const closeProductModal = () => setIsProductModalOpen(false)
 
@@ -220,10 +230,17 @@ const Home = () => {
         </div>
         <div className='flex flex-wrap'>
           <Suspense fallback={<SkeletonHome className='h-[70vh]' />}>
-            <CardsSection
-              setIsProductModalOpen={setIsProductModalOpen}
-              setTargetProduct={setTargetProduct}
-            />
+            <Await
+              resolve={data.selectedFishData}
+              errorElement={(
+                <p>Get default selected failed.</p>
+              )}
+            >
+              <CardsSection
+                setIsProductModalOpen={setIsProductModalOpen}
+                setTargetProduct={setTargetProduct}
+              />
+            </Await>
           </Suspense>
         </div>
       </div>

@@ -1,9 +1,10 @@
-import { useLoaderData } from 'react-router-dom'
+import { Suspense } from 'react'
+import { Await, useLoaderData } from 'react-router-dom'
 import clx from 'classnames'
 import { MdGTranslate, MdLogout } from 'react-icons/md'
 import { FaUserCircle } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
-import { get, keyBy } from 'lodash-es'
+import { keyBy } from 'lodash-es'
 import useOnInit from '../../hooks/useOnInit'
 
 const logoutUrl = import.meta.env.VITE_LOGOUT_URL
@@ -49,8 +50,17 @@ const Logout = (props) => {
 }
 
 const User = () => {
-  const loaderData = useLoaderData()
-  return get(loaderData, 'message', 'ERROR')
+  const data = useLoaderData()
+  return (
+    <Suspense fallback={<span>Loading</span>}>
+      <Await
+        resolve={data.message}
+        errorElement={<span>Error</span>}
+      >
+        {(message) => message}
+      </Await>
+    </Suspense>
+  )
 }
 
 const getSelectLang = (i18n) => {
@@ -73,7 +83,7 @@ const getSelectLang = (i18n) => {
 
 const NavBar = (props) => {
   const { fixed, appBaseName } = props
-  const { t, i18n } = useTranslation()
+  const { i18n } = useTranslation()
   const defaultLang = getSelectLang(i18n)
 
   const onChangeLang = (e) => {
@@ -131,7 +141,7 @@ const NavBar = (props) => {
               data-tip={`v${window.APP_VERSION}`}
             >
               <span className='max-sm:hidden'>
-                {fixed ? t('user') : <User />}
+                {fixed ? <FaUserCircle size='1.5em' /> : <User />}
               </span>
               <FaUserCircle className='md:hidden' size='1.5em' />
             </div>

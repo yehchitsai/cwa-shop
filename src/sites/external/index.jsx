@@ -4,6 +4,7 @@ import {
 } from 'lodash-es'
 import safeAwait from 'safe-await'
 import { preload } from 'swr'
+import { defer } from 'react-router-dom'
 import getApiHost from '../../utils/getApiHost'
 import fetcher from '../../utils/fetcher'
 import Router from '../../components/Router'
@@ -23,7 +24,7 @@ const getFishDataConfig = (fishType) => ({
 })
 
 const pages = import.meta.glob('./pages/**/index.jsx')
-const loader = async () => {
+const getSelectedFishData = async () => {
   const [preOrderError, preOrderResp] = await safeAwait(preload(preorderConfig, fetcher))
   if (preOrderError) {
     console.log(preOrderError)
@@ -54,6 +55,9 @@ const loader = async () => {
   const fishData = concat(...fishDataList)
   const selectedFishData = filter(fishData, (item) => item.itemSerial in preOrderItemSerialMap)
   return selectedFishData
+}
+const loader = () => {
+  return defer({ selectedFishData: getSelectedFishData() })
 }
 const loaderMap = {
   index: loader,
