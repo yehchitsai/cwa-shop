@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 import { useTranslation } from 'react-i18next'
 import { MdDelete } from 'react-icons/md'
-import { useLoaderData, useNavigate } from 'react-router-dom'
+import {
+  Await, useLoaderData, useNavigate, useAsyncValue
+} from 'react-router-dom'
 import toast from 'react-hot-toast'
 import safeAwait from 'safe-await'
 import {
@@ -25,7 +27,7 @@ const orderEndPoint = `${import.meta.env.VITE_AWS_HOST_PREFIX}/fishorder`
 
 const productModelKey = 'productModel'
 
-const Confirm = () => {
+const Page = () => {
   const navigate = useNavigate()
   const { i18n } = useTranslation()
   const { fishTypeMap, isLoading } = useFishTypes(i18n.language)
@@ -33,7 +35,7 @@ const Confirm = () => {
   const setOrderData = useSetRecoilState(orderDataState)
   const [targetProduct, setTargetProduct] = useState({})
   const [isProductModalOpen, setIsProductModalOpen] = useState(false)
-  const defaultSelectedProducts = useLoaderData()
+  const defaultSelectedProducts = useAsyncValue()
   const { trigger: reserveByItemSerial, isMutating: isReserving } = useCreate(preOrderHost)
   const { trigger: orderByItemSerial, isMutating: isOrdering } = useCreate(orderHost)
   const { currency, data: selectedTypes } = flow(
@@ -147,7 +149,6 @@ const Confirm = () => {
     )
   }
 
-  console.log({ selectedProducts })
   const isUpdating = (isReserving || isOrdering)
   return (
     <>
@@ -252,6 +253,20 @@ const Confirm = () => {
         fishTypeMap={fishTypeMap}
       />
     </>
+  )
+}
+
+const Confirm = () => {
+  const data = useLoaderData()
+  return (
+    <Suspense fallback={<SkeletonHome className='fixed top-0' />}>
+      <Await
+        resolve={data.selectedFishData}
+        errorElement={<p>Get data failed</p>}
+      >
+        <Page />
+      </Await>
+    </Suspense>
   )
 }
 

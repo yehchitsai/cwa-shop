@@ -2,7 +2,8 @@ import { Suspense } from 'react'
 import {
   createBrowserRouter,
   RouterProvider,
-  redirect
+  redirect,
+  defer
 } from 'react-router-dom'
 import { isEmpty } from 'lodash-es'
 import { preload } from 'swr'
@@ -34,7 +35,22 @@ const withErrorElement = (routes) => routes.map((item) => {
 })
 
 const defaultAuth = { message: 'NO USER' }
-let tmpAuth = {}
+const getAuth = () => preload(authConfig, fetcher)
+  .then((res) => {
+    if (res.message === 'Unauthorized') {
+      throw new Error(res.message)
+    }
+    return res.message
+  })
+  .catch((e) => {
+    console.log(e)
+    window.location.href = (
+      window.IS_MOCK
+        ? window.location.href.replace(window.location.pathname, `${window.APP_BASENAME}/${loginUrl}`)
+        : loginUrl
+    )
+    return 'ERROR'
+  })
 const Router = (props) => {
   const { routes, basename = '/', isAuthRoutes = true } = props
   const appBaseName = `${window.APP_BASENAME}${basename}`
@@ -50,25 +66,7 @@ const Router = (props) => {
         }
 
         return isAuthRoutes
-          ? isEmpty(tmpAuth)
-            ? preload(authConfig, fetcher)
-              .then((res) => {
-                if (res.message === 'Unauthorized') {
-                  throw new Error(res.message)
-                }
-                tmpAuth = res
-                return res
-              })
-              .catch((e) => {
-                console.log(e)
-                window.location.href = (
-                  isEmpty(window.APP_BASENAME)
-                    ? loginUrl
-                    : window.location.href.replace(window.location.pathname, `${window.APP_BASENAME}/${loginUrl}`)
-                )
-                return { message: 'ERROR' }
-              })
-            : tmpAuth
+          ? defer({ message: getAuth() })
           : defaultAuth
       },
       children: withErrorElement([
