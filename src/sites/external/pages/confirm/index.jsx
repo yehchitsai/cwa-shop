@@ -147,7 +147,6 @@ const Confirm = () => {
     )
   }
 
-  console.log({ selectedProducts })
   const isUpdating = (isReserving || isOrdering)
   return (
     <>
