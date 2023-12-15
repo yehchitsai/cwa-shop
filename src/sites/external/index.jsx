@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom/client'
 import {
-  concat, filter, flow, get, isEmpty, keyBy, keys, map, values
+  concat, filter, flow, get, keyBy, keys, map, values
 } from 'lodash-es'
 import safeAwait from 'safe-await'
 import { preload } from 'swr'
@@ -23,14 +23,7 @@ const getFishDataConfig = (fishType) => ({
 })
 
 const pages = import.meta.glob('./pages/**/index.jsx')
-const tmpSelectedFishData = {}
 const loader = async () => {
-  const { pathname } = window.location
-  const tmpData = get(tmpSelectedFishData, pathname)
-  if (!isEmpty(tmpData)) {
-    return tmpData
-  }
-
   const [preOrderError, preOrderResp] = await safeAwait(preload(preorderConfig, fetcher))
   if (preOrderError) {
     console.log(preOrderError)
@@ -60,7 +53,6 @@ const loader = async () => {
 
   const fishData = concat(...fishDataList)
   const selectedFishData = filter(fishData, (item) => item.itemSerial in preOrderItemSerialMap)
-  tmpSelectedFishData[pathname] = selectedFishData
   return selectedFishData
 }
 const loaderMap = {
