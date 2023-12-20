@@ -25,6 +25,9 @@ const getAuthorization = () => {
   const isTempTokenExist = !isEmpty(TMP_TOKEN)
   const isStorageTokenExist = !!(tokenTypeFromStorage && accessTokenFromStorage)
   const isUrlSearchTokenExist = !!(tokenTypeFromUrl && accessTokenFromUrl)
+  // always remove local storage token first
+  removeTokens()
+  // find user priority hash token > tmp variable token > storage token
   switch (true) {
     case isUrlSearchTokenExist: {
       Authorization = {
@@ -34,16 +37,15 @@ const getAuthorization = () => {
       window.history.replaceState(null, '', window.location.pathname + window.location.search)
       break
     }
+    case isTempTokenExist: {
+      Authorization = TMP_TOKEN
+      break
+    }
     case isStorageTokenExist: {
       Authorization = {
         [TOKEN_KEY.TOKEN_TYPE]: tokenTypeFromStorage,
         [TOKEN_KEY.ACCESS_TOKEN]: accessTokenFromStorage
       }
-      removeTokens()
-      break
-    }
-    case isTempTokenExist: {
-      Authorization = TMP_TOKEN
       break
     }
     default:
@@ -86,7 +88,9 @@ const fetcher = async (config = {}, triggerArgs = {}) => {
   const isHttpRequest = host.startsWith('http')
   const isAwsApi = key.startsWith(window.AWS_HOST_PREFIX)
   const isGetRequest = isEmpty(body)
-  const authorization = getAuthorization()
+  // delay for multiple tab login with different user
+  // when tab change will trigger set last login user token into localstorage
+  const authorization = await setTimeout(getAuthorization, 10)
   const newOptions = {
     headers: new Headers({
       'Content-type': 'application/json',
