@@ -21,7 +21,7 @@ const CartBottomItems = (props) => {
     () => sumBy(items, (item) => +get(fishTypeMap, `${item.fishType}.fishPrice`)),
     (summaryPrice) => round(summaryPrice, 2)
   )()
-  const currency = get(fishTypeMap, `${get(items, '0.fishType')}.currency`)
+  const currency = get(fishTypeMap, `${get(items, '0.fishType')}.currency`, '')
   return (
     <>
       <li key='totalCount'>

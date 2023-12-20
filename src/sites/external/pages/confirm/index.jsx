@@ -42,7 +42,7 @@ const Page = () => {
     () => groupBy(selectedProducts, (selectedProduct) => selectedProduct.fishType),
     (groupedProducts) => reduce(groupedProducts, (collect, products, fishType) => {
       if (isEmpty(collect.currency)) {
-        set(collect, 'currency', get(fishTypeMap, `${fishType}.currency`))
+        set(collect, 'currency', get(fishTypeMap, `${fishType}.currency`, ''))
       }
       collect.data.push({
         fishName: get(fishTypeMap, `${fishType}.fishName`),
