@@ -15,6 +15,7 @@ import Layout from './Layout'
 import NavBar from '../NavBar'
 import 'react-loading-skeleton/dist/skeleton.css'
 
+const logoutUrl = import.meta.env.VITE_LOGOUT_URL
 const loginUrl = import.meta.env.VITE_LOGIN_URL
 const host = getApiHost('VITE_AWS_CHECK_AUTHORIZE')
 const awsHostPrefix = import.meta.env.VITE_AWS_HOST_PREFIX
@@ -47,7 +48,7 @@ const getAuth = () => preload(authConfig, fetcher)
     window.location.href = (
       window.IS_MOCK
         ? window.location.href.replace(window.location.pathname, `${window.APP_BASENAME}/${loginUrl}`)
-        : loginUrl
+        : logoutUrl
     )
     return 'ERROR'
   })
