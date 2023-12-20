@@ -90,7 +90,9 @@ const fetcher = async (config = {}, triggerArgs = {}) => {
   const isGetRequest = isEmpty(body)
   // delay for multiple tab login with different user
   // when tab change will trigger set last login user token into localstorage
-  const authorization = await setTimeout(getAuthorization, 10)
+  const authorization = await new Promise((resolve) => {
+    setTimeout(() => resolve(getAuthorization()), 10)
+  })
   const newOptions = {
     headers: new Headers({
       'Content-type': 'application/json',
