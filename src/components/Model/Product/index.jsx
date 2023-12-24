@@ -73,6 +73,7 @@ const ProductModel = (props) => {
   const playerRef = useRef(null)
   const isVideoExist = !isEmpty(itemVideos)
   const isOpenNewTabBtnVisible = !(isVideoExist && slideIndex === 0)
+  const largeImgUrl = get(itemImages, `${slideIndex - (isVideoExist ? 1 : 0)}.zoomedImg`, '')
   // const { i18n, t } = useTranslation()
   // const {
   //   fishTypeMap
@@ -113,6 +114,7 @@ const ProductModel = (props) => {
     if (visible) {
       addListener()
       trigger()
+      setSlideIndex(0)
     } else {
       removeListener()
     }
@@ -203,7 +205,7 @@ const ProductModel = (props) => {
           target='_blank'
           rel='noreferrer noopener'
           className='btn btn-circle fixed bottom-2 right-2'
-          href={`${get(itemImages, `${slideIndex + (isVideoExist ? 1 : 0)}.zoomedImg`)}`}
+          href={largeImgUrl}
         >
           <MdOpenInNew size='1.5rem' />
         </a>
