@@ -3,13 +3,13 @@ import { useDropzone } from 'react-dropzone'
 import { MdOutlineCloudUpload, MdDelete, MdError } from 'react-icons/md'
 import clx from 'classnames'
 import {
-  flow, get, isEmpty, keyBy
+  flow, get, isEmpty, keyBy, reduce, size
 } from 'lodash-es'
 import { Field, useFormikContext } from 'formik'
 import { filesize as getFileSize } from 'filesize'
 
-// default max 6 MB
-const DEFAULT_MAX_SIZE = 6
+// default max 4 MB
+const DEFAULT_MAX_SIZE = 4
 
 const Dropzone = (props) => {
   const {
@@ -27,18 +27,22 @@ const Dropzone = (props) => {
     }
 
     const rejectionsBySize = flow(
-      () => acceptedFiles.filter((acceptedFile) => {
+      () => reduce(acceptedFiles, (collect, acceptedFile) => {
         const {
-          value: fileSize
-        } = getFileSize(acceptedFile.size, { exponent: 2, output: 'object' })
-        return fileSize > maxSize
-      }),
-      (rejectedFiles) => rejectedFiles.map((rejectedFile) => ({
+          value: fileSize,
+          unit
+        } = getFileSize(acceptedFile.size, { exponent: 2, output: 'object', standard: 'jedec' })
+        if (fileSize > maxSize) {
+          collect.push([acceptedFile, `${fileSize}${unit}`])
+        }
+        return collect
+      }, []),
+      (rejectedFiles) => rejectedFiles.map(([rejectedFile, fileSize]) => ({
         file: rejectedFile,
+        rejectFileSize: fileSize,
         errors: [{ code: -1, message: `File size exceed limit ${maxSize} MB` }]
       }))
     )()
-    setFieldValue(rejectField, [...fileRejections, ...rejectionsBySize])
 
     const newFiles = []
     const filesWithoutExceedLimit = flow(
@@ -61,7 +65,35 @@ const Dropzone = (props) => {
       })
       newFiles.push(newFile)
     }
-    const allFiles = [...files, ...await Promise.all(newFiles)]
+    const { vaildFiles, rejectFileByBase64Size } = reduce(
+      await Promise.all(newFiles),
+      (collect, newFile) => {
+        const { url, file } = newFile
+        const {
+          value: fileSize,
+          unit
+        } = getFileSize(size(url), { exponent: 2, output: 'object', standard: 'jedec' })
+        const isExceedLimit = fileSize > maxSize
+        if (isExceedLimit) {
+          collect.rejectFileByBase64Size.push({
+            file,
+            rejectFileSize: `${fileSize} ${unit}`,
+            errors: [{ code: -1, message: `File size exceed limit ${maxSize} MB` }]
+          })
+          return collect
+        }
+
+        collect.vaildFiles.push(newFile)
+        return collect
+      },
+      { vaildFiles: [], rejectFileByBase64Size: [] }
+    )
+    const allFiles = [...files, ...vaildFiles]
+    setFieldValue(rejectField, [
+      ...fileRejections,
+      ...rejectionsBySize,
+      ...rejectFileByBase64Size
+    ])
     setFieldValue(name, allFiles)
   }, [files, rejectField, name, maxSize, setFieldValue])
 
@@ -131,14 +163,10 @@ const Dropzone = (props) => {
           <div className='flex w-full'>
             <ol>
               {rejections.map((rejection) => {
-                const { file, errors = [] } = rejection
+                const { file, rejectFileSize, errors = [] } = rejection
+                const { code } = get(errors, '0', {})
+                const isExceedLimit = (code === -1)
                 console.log(errors)
-                const isExceedLimit = errors[0].code === -1
-                const fileSize = getFileSize(file.size, {
-                  // 2 MB, 1 KB
-                  exponent: isExceedLimit ? 2 : 1,
-                  standard: 'jedec'
-                })
                 return (
                   <div
                     key={file.path}
@@ -146,7 +174,7 @@ const Dropzone = (props) => {
                   >
                     <input type='checkbox' name={file.path} checked readOnly />
                     <div className='collapse-title min-h-0 text-xl font-medium'>
-                      {`${file.path} - ${fileSize}`}
+                      {isExceedLimit ? `${file.path} - ${rejectFileSize}` : file.path}
                     </div>
                     <div className='collapse-content'>
                       <ul>
@@ -177,7 +205,7 @@ const Dropzone = (props) => {
               {
                 !isVideo && (
                   <img
-                    className='mask mask-square rounded-md'
+                    className='mask mask-square h-full rounded-md'
                     src={url}
                     alt='upload file'
                   />
