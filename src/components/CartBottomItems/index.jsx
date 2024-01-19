@@ -11,6 +11,7 @@ import useFishTypes from '../../hooks/useFishTypes'
 
 const CartBottomItems = (props) => {
   const { i18n } = useTranslation()
+  const { t } = useTranslation()
   const {
     fishTypeMap
   } = useFishTypes(i18n.language)
@@ -25,10 +26,10 @@ const CartBottomItems = (props) => {
   return (
     <>
       <li key='totalCount'>
-        <span>{`Total count: ${selectedSize}`}</span>
+        <span>{`${t('totalCount')}: ${selectedSize}`}</span>
       </li>
       <li key='totalPrice'>
-        <span>{`Total price: ${totalPrice} ${currency}`}</span>
+        <span>{`${t('totalPrice')}: ${totalPrice} ${currency}`}</span>
       </li>
       <Link to='/confirm'>
         <button
@@ -38,7 +39,7 @@ const CartBottomItems = (props) => {
             { 'btn-disabled': isNoProductSelected }
           )}
         >
-          Confirm order
+          {`${t('confirmOrder')}`}
         </button>
       </Link>
     </>

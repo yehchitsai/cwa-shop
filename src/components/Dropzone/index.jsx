@@ -8,8 +8,8 @@ import {
 import { Field, useFormikContext } from 'formik'
 import { filesize as getFileSize } from 'filesize'
 
-// default max 4 MB
-const DEFAULT_MAX_SIZE = 4
+// default max 5.6 MB
+const DEFAULT_MAX_SIZE = 5.6
 
 const Dropzone = (props) => {
   const {

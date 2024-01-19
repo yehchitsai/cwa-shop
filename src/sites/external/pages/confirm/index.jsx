@@ -30,6 +30,7 @@ const productModelKey = 'productModel'
 const Page = () => {
   const navigate = useNavigate()
   const { i18n } = useTranslation()
+  const { t } = useTranslation()
   const { fishTypeMap, isLoading } = useFishTypes(i18n.language)
   const [selectedProducts, setSelectedProducts] = useRecoilState(selectedProductsState)
   const setOrderData = useSetRecoilState(orderDataState)
@@ -159,10 +160,10 @@ const Page = () => {
           <thead>
             <tr>
               <th />
-              <th className='z-[1]'>Image</th>
-              <th>FishType Name</th>
-              <th>ItemSerial</th>
-              <th>ItemPrice</th>
+              <th className='z-[1]'>{`${t('pictures')}`}</th>
+              <th>{`${t('fishType')}`}</th>
+              <th>{`${t('tankNo')}`}</th>
+              <th>{`${t('itemPrice')}`}</th>
               <th />
             </tr>
           </thead>
@@ -205,9 +206,9 @@ const Page = () => {
           </tbody>
           <thead>
             <tr>
-              <th colSpan={2} className='z-10'>Total selected</th>
-              <th colSpan={2}>Fish types</th>
-              <th>Total price</th>
+              <th colSpan={2} className='z-10'>{`${t('totalSelected')}`}</th>
+              <th colSpan={2}>{`${t('orderList')}`}</th>
+              <th>{`${t('totalPrice')}`}</th>
               <th />
             </tr>
           </thead>
@@ -229,7 +230,7 @@ const Page = () => {
                   disabled={isUpdating}
                   onClick={onOrder}
                 >
-                  Submit cart
+                  {`${t('submitCart')}`}
                 </button>
                 <br />
                 <button
@@ -238,7 +239,7 @@ const Page = () => {
                   onClick={onRemoveAll}
                   disabled={isUpdating}
                 >
-                  Remove all
+                  {`${t('removerAll')}`}
                 </button>
               </th>
             </tr>
