@@ -7,13 +7,20 @@ import useFishTypes from '../../hooks/useFishTypes'
 const CartItems = (props) => {
   const { items = [] } = props
   const { i18n } = useTranslation()
+  const { t } = useTranslation()
   const {
     fishTypeMap
   } = useFishTypes(i18n.language)
   const selectedSize = size(items)
   const isNoProductSelected = selectedSize === 0
   if (isNoProductSelected) {
-    return <li disabled><span>Cart is empty</span></li>
+    return (
+      <li disabled>
+        <span>
+          {`${t('cartInfo')}`}
+        </span>
+      </li>
+    )
   }
 
   const cartList = flow(

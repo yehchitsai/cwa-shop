@@ -1,10 +1,19 @@
 {
   "user": "user",
-  "shop": "SHOP",
   "currency": "USD",
-  "fishType": "Fish Type",
-  "tankNo": "Tank Number",
-  "pictures": "Pictures",
   "video": "Video",
-  "newItem": "New item"
+  "newItem": "New item",
+  "shop": "Betta Purchase System",
+  "cartInfo": "Cart is empty",
+  "totalCount": "Total piece",
+  "totalPrice": "Total amount",
+  "confirmOrder": "CONFIRM ORDER",
+  "fishType": "Common Name",
+  "tankNo": "Number",
+  "pictures": "Image",
+  "itemPrice": "Amount",
+  "totalSelected": "Total piece",
+  "orderList": "List",
+  "submitCart": "SUBMIT CART",
+  "removerAll": "REMOVE ALL"
 }

@@ -1,10 +1,19 @@
 {
   "user": "使用者",
-  "shop": "商店",
   "currency": "TWD",
-  "fishType": "商品分類",
-  "tankNo": "魚缸編號",
-  "pictures": "圖片",
   "video": "影片",
-  "newItem": "新增"
+  "newItem": "新增",
+  "shop": "鬥魚訂單系統",
+  "cartInfo": "購物車（0）",
+  "totalCount": "數量",
+  "totalPrice": "總金額",
+  "confirmOrder": "商品確認",
+  "fishType": "品名",
+  "tankNo": "編號",
+  "pictures": "影像",
+  "itemPrice": "金額",
+  "totalSelected": "數量",
+  "orderList": "購買清單",
+  "submitCart": "訂單確認",
+  "removerAll": "全部刪除"
 }

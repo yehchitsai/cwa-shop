@@ -1,10 +1,19 @@
 {
   "user": "ユーザー",
-  "shop": "店",
   "currency": "JPY",
-  "fishType": "魚の種類",
-  "tankNo": "水槽番号",
-  "pictures": "写真",
   "video": "ビデオ",
-  "newItem": "新規"
+  "newItem": "新規",
+  "shop": "ベタ購入システム",
+  "cartInfo": "カート（0）",
+  "totalCount": "合計個数",
+  "totalPrice": "合計金額",
+  "confirmOrder": "商品確認",
+  "fishType": "生物名",
+  "tankNo": "番号",
+  "pictures": "画像",
+  "itemPrice": "総金額",
+  "totalSelected": "合計個数",
+  "orderList": "購入リスト",
+  "submitCart": "注文内容確認",
+  "removerAll": "オールクリア"
 }
