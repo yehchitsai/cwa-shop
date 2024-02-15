@@ -21,6 +21,8 @@ const links = flow(
   (endpoints) => endpoints.map((endpoint) => ({ url: `${window.APP_BASENAME}${endpoint}`, name: endpoint.replace(/\//g, '') }))
 )()
 
+window.sessionStorage.removeItem('redirectPath')
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Root>
     <div className='hero min-h-screen bg-base-200'>
