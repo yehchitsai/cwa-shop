@@ -6,6 +6,8 @@ import fetcher from '../../utils/fetcher'
 import '../../i18n'
 import '../../index.css'
 
+sessionStorage.removeItem('redirectPath')
+
 const Root = (props) => {
   const { children } = props
   return (

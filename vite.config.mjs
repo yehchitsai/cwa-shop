@@ -12,13 +12,15 @@ import { version, name } from './package.json'
 const {
   NODE_ENV,
   BASENAME,
+  PREVIEW,
   MOCK,
   MOCK_AWS_API,
   VITE_AWS_HOST_PREFIX: awsHostPrefix
 } = process.env
-const appBaseName = BASENAME ? `/${name}` : ''
 const isMock = !!MOCK
 const isMockAwsApi = !!MOCK_AWS_API
+const isPreview = !!PREVIEW
+const appBaseName = (BASENAME && !isPreview) ? `/${name}` : ''
 
 const outDir = resolve(__dirname, 'dist')
 const envDir = resolve(__dirname, 'environments')
@@ -52,11 +54,12 @@ const routes = flow(
 
 // https://vitejs.dev/config/
 export default ({ mode }) => {
+  const isProd = NODE_ENV === 'production'
   const modeEnv = loadEnv(isMock ? 'mock' : mode, envDir)
-  const targetEnv = loadEnv(NODE_ENV === 'production' ? 'production' : 'development', envDir)
+  const targetEnv = loadEnv(isProd ? 'production' : 'development', envDir)
   process.env = { ...process.env, ...modeEnv }
   const viteConfig = {
-    base: './',
+    base: isProd ? undefined : './',
     envDir,
     define: {
       'window.APP_VERSION': `"${version}"`,
@@ -64,6 +67,8 @@ export default ({ mode }) => {
       'window.AWS_HOST_PREFIX': `"${awsHostPrefix}"`,
       'window.IS_MOCK': `${isMock}`,
       'window.IS_MOCK_AWS_API': `${isMockAwsApi}`,
+      'window.IS_PROD': `${isProd}`,
+      'window.IS_PREVIEW': `${isPreview}`,
       'window.TARGET_ENV': `${JSON.stringify(targetEnv)}`
     },
     root: `${entriesDir}/`,
@@ -74,10 +79,19 @@ export default ({ mode }) => {
         localEnabled: isMock
       })
     ],
+    experimental: {
+      renderBuiltUrl: (filename) => {
+        const prefix = 'assets'
+        if (!filename.startsWith(prefix) && filename.includes('/')) {
+          return `./${filename.split('/')[1]}`
+        }
+
+        return `./${filename.replace(/.*assets/, prefix)}`
+      }
+    },
     build: {
       outDir,
       emptyOutDir: true,
-      assetsDir: 'assets',
       rollupOptions: {
         input: entriesMap,
         output: {
@@ -111,12 +125,14 @@ export default ({ mode }) => {
             `
             if (entryName === 'index.html') {
               fs.writeFileSync('dist/404.html', file404, 'utf-8')
-            } else {
-              fs.mkdirSync(`dist/${entryName}`)
-              fs.writeFileSync(`dist/${entryName}/404.html`, file404, 'utf-8')
+              return '[name]-[hash].js'
             }
 
-            return 'assets/[name]-[hash].js'
+            fs.mkdirSync(`dist/${entryName}`)
+            fs.mkdirSync(`dist/${entryName}/assets`)
+            fs.writeFileSync(`dist/${entryName}/404.html`, file404, 'utf-8')
+            // return `${entryName}/assets/[name]-[hash].js`
+            return `${entryName}/[name]-[hash].js`
           }
         }
       }

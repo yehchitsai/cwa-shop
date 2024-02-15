@@ -11,11 +11,15 @@ const links = flow(
       (window.IS_MOCK ? true : !path.includes('./login'))
     )
   }),
-  (filteredPaths) => filteredPaths.map((path) => path.replace('./', '/').replace('index.html', '')),
+  (filteredPaths) => filteredPaths.map((path) => {
+    if (window.APP_BASENAME === '') {
+      return path.replace('index.html', '')
+    }
+
+    return path.replace('./', '/').replace('index.html', '')
+  }),
   (endpoints) => endpoints.map((endpoint) => ({ url: `${window.APP_BASENAME}${endpoint}`, name: endpoint.replace(/\//g, '') }))
 )()
-
-sessionStorage.removeItem('redirectPath')
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Root>

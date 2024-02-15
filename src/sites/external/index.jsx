@@ -7,6 +7,7 @@ import { preload } from 'swr'
 import { defer } from 'react-router-dom'
 import getApiHost from '../../utils/getApiHost'
 import fetcher from '../../utils/fetcher'
+import getRouterBase from '../../utils/getRouterBase'
 import Router from '../../components/Router'
 import getRoutes from '../../components/Router/getRoutes'
 import Root from '../../components/Root'
@@ -69,7 +70,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <Root>
     <Router
       routes={dynamicRoutes}
-      basename='/external'
+      basename={getRouterBase('/external')}
       isAuthRoutes
     />
   </Root>
