@@ -92,7 +92,6 @@ export default ({ mode }) => {
     build: {
       outDir,
       emptyOutDir: true,
-      minify: true,
       rollupOptions: {
         input: entriesMap,
         output: {
