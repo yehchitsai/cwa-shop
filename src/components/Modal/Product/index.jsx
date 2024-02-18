@@ -99,7 +99,7 @@ const ProductModal = (props) => {
         isFullSize
       >
         <Skeleton
-          className='absolute left-0 top-[10vh] h-[70vh] w-full'
+          className='absolute left-0 top-[10vh] h-[calc(100%-20vh)] w-full'
         />
       </Modal>
     )
@@ -135,7 +135,7 @@ const ProductModal = (props) => {
         dots
       >
         {!isEmpty(itemVideos) && (
-          <div className='max-sm:max-h-[80vh] sm:max-h-full max-w-full'>
+          <div className='max-w-full max-sm:h-[calc(100%-20vh)] sm:max-h-full'>
             <div className='m-auto max-w-screen-lg'>
               <Video
                 options={getOptions(itemVideos)}
@@ -149,8 +149,8 @@ const ProductModal = (props) => {
             productImg: imgUrl
           } = itemImage
           return (
-            <div className='h-[80vh]' key={index}>
-              <div className='max-sm:flex max-sm:h-[80vh]'>
+            <div className='h-[90vh]' key={index}>
+              <div className='max-sm:flex max-sm:h-[90vh]'>
                 <LazyImage
                   src={imgUrl}
                   key={imgUrl}
