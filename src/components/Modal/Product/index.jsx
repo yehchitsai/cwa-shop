@@ -99,7 +99,7 @@ const ProductModal = (props) => {
         isFullSize
       >
         <Skeleton
-          className='absolute left-0 top-[10vh] h-[80vh] w-full'
+          className='absolute left-0 top-[20vh] h-[60vh] w-full'
         />
       </Modal>
     )
@@ -135,7 +135,7 @@ const ProductModal = (props) => {
         dots
       >
         {!isEmpty(itemVideos) && (
-          <div className='max-h-full max-w-full'>
+          <div className='max-sm:max-h-[80vh] sm:max-h-full max-w-full'>
             <div className='m-auto max-w-screen-lg'>
               <Video
                 options={getOptions(itemVideos)}
