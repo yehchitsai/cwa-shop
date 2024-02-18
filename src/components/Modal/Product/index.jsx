@@ -135,7 +135,7 @@ const ProductModal = (props) => {
         dots
       >
         {!isEmpty(itemVideos) && (
-          <div className='max-h-[100vh] max-w-full'>
+          <div className='max-h-full max-w-full'>
             <div className='m-auto max-w-screen-lg'>
               <Video
                 options={getOptions(itemVideos)}
