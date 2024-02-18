@@ -99,7 +99,7 @@ const ProductModal = (props) => {
         isFullSize
       >
         <Skeleton
-          className='absolute left-0 top-[20vh] h-[60vh] w-full'
+          className='absolute left-0 top-[10vh] h-[70vh] w-full'
         />
       </Modal>
     )
