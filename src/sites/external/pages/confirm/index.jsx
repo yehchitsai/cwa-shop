@@ -1,4 +1,4 @@
-import { Suspense, useState } from 'react'
+import { Suspense, useState, useRef } from 'react'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 import { useTranslation } from 'react-i18next'
 import { MdDelete } from 'react-icons/md'
@@ -18,16 +18,17 @@ import useOnInit from '../../../../hooks/useOnInit'
 import useCreate from '../../../../hooks/useCreate'
 import SkeletonHome from '../../../../components/Skeleton/Home'
 import LazyImage from '../../../../components/LazyImage'
-import ProductModel from '../../../../components/Model/Product'
+import ProductModal from '../../../../components/Modal/Product'
 
 const preOrderHost = getApiHost('VITE_AWS_FISH_PREORDER')
 const preOrderEndPoint = `${import.meta.env.VITE_AWS_HOST_PREFIX}/bettafishpreorder`
 const orderHost = getApiHost('VITE_AWS_FISH_ORDER')
 const orderEndPoint = `${import.meta.env.VITE_AWS_HOST_PREFIX}/fishorder`
 
-const productModelKey = 'productModel'
+const productModalKey = 'productModal'
 
 const Page = () => {
+  const modalRef = useRef()
   const navigate = useNavigate()
   const { i18n } = useTranslation()
   const { t } = useTranslation()
@@ -35,7 +36,6 @@ const Page = () => {
   const [selectedProducts, setSelectedProducts] = useRecoilState(selectedProductsState)
   const setOrderData = useSetRecoilState(orderDataState)
   const [targetProduct, setTargetProduct] = useState({})
-  const [isProductModalOpen, setIsProductModalOpen] = useState(false)
   const defaultSelectedProducts = useAsyncValue()
   const { trigger: reserveByItemSerial, isMutating: isReserving } = useCreate(preOrderHost)
   const { trigger: orderByItemSerial, isMutating: isOrdering } = useCreate(orderHost)
@@ -61,11 +61,8 @@ const Page = () => {
 
   const openProductModal = (newTargetProduct) => async () => {
     setTargetProduct(newTargetProduct)
-    setIsProductModalOpen(true)
-    document.querySelector(`#${productModelKey}`).showModal()
+    modalRef.current.open()
   }
-
-  const closeProductModal = () => setIsProductModalOpen(false)
 
   const onRemove = (product) => async () => {
     const toastId = toast.loading('Updating...')
@@ -193,7 +190,7 @@ const Page = () => {
                   <th>
                     <button
                       type='button'
-                      className='btn btn-square btn-error btn-outline'
+                      className='btn btn-square btn-outline btn-error'
                       onClick={onRemove(selectedProduct)}
                       disabled={isUpdating}
                     >
@@ -226,7 +223,7 @@ const Page = () => {
               <th className='space-y-2'>
                 <button
                   type='button'
-                  className='btn btn-success btn-outline'
+                  className='btn btn-outline btn-success'
                   disabled={isUpdating}
                   onClick={onOrder}
                 >
@@ -235,7 +232,7 @@ const Page = () => {
                 <br />
                 <button
                   type='button'
-                  className='btn btn-error btn-outline'
+                  className='btn btn-outline btn-error'
                   onClick={onRemoveAll}
                   disabled={isUpdating}
                 >
@@ -246,10 +243,9 @@ const Page = () => {
           </tbody>
         </table>
       </div>
-      <ProductModel
-        id={productModelKey}
-        visible={isProductModalOpen}
-        onClose={closeProductModal}
+      <ProductModal
+        modalRef={modalRef}
+        id={productModalKey}
         product={targetProduct}
         fishTypeMap={fishTypeMap}
       />

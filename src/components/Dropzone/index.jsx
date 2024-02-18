@@ -1,8 +1,9 @@
-import { useCallback } from 'react'
+import { useCallback, useState, useImperativeHandle } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { MdOutlineCloudUpload, MdDelete, MdError } from 'react-icons/md'
 import clx from 'classnames'
 import {
+  filter,
   flow, get, isEmpty, keyBy, reduce, size
 } from 'lodash-es'
 import { Field, useFormikContext } from 'formik'
@@ -11,18 +12,47 @@ import { filesize as getFileSize } from 'filesize'
 // default max 5.6 MB
 const DEFAULT_MAX_SIZE = 5.6
 
+const SELECT_TYPE_OPTIONS = [
+  { value: true, label: 'Select by files' },
+  { value: false, label: 'Select by folder' }
+]
+
 const Dropzone = (props) => {
   const {
-    className, accept, name, disabled, maxSize = DEFAULT_MAX_SIZE
+    className,
+    accept = {},
+    name,
+    disabled,
+    dropzoneRef,
+    maxSize = DEFAULT_MAX_SIZE,
+    customPreviewSize,
+    isSelectFolder = false,
+    isShowPreview = true,
+    onFinish = () => {}
   } = props
+  const [isPending, setIsPending] = useState(false)
+  const [selectType, setSelectType] = useState(true)
   const { values, setFieldValue } = useFormikContext()
   const rejectField = `${name}Error`
   const files = get(values, name, [])
   const rejections = get(values, rejectField, [])
 
-  const onDrop = useCallback(async (acceptedFiles, fileRejections) => {
+  const onSelectType = (e) => {
+    const newSelectType = JSON.parse(get(e, 'target.value', true))
+    setSelectType(newSelectType)
+  }
+
+  const onDrop = useCallback(async (acceptedFiles, defaultFileRejections) => {
+    setIsPending(true)
+    const fileRejections = isSelectFolder
+      // select folder will ignore unaccept type file
+      ? filter(defaultFileRejections, (rejection) => (rejection.file.type in accept))
+      : defaultFileRejections
+
     if (isEmpty(acceptedFiles)) {
       setFieldValue(rejectField, fileRejections)
+      setIsPending(false)
+      onFinish([])
       return
     }
 
@@ -95,15 +125,16 @@ const Dropzone = (props) => {
       ...rejectFileByBase64Size
     ])
     setFieldValue(name, allFiles)
-  }, [files, rejectField, name, maxSize, setFieldValue])
+    setIsPending(false)
+    onFinish(allFiles)
+  }, [files, rejectField, name, maxSize, accept, isSelectFolder, setFieldValue, onFinish])
 
   const {
     getRootProps,
     getInputProps,
-    isDragActive,
-    open
+    isDragActive
   } = useDropzone({
-    onDrop, accept, noClick: true, disabled
+    onDrop, accept, noClick: true, disabled: (disabled || isPending)
   })
 
   const onRemoveFile = (targetIndex) => () => {
@@ -111,12 +142,47 @@ const Dropzone = (props) => {
     setFieldValue(name, newFiles)
   }
 
+  const open = () => {
+    const { ref } = getInputProps()
+    ref.current.click()
+  }
+
+  useImperativeHandle(dropzoneRef, () => {
+    return {
+      removeFile: (index) => onRemoveFile(index)(),
+      setAcceptedFiles: (defaultFiles) => setFieldValue(name, defaultFiles),
+      getAcceptedFiles: () => files
+    }
+  })
+
   return (
     <>
+      {
+        isSelectFolder && (
+          <div className='w-full'>
+            {SELECT_TYPE_OPTIONS.map((option, index) => (
+              <label className='label cursor-pointer' key={index}>
+                <input
+                  type='radio'
+                  name='select-type'
+                  className='radio'
+                  value={option.value}
+                  checked={option.value === selectType}
+                  onChange={onSelectType}
+                  disabled={isPending}
+                />
+                <span className='label-text w-full pl-4'>
+                  {option.label}
+                </span>
+              </label>
+            ))}
+          </div>
+        )
+      }
       <div
         {
           ...getRootProps({
-            className: clx('m-full', { [className]: className })
+            className: clx('w-full', { [className]: className })
           })
         }
       >
@@ -131,26 +197,41 @@ const Dropzone = (props) => {
             />
             <span className='font-medium text-gray-600'>
               {
-                isDragActive
-                  ? <p>Drop the files here ...</p>
-                  : (
-                    <p>
-                      Drag and drop some files here, or
-                      <button
-                        type='button'
-                        onClick={open}
-                        className='btn btn-outline mx-4'
-                        disabled={disabled}
-                      >
-                        click
-                      </button>
-                      to select files
-                    </p>
-                  )
+                isDragActive && (
+                  <p>
+                    {`Drop the ${selectType ? 'files' : 'folder'} here ...`}
+                  </p>
+                )
+              }
+              {
+                !isDragActive && (
+                  <p>
+                    Drag and drop
+                    {` ${selectType ? 'some files' : 'folder'} `}
+                    here, or
+                    <button
+                      type='button'
+                      onClick={open}
+                      className='btn btn-outline mx-4'
+                      disabled={disabled}
+                    >
+                      click
+                    </button>
+                    {'to select '}
+                    {selectType ? 'files' : 'folder'}
+                  </p>
+                )
               }
             </span>
           </span>
-          <input {...getInputProps()} />
+          {selectType && (
+            <input {...getInputProps()} />
+          )}
+          {!selectType && (
+            <input
+              {...getInputProps({ webkitdirectory: '', directory: '' })}
+            />
+          )}
         </label>
       </div>
       {!isEmpty(rejections) && (
@@ -190,50 +271,56 @@ const Dropzone = (props) => {
           </div>
         </div>
       )}
-      <div className='m-auto flex w-full flex-wrap'>
-        {files.map((file, index) => {
-          const { url, isVideo } = file
-          return (
-            <div
-              className={clx(
-                'relative',
-                { 'p-2 max-sm:w-1/2 max-lg:w-1/3 lg:w-1/6': !isVideo },
-                { 'w-full flex justify-evenly bg-black my-4': isVideo }
-              )}
-              key={index}
-            >
-              {
-                !isVideo && (
-                  <img
-                    className='mask mask-square h-full rounded-md'
-                    src={url}
-                    alt='upload file'
-                  />
-                )
-              }
-              {
-                isVideo && (
-                  <video
-                    key={url}
-                    src={url}
-                    controls
-                  />
-                )
-              }
-              <button
-                type='button'
-                className='btn btn-square btn-error btn-outline btn-sm absolute bottom-4 right-4'
-                onClick={onRemoveFile(index)}
-                disabled={disabled}
+      {isShowPreview && (
+        <div className='m-auto flex w-full flex-wrap'>
+          {files.map((file, index) => {
+            const { url, isVideo } = file
+            return (
+              <div
+                className={clx(
+                  'relative',
+                  { 'p-2 max-sm:w-1/2': !isVideo },
+                  { 'max-lg:w-1/3 lg:w-1/6': (!isVideo && !customPreviewSize) },
+                  { [customPreviewSize]: (!isVideo && customPreviewSize) },
+                  { 'w-full flex justify-evenly bg-black my-4': isVideo }
+                )}
+                key={index}
               >
-                <MdDelete
-                  size='1.2em'
-                />
-              </button>
-            </div>
-          )
-        })}
-      </div>
+                {
+                  !isVideo && (
+                    <img
+                      className='rounded-md object-contain'
+                      src={url}
+                      alt='upload file'
+                    />
+                  )
+                }
+                {
+                  isVideo && (
+                    <video
+                      key={url}
+                      src={url}
+                      controls
+                    />
+                  )
+                }
+                <button
+                  type='button'
+                  className={clx(
+                    'btn btn-square btn-outline btn-error btn-sm absolute bottom-4 right-4'
+                  )}
+                  onClick={onRemoveFile(index)}
+                  disabled={disabled}
+                >
+                  <MdDelete
+                    size='1.2em'
+                  />
+                </button>
+              </div>
+            )
+          })}
+        </div>
+      )}
       <Field
         name={name}
         className='hidden'

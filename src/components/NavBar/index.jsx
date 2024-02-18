@@ -114,7 +114,7 @@ const NavBar = (props) => {
             </label>
             <ul
               tabIndex={0}
-              className='menu dropdown-content rounded-box z-10 mt-4 w-36 translate-y-10 bg-base-100 p-2 shadow'
+              className='menu dropdown-content z-10 mt-4 w-36 translate-y-10 rounded-box bg-base-100 p-2 shadow'
             >
               {langs.map((lang) => {
                 const { value, label } = lang

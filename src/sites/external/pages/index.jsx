@@ -1,7 +1,8 @@
 import {
   Suspense,
   useMemo,
-  useState
+  useState,
+  useRef
 } from 'react'
 import {
   Await, useLoaderData, useAsyncValue, useSearchParams
@@ -24,13 +25,13 @@ import useCreate from '../../../hooks/useCreate'
 import useOnInit from '../../../hooks/useOnInit'
 import getApiHost from '../../../utils/getApiHost'
 import Card from '../../../components/Card'
-import ProductModel from '../../../components/Model/Product'
+import ProductModal from '../../../components/Modal/Product'
 import SkeletonHome from '../../../components/Skeleton/Home'
 import Drawer from '../../../components/Drawer'
 import CartItems from '../../../components/CartItems'
 import CartBottomItems from '../../../components/CartBottomItems'
 
-const productModelKey = 'productModel'
+const productModalKey = 'productModal'
 
 const preOrderHost = getApiHost('VITE_AWS_FISH_PREORDER')
 const preOrderEndPoint = `${import.meta.env.VITE_AWS_HOST_PREFIX}/bettafishpreorder`
@@ -76,7 +77,7 @@ const SelectSection = () => {
 
 const CardsSection = (props) => {
   const {
-    setIsProductModalOpen,
+    openModal,
     setTargetProduct
   } = props
   const [searchParams] = useSearchParams()
@@ -100,8 +101,7 @@ const CardsSection = (props) => {
 
   const openProductModal = (newTargetProduct) => async () => {
     setTargetProduct({ ...newTargetProduct, fishType })
-    setIsProductModalOpen(true)
-    document.querySelector(`#${productModelKey}`).showModal()
+    openModal()
   }
 
   const onSelectProduct = (product) => async (e) => {
@@ -195,12 +195,10 @@ const CardsSection = (props) => {
 }
 
 const Home = () => {
-  const [isProductModalOpen, setIsProductModalOpen] = useState(false)
+  const modalRef = useRef()
   const [targetProduct, setTargetProduct] = useState({})
   const [selectProducts] = useRecoilState(selectedProductsState)
   const data = useLoaderData()
-
-  const closeProductModal = () => setIsProductModalOpen(false)
 
   return (
     <Drawer
@@ -237,7 +235,7 @@ const Home = () => {
               )}
             >
               <CardsSection
-                setIsProductModalOpen={setIsProductModalOpen}
+                openModal={() => modalRef.current.open()}
                 setTargetProduct={setTargetProduct}
               />
             </Await>
@@ -245,10 +243,9 @@ const Home = () => {
         </div>
       </div>
       <Suspense fallback={<SkeletonHome />}>
-        <ProductModel
-          id={productModelKey}
-          visible={isProductModalOpen}
-          onClose={closeProductModal}
+        <ProductModal
+          modalRef={modalRef}
+          id={productModalKey}
           product={targetProduct}
         />
       </Suspense>

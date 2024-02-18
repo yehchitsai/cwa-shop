@@ -1,9 +1,16 @@
+import clx from 'classnames'
+
 const FormRow = (props) => {
   const {
-    children, label, required, error, counter
+    children, label, required, error, counter, className
   } = props
   return (
-    <div className='form-control mb-2 w-full'>
+    <div
+      className={clx(
+        'form-control mb-2 w-full',
+        { [className]: className }
+      )}
+    >
       <label className='label'>
         <span className='label-text'>
           {label}

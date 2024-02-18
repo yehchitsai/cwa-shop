@@ -1,22 +1,22 @@
 import {
-  useEffect, useCallback, useState, useRef
+  useState, useRef
 } from 'react'
 import clx from 'classnames'
 // import { useTranslation } from 'react-i18next'
 import { MdArrowForwardIos, MdArrowBackIosNew, MdOpenInNew } from 'react-icons/md'
 import Skeleton from 'react-loading-skeleton'
 import {
-  delay, get, isEmpty
+  get, isEmpty
 } from 'lodash-es'
 import Slider from 'react-slick'
+import wait from '../../../utils/wait'
 import useFishInfo from '../../../hooks/useFishInfo'
 import LazyImage from '../../LazyImage'
 import Video from '../../Video'
-import Model from '../index'
+import getVideoJsOptions from '../../Video/getVideoJsOptions'
+import Modal from '../index'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
-
-const ESC_KEY_CODE = 27
 
 const SliderArrow = (props) => {
   const {
@@ -38,23 +38,14 @@ const SliderArrow = (props) => {
   )
 }
 
-const getVideoJsOptions = (itemVideos) => {
-  return {
-    autoplay: false,
-    controls: true,
-    fill: true,
-    responsive: true,
-    fluid: true,
-    sources: [{
-      src: get(itemVideos, '[0].productVideo'),
-      type: 'video/mp4'
-    }]
-  }
+const getOptions = (itemVideos) => {
+  const src = get(itemVideos, '[0].productVideo')
+  return getVideoJsOptions({ src })
 }
 
-const ProductModel = (props) => {
+const ProductModal = (props) => {
   const {
-    id, visible, onClose, product = {}
+    modalRef, id, onClose, product = {}
   } = props
   const {
     // fishType,
@@ -91,68 +82,40 @@ const ProductModel = (props) => {
     playerRef.current = player
   }
 
-  const onClickEsc = useCallback(async (e) => {
-    if (e.keyCode !== ESC_KEY_CODE) {
-      return
-    }
-
-    await delay(() => Promise.resolve(), 100)
-    onClose()
-  }, [onClose])
-
-  const addListener = useCallback(
-    () => document.addEventListener('keydown', onClickEsc, false),
-    [onClickEsc]
-  )
-
-  const removeListener = useCallback(
-    () => document.removeEventListener('keydown', onClickEsc, false),
-    [onClickEsc]
-  )
-
-  useEffect(() => {
-    if (visible) {
-      addListener()
-      trigger()
-      setSlideIndex(0)
-    } else {
-      removeListener()
-    }
-
-    return removeListener
-  }, [visible, addListener, removeListener, trigger])
+  const onOpen = async () => {
+    await wait(0)
+    trigger()
+    setSlideIndex(0)
+  }
 
   if (isLoading || isMutating) {
     return (
-      <Model
+      <Modal
+        modalRef={modalRef}
         id={id}
-        className={clx(
-          'h-full min-h-full w-full max-w-[100vw] rounded-none p-0',
-          { hidden: !visible }
-        )}
         isCloseBtnVisible={false}
         onClose={onClose}
+        onOpen={onOpen}
+        isFullSize
       >
         <Skeleton
-          className='fixed mt-[10vh] h-[80vh] w-[100vw]'
+          className='absolute left-0 top-[10vh] h-[80vh] w-full'
         />
-      </Model>
+      </Modal>
     )
   }
 
   return (
-    <Model
+    <Modal
+      modalRef={modalRef}
       id={id}
-      className={clx(
-        'h-full min-h-full w-full max-w-[100vw] rounded-none p-0',
-        'max-sm:overflow-y-hidden',
-        { hidden: !visible }
-      )}
-      isCloseBtnVisible={false}
       onClose={onClose}
+      onOpen={onOpen}
+      isCloseBtnVisible={false}
+      isFullSize
     >
       <Slider
-        className='top-[50%] translate-y-[-50%]'
+        className='translate-y-[6%]'
         dotsClass='slick-dots bottom-[0.8rem!important]'
         prevArrow={(
           <SliderArrow customClassName='left-2'>
@@ -175,7 +138,7 @@ const ProductModel = (props) => {
           <div className='max-h-[100vh] max-w-full'>
             <div className='m-auto max-w-screen-lg'>
               <Video
-                options={getVideoJsOptions(itemVideos)}
+                options={getOptions(itemVideos)}
                 onReady={onPlayerReady}
               />
             </div>
@@ -210,8 +173,8 @@ const ProductModel = (props) => {
           <MdOpenInNew size='1.5rem' />
         </a>
       )}
-    </Model>
+    </Modal>
   )
 }
 
-export default ProductModel
+export default ProductModal

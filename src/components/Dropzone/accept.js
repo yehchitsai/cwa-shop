@@ -5,7 +5,8 @@ const ACCEPT = {
     'image/jpeg': ['.jpg']
   },
   VIDEO: {
-    'video/mp4': ['.mp4']
+    'video/mp4': ['.mp4'],
+    'video/mov': ['.mov']
   }
 }
 

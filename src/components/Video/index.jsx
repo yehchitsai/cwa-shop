@@ -5,7 +5,7 @@ import 'video.js/dist/video-js.css'
 const Video = (props) => {
   const videoRef = useRef(null)
   const playerRef = useRef(null)
-  const { options, onReady } = props
+  const { options, onReady, height = 'h-[90vh!important]' } = props
 
   useEffect(() => {
     // Make sure Video.js player is only initialized once
@@ -16,7 +16,7 @@ const Video = (props) => {
       videoElement.classList.add(
         'vjs-big-play-centered',
         'p-[0!important]',
-        'h-[90vh!important]'
+        height
       )
       videoRef.current.appendChild(videoElement)
 
@@ -34,7 +34,7 @@ const Video = (props) => {
       player.autoplay(options.autoplay)
       player.src(options.sources)
     }
-  }, [options, videoRef, onReady])
+  }, [options, videoRef, onReady, height])
 
   // Dispose the Video.js player when the functional component unmounts
   useEffect(() => {
