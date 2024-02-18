@@ -50,7 +50,6 @@ const EditModal = (props) => {
     >
       <FormRow
         label={t('video')}
-        className='mb-10 h-[30vh]'
       >
         <Video
           options={getVideoJsOptions({ src, type })}
@@ -60,7 +59,8 @@ const EditModal = (props) => {
       <Formik
         initialValues={{
           [FORM.ID]: id,
-          [FORM.FISH_TYPE]: fishType
+          [FORM.FISH_TYPE]: fishType,
+          [FORM.IMAGES]: images
         }}
       >
         {() => (
