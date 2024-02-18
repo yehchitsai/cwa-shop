@@ -65,6 +65,7 @@ const ProductModal = (props) => {
   const isVideoExist = !isEmpty(itemVideos)
   const isOpenNewTabBtnVisible = !(isVideoExist && slideIndex === 0)
   const largeImgUrl = get(itemImages, `${slideIndex - (isVideoExist ? 1 : 0)}.zoomedImg`, '')
+  const isPending = (isLoading || isMutating)
   // const { i18n, t } = useTranslation()
   // const {
   //   fishTypeMap
@@ -88,23 +89,6 @@ const ProductModal = (props) => {
     setSlideIndex(0)
   }
 
-  if (isLoading || isMutating) {
-    return (
-      <Modal
-        modalRef={modalRef}
-        id={id}
-        isCloseBtnVisible={false}
-        onClose={onClose}
-        onOpen={onOpen}
-        isFullSize
-      >
-        <Skeleton
-          className='absolute left-0 top-[10vh] h-[calc(100%-20vh)] w-full'
-        />
-      </Modal>
-    )
-  }
-
   return (
     <Modal
       modalRef={modalRef}
@@ -114,56 +98,63 @@ const ProductModal = (props) => {
       isCloseBtnVisible={false}
       isFullSize
     >
-      <Slider
-        className='translate-y-[6%]'
-        dotsClass='slick-dots bottom-[0.8rem!important]'
-        prevArrow={(
-          <SliderArrow customClassName='left-2'>
-            <MdArrowBackIosNew size='1.5em' />
-          </SliderArrow>
-        )}
-        nextArrow={(
-          <SliderArrow customClassName='right-2'>
-            <MdArrowForwardIos size='1.5em' />
-          </SliderArrow>
-        )}
-        afterChange={onSlideChange}
-        slidesToShow={1}
-        slidesToScroll={1}
-        speed={500}
-        infinite
-        dots
-      >
-        {!isEmpty(itemVideos) && (
-          <div className='max-w-full max-sm:h-[calc(100%-20vh)] sm:max-h-full'>
-            <div className='m-auto max-w-screen-lg'>
-              <Video
-                options={getOptions(itemVideos)}
-                onReady={onPlayerReady}
-              />
-            </div>
-          </div>
-        )}
-        {itemImages.map((itemImage = {}, index) => {
-          const {
-            productImg: imgUrl
-          } = itemImage
-          return (
-            <div className='h-[90vh]' key={index}>
-              <div className='max-sm:flex max-sm:h-[90vh]'>
-                <LazyImage
-                  src={imgUrl}
-                  key={imgUrl}
-                  className='m-auto max-h-screen object-scale-down'
-                  alt='Carousel component'
-                  loaderClassName='translate-x-[-100%] z-0 w-[100vw] h-[80vh]'
+      {isPending && (
+        <Skeleton
+          className='absolute left-0 top-[10vh] h-[75vh] w-full'
+        />
+      )}
+      {!isPending && (
+        <Slider
+          className='translate-y-[6%]'
+          dotsClass='slick-dots bottom-[0.8rem!important]'
+          prevArrow={(
+            <SliderArrow customClassName='left-2'>
+              <MdArrowBackIosNew size='1.5em' />
+            </SliderArrow>
+          )}
+          nextArrow={(
+            <SliderArrow customClassName='right-2'>
+              <MdArrowForwardIos size='1.5em' />
+            </SliderArrow>
+          )}
+          afterChange={onSlideChange}
+          slidesToShow={1}
+          slidesToScroll={1}
+          speed={500}
+          infinite
+          dots
+        >
+          {!isEmpty(itemVideos) && (
+            <div className='max-w-full max-sm:h-[80vh] sm:max-h-full'>
+              <div className='m-auto max-w-screen-lg'>
+                <Video
+                  options={getOptions(itemVideos)}
+                  onReady={onPlayerReady}
                 />
               </div>
             </div>
-          )
-        })}
-      </Slider>
-      {isOpenNewTabBtnVisible && (
+          )}
+          {itemImages.map((itemImage = {}, index) => {
+            const {
+              productImg: imgUrl
+            } = itemImage
+            return (
+              <div className='h-[80vh]' key={index}>
+                <div className='max-sm:flex max-sm:h-[75vh]'>
+                  <LazyImage
+                    src={imgUrl}
+                    key={imgUrl}
+                    className='m-auto max-h-screen object-scale-down'
+                    alt='Carousel component'
+                    loaderClassName='translate-x-[-100%] z-0 w-[100vw] h-[80vh]'
+                  />
+                </div>
+              </div>
+            )
+          })}
+        </Slider>
+      )}
+      {(!isPending && isOpenNewTabBtnVisible) && (
         <a
           target='_blank'
           rel='noreferrer noopener'
