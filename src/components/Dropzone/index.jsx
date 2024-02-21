@@ -285,7 +285,7 @@ const Dropzone = (props) => {
                   { 'p-2 max-sm:w-1/2': !isVideo },
                   { 'max-lg:w-1/3 lg:w-1/6': (!isVideo && !customPreviewSize) },
                   { [customPreviewSize]: (!isVideo && customPreviewSize) },
-                  { 'w-full flex justify-evenly bg-black my-4': isVideo }
+                  { 'w-full bg-black my-4': isVideo }
                 )}
                 key={index}
               >
