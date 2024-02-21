@@ -38,7 +38,6 @@ const Dropzone = (props) => {
   const rejectField = `${name}Error`
   const files = get(values, name, [])
   const rejections = get(values, rejectField, [])
-  console.log(files)
 
   const onSelectType = (e) => {
     const newSelectType = JSON.parse(get(e, 'target.value', true))
@@ -309,7 +308,7 @@ const Dropzone = (props) => {
                 <button
                   type='button'
                   className={clx(
-                    'btn btn-square btn-outline btn-error btn-sm absolute bottom-4 right-4'
+                    'btn btn-square btn-outline btn-error btn-sm absolute bottom-4 right-4 z-[1]'
                   )}
                   onClick={onRemoveFile(index)}
                   disabled={disabled}
