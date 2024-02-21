@@ -38,6 +38,7 @@ const Dropzone = (props) => {
   const rejectField = `${name}Error`
   const files = get(values, name, [])
   const rejections = get(values, rejectField, [])
+  console.log(files)
 
   const onSelectType = (e) => {
     const newSelectType = JSON.parse(get(e, 'target.value', true))
