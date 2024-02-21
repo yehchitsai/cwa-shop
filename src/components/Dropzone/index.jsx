@@ -8,6 +8,8 @@ import {
 } from 'lodash-es'
 import { Field, useFormikContext } from 'formik'
 import { filesize as getFileSize } from 'filesize'
+import Video from '../Video'
+import getVideoJsOptions from '../Video/getVideoJsOptions'
 
 // default max 5.6 MB
 const DEFAULT_MAX_SIZE = 5.6
@@ -297,10 +299,10 @@ const Dropzone = (props) => {
                 }
                 {
                   isVideo && (
-                    <video
+                    <Video
                       key={url}
-                      src={url}
-                      controls
+                      options={getVideoJsOptions({ src: url })}
+                      height='h-[50vh!important]'
                     />
                   )
                 }
