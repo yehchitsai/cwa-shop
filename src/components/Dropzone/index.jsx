@@ -85,8 +85,8 @@ const Dropzone = (props) => {
       })
     )()
     for (const acceptedFile of filesWithoutExceedLimit) {
-      const { name: fileName, type } = acceptedFile
-      const isVideo = type === 'video/mp4'
+      const { name: fileName, type = '' } = acceptedFile
+      const isVideo = type.startsWith('video/')
       const commonInfo = { isVideo, name: fileName, file: acceptedFile }
       const newFile = new Promise((resolve) => {
         const reader = new FileReader()
@@ -301,7 +301,6 @@ const Dropzone = (props) => {
                 {
                   isVideo && (
                     <Video
-                      key={url}
                       options={getVideoJsOptions({ src: url })}
                       height='h-[50vh!important]'
                     />
