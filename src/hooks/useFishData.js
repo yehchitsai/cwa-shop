@@ -11,7 +11,7 @@ const useFishData = (fishType) => {
   const url = isEmpty(fishType) ? null : `${awsHostPrefix}/bettafishinfo?${qs.stringify(params)}`
   const {
     data: defaultData = [], error, isLoading
-  } = useSWR(() => ({ url, host }), { suspense: true })
+  } = useSWR(() => ({ url, host }), { suspense: false })
   const data = get(defaultData, 'results', defaultData)
   return {
     data,

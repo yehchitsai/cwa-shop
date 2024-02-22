@@ -78,19 +78,13 @@ const SelectSection = () => {
 const CardsSection = (props) => {
   const {
     openModal,
-    setTargetProduct
+    setTargetProduct,
+    fishType
   } = props
-  const [searchParams] = useSearchParams()
-  const { i18n } = useTranslation()
-  const { fishTypes } = useFishTypes(i18n.language)
   const {
     trigger: reserveByItemSerial,
     isMutating: isReserving
   } = useCreate(preOrderHost)
-  const fishType = useMemo(
-    () => searchParams.get('fishType') || get(fishTypes, '0.value'),
-    [searchParams, fishTypes]
-  )
   const {
     data: fishData,
     isLoading
@@ -163,6 +157,12 @@ const CardsSection = (props) => {
     setSelectedProducts(selectedFishData)
   })
 
+  if (isLoading) {
+    return (
+      <SkeletonHome className='h-[70vh]' />
+    )
+  }
+
   if (isEmpty(fishData)) {
     return (
       <div className='mt-20 h-[70vh] w-full text-center'>
@@ -171,13 +171,7 @@ const CardsSection = (props) => {
     )
   }
 
-  if (isLoading) {
-    return (
-      <SkeletonHome className='h-[70vh]' />
-    )
-  }
-
-  const defaultSelectProductMap = keyBy(selectedFishData, 'itemSerial')
+  const defaultSelectProductMap = keyBy(selectedProducts, 'itemSerial')
   return fishData.map((item) => {
     const { itemSerial } = item
     const defaultIsSelect = (itemSerial in defaultSelectProductMap)
@@ -198,6 +192,13 @@ const Home = () => {
   const modalRef = useRef()
   const [targetProduct, setTargetProduct] = useState({})
   const [selectProducts] = useRecoilState(selectedProductsState)
+  const { i18n } = useTranslation()
+  const { fishTypes } = useFishTypes(i18n.language)
+  const [searchParams] = useSearchParams()
+  const fishType = useMemo(
+    () => searchParams.get('fishType') || get(fishTypes, '0.value'),
+    [searchParams, fishTypes]
+  )
   const data = useLoaderData()
 
   return (
@@ -237,6 +238,7 @@ const Home = () => {
               <CardsSection
                 openModal={() => modalRef.current.open()}
                 setTargetProduct={setTargetProduct}
+                fishType={fishType}
               />
             </Await>
           </Suspense>
