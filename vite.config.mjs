@@ -101,26 +101,12 @@ export default ({ mode }) => {
               <!DOCTYPE html>
               <script>
                 sessionStorage.removeItem('redirectPath')
-                const pathname = window.location.pathname
-                const isFolderPath = pathname.endsWith('/')
-                const matchRoute = ${JSON.stringify(routes)}
-                  .find((route) => pathname.startsWith(route)) || ''
-                const isRouteExist = !!matchRoute
-                console.log(pathname, isRouteExist, matchRoute, '${entryName}')
-                if (!isRouteExist) {
-                  const nextPathName = window.location.href
-                    .replace(window.location.search, '')
-                    .replace(pathname, '${appBaseName}')
-                  console.log(nextPathName)
-                  window.location.href = nextPathName
-                } else {
-                  const nextPathName = window.location.href
-                    .replace(window.location.search, '')
-                    .replace(pathname, matchRoute)
-                  const storePathName = window.location.href.replace()
-                  sessionStorage.setItem('redirectPath', pathname + window.location.search)
-                  window.location.href = nextPathName
+                const routerPath = window.location.pathname.replace('${appBaseName}', '')
+                if (routerPath !== '' && routerPath !== '/') {
+                  sessionStorage.setItem('redirectPath', routerPath + window.location.search)
                 }
+                console.log(routerPath, '${entryName}')
+                window.location.href = window.location.origin + '${appBaseName}'
               </script>
             `
             if (entryName === 'index.html') {
