@@ -10,7 +10,7 @@ import { preload } from 'swr'
 import fetcher from '../../utils/fetcher'
 import getApiHost from '../../utils/getApiHost'
 import SkeletonHome from '../Skeleton/Home'
-import ErrorElement from './ErrorElement.jsx'
+import ErrorElement from './ErrorElement'
 import Layout from './Layout'
 import NavBar from '../NavBar'
 import 'react-loading-skeleton/dist/skeleton.css'
@@ -21,7 +21,10 @@ const host = getApiHost('VITE_AWS_CHECK_AUTHORIZE')
 const awsHostPrefix = import.meta.env.VITE_AWS_HOST_PREFIX
 const authConfig = {
   host,
-  url: `${awsHostPrefix}/checkAuthorize`
+  url: `${awsHostPrefix}/checkAuthorize`,
+  options: {
+    errorMessage: '未登入'
+  }
 }
 
 const withErrorElement = (routes) => routes.map((item) => {
@@ -66,9 +69,11 @@ const Router = (props) => {
           return redirect(nextPath.startsWith('/') ? nextPath : `/${nextPath}`)
         }
 
-        return isAuthRoutes
-          ? defer({ message: getAuth() })
-          : defaultAuth
+        if (!isAuthRoutes) {
+          return defaultAuth
+        }
+
+        return defer({ message: getAuth() })
       },
       children: withErrorElement([
         ...routes,

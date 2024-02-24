@@ -82,7 +82,7 @@ const fetcher = async (config = {}, triggerArgs = {}) => {
   const isForceDisableMock = forceMock === '0'
   const { arg: { url: keyFromTrigger = '', ...body } = {} } = triggerArgs
   const { host = '', url: keyFromGet = '', options = {} } = config
-  const { header = {}, ...restOptions } = options
+  const { header = {}, errorMessage = '發生錯誤', ...restOptions } = options
   const key = keyFromGet || keyFromTrigger
   const url = `${host}${key}`
   const isHttpRequest = host.startsWith('http')
@@ -124,7 +124,7 @@ const fetcher = async (config = {}, triggerArgs = {}) => {
       const isMockAwsApi = (window.IS_MOCK_AWS_API && key.startsWith(window.AWS_HOST_PREFIX))
       if (!window.IS_MOCK && !isMockAwsApi) {
         console.log(e)
-        throw new Error('發生錯誤')
+        throw new Error(errorMessage)
       }
 
       console.log(
