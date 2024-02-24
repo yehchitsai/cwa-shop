@@ -22,7 +22,7 @@ const HomeLogo = (props) => {
 
   return (
     <a
-      href={window.location.href.replace(window.location.pathname, `${appBaseName}/`)}
+      href={`${window.location.origin}${appBaseName}`}
       className={className}
     >
       {`${t('shop')}`}
