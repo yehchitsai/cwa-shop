@@ -26,7 +26,7 @@ const Table = (props) => {
           {data.map((item, index) => (
             <TableRow
               field={`${field}.${index}`}
-              item={item.uploadFile}
+              item={item}
               index={index}
               key={index}
               onRemove={onRemove}

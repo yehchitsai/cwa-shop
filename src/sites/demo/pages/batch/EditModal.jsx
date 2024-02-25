@@ -2,39 +2,78 @@ import { useRef, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Formik, Field, Form } from 'formik'
 import {
-  first, get, isEmpty, map
+  first, flow, get, isEmpty, isNull, map, pick
 } from 'lodash-es'
+import * as Yup from 'yup'
 import Modal from '../../../../components/Modal'
 import Video from '../../../../components/Video'
 import getVideoJsOptions from '../../../../components/Video/getVideoJsOptions'
 import FormRow from '../../../../components/Form/FormRow'
 import ACCEPT from '../../../../components/Dropzone/accept'
 import Dropzone from '../../../../components/Dropzone'
+import { FORM_ITEM } from './constants'
+
+const id = 'editBatchItem'
 
 const FORM = {
   ITEM_SERIAL: 'itemSerial',
   FISH_TYPE: 'fishType',
-  IMAGES: 'images'
+  ITEM_IMAGES: 'itemImages',
+  ITEM_VIDEOS: 'itemVideos'
 }
 
+const validationSchema = Yup.object().shape({
+  [FORM.ITEM_SERIAL]: Yup.string().required(`Miss ${FORM.ITEM_SERIAL}!`),
+  [FORM.FISH_TYPE]: Yup.string().required(`Miss ${FORM.FISH_TYPE}!`),
+  [FORM.ITEM_IMAGES]: Yup.array().min(1).required(`Miss ${FORM.ITEM_IMAGES}!`)
+})
+
 const EditModal = (props) => {
-  const { modalRef, editItem, onClose } = props
+  const {
+    modalRef, editItem, onClose, onUpdated
+  } = props
   const [isUpdated, setIsUpdated] = useState(false)
   const dropzoneRef = useRef()
   const { t } = useTranslation()
+  const initFormData = get(editItem, 'data', {})
   const {
     itemSerial,
     fishType,
     itemImages = [],
     itemVideos = []
-  } = get(editItem, 'data', {})
+  } = initFormData
 
-  const onOpen = () => {
+  const onEditModalOpen = () => {
     setIsUpdated(false)
   }
 
+  const onEditModalClose = () => {
+    setIsUpdated(false)
+    onClose && onClose()
+  }
+
+  const onEditModalOk = (formValues) => {
+    const errorElement = document.querySelector(`#${id} .text-red-400:not(:empty)`)
+    console.log(errorElement)
+    if (!isNull(errorElement)) {
+      errorElement.scrollIntoView({ behavior: 'smooth' })
+      return
+    }
+
+    const convertedItemImages = flow(
+      () => get(formValues, FORM.ITEM_IMAGES, []),
+      (newItemImages) => map(newItemImages, 'url')
+    )()
+    const updateFormValues = {
+      ...pick(formValues, [FORM.FISH_TYPE, FORM.ITEM_SERIAL, FORM.ITEM_VIDEOS]),
+      [FORM.ITEM_IMAGES]: convertedItemImages
+    }
+    onUpdated(`${editItem.field}.${FORM_ITEM.RECOGNITION_DATA}`, updateFormValues)
+    modalRef.current.close()
+  }
+
   useEffect(() => {
-    if (isUpdated || isEmpty(itemImages)) {
+    if (isUpdated || isEmpty(itemImages) || !dropzoneRef.current) {
       return
     }
 
@@ -49,53 +88,76 @@ const EditModal = (props) => {
   return (
     <Modal
       modalRef={modalRef}
-      id='editBatchItem'
+      id={id}
       title='Edit item'
       className='max-lg:w-[60vw] max-sm:w-[90%] lg:w-[50vw]'
-      onOpen={onOpen}
-      onClose={onClose}
+      onOpen={onEditModalOpen}
+      onClose={onEditModalClose}
       isCloseBtnVisible
       isOkBtnVisible
+      isFormModal
     >
-      <FormRow
-        label={t('video')}
-      >
-        <Video
-          options={getVideoJsOptions({ src: first(itemVideos) })}
-          height='h-[30vh!important]'
-        />
-      </FormRow>
-      <Formik
-        initialValues={{
-          [FORM.ITEM_SERIAL]: itemSerial,
-          [FORM.FISH_TYPE]: fishType,
-          [FORM.IMAGES]: itemImages
-        }}
-      >
-        {() => (
-          <Form>
-            <FormRow label='Id'>
-              <Field name={FORM.ITEM_SERIAL} className='input input-bordered' required />
-            </FormRow>
-            <FormRow label='FishType'>
-              <Field name={FORM.FISH_TYPE} className='input input-bordered' required />
-            </FormRow>
-            <FormRow
-              label={t('pictures')}
-            >
-              <Dropzone
-                dropzoneRef={dropzoneRef}
-                name={FORM.IMAGES}
-                accept={ACCEPT.IMAGE}
-                customPreviewSize='lg:w-1/3'
-                // onFinish={onSelectFilesFinish}
-                // isShowPreview={false}
-                // isSelectFolder
-              />
-            </FormRow>
-          </Form>
-        )}
-      </Formik>
+      {(actions) => (
+        <>
+          <FormRow
+            label={t('video')}
+          >
+            <Video
+              options={getVideoJsOptions({
+                src: first(itemVideos)
+              })}
+              height='h-[30vh!important]'
+            />
+          </FormRow>
+          <Formik
+            initialValues={{
+              [FORM.ITEM_SERIAL]: itemSerial,
+              [FORM.FISH_TYPE]: fishType,
+              [FORM.ITEM_IMAGES]: itemImages,
+              [FORM.ITEM_VIDEOS]: itemVideos
+            }}
+            onSubmit={onEditModalOk}
+            validationSchema={validationSchema}
+          >
+            {(formProps) => (
+              <Form>
+                <FormRow
+                  label={FORM.ITEM_SERIAL}
+                  error={formProps.touched[FORM.ITEM_SERIAL] && formProps.errors[FORM.ITEM_SERIAL]}
+                >
+                  <Field
+                    name={FORM.ITEM_SERIAL}
+                    className='input input-bordered'
+                    autoComplete='off'
+                  />
+                </FormRow>
+                <FormRow
+                  label={FORM.FISH_TYPE}
+                  error={formProps.touched[FORM.FISH_TYPE] && formProps.errors[FORM.FISH_TYPE]}
+                >
+                  <Field
+                    name={FORM.FISH_TYPE}
+                    className='input input-bordered'
+                    autoComplete='off'
+                  />
+                </FormRow>
+                <FormRow
+                  label={FORM.ITEM_IMAGES}
+                  error={formProps.errors[FORM.ITEM_IMAGES]}
+                >
+                  <Dropzone
+                    dropzoneRef={dropzoneRef}
+                    name={FORM.ITEM_IMAGES}
+                    accept={ACCEPT.IMAGE}
+                    customPreviewSize='lg:w-1/3'
+                  />
+                </FormRow>
+                {actions}
+              </Form>
+            )}
+          </Formik>
+        </>
+      )}
     </Modal>
   )
 }

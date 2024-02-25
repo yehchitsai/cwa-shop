@@ -18,11 +18,32 @@ const retryAction = async (action) => {
     return recognitionStatus === 'success'
   }
 
-  return retry('recognition failed')(action, checker, 1)
+  const retryTimes = window.IS_MOCK ? 1 : 3
+  return retry('recognition failed')(action, checker, retryTimes)
+}
+
+const getRecognitionState = (status) => {
+  let isLoading = false
+  let isSuccess = false
+  let isError = false
+  if (status === 'loading') {
+    isLoading = true
+  }
+
+  if (status === 'success') {
+    isSuccess = true
+  }
+
+  if (status === 'fail') {
+    isError = true
+  }
+
+  return { isLoading, isSuccess, isError }
 }
 
 const useRecognition = (file, onSuccess) => {
   const isInit = useRef(false)
+  const isVideoUploaded = useRef(false)
   const [isLoading, setIsLoading] = useState(true)
   const [recognitionError, setRecognitionError] = useState(null)
   const [status, setStatus] = useState('')
@@ -38,16 +59,20 @@ const useRecognition = (file, onSuccess) => {
   const recognition = async () => {
     setIsLoading(true)
     setStatus('loading')
-    const [uploadVideoError] = await safeAwait(
-      uploadVideo({ url: `/v1/ithomebucket/${fileName}`, [fileName]: url })
-    )
-    if (uploadVideoError) {
-      setIsLoading(false)
-      setRecognitionError(uploadVideoError)
-      setStatus('fail')
-      return
+    // prevent reupload video
+    if (!isVideoUploaded.current) {
+      const [uploadVideoError] = await safeAwait(
+        uploadVideo({ url: `/v1/ithomebucket/${fileName}`, File: url })
+      )
+      if (uploadVideoError) {
+        setIsLoading(false)
+        setRecognitionError(uploadVideoError)
+        setStatus('fail')
+        return
+      }
     }
 
+    isVideoUploaded.current = true
     const params = { file: fileName }
     const getRecognitionUrl = `${awsHostPrefix}/getRecognition?${qs.stringify(params)}`
     const [videoRecognitionError, result] = await safeAwait(
@@ -81,7 +106,7 @@ const useRecognition = (file, onSuccess) => {
     trigger: recognition,
     isLoading,
     error: recognitionError,
-    status,
+    state: getRecognitionState(status),
     data
   }
 }

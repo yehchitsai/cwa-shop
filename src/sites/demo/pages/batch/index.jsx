@@ -1,15 +1,19 @@
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Formik, Form } from 'formik'
+import safeAwait from 'safe-await'
 import * as Yup from 'yup'
 import { GrMultiple } from 'react-icons/gr'
 import {
-  MdAdd, MdWarning, MdChecklist
+  MdAdd, MdWarning, MdChecklist, MdOutlineRefresh
 } from 'react-icons/md'
-import { get, isEmpty, size } from 'lodash-es'
+import toast from 'react-hot-toast'
+import {
+  filter, get, isEmpty, isUndefined, map, size
+} from 'lodash-es'
 import wait from '../../../../utils/wait'
-// import getApiHost from '../../../../utils/getApiHost'
-// import useCreate from '../../../../hooks/useCreate'
+import getApiHost from '../../../../utils/getApiHost'
+import useCreate from '../../../../hooks/useCreate'
 import FormLayout from '../../../../components/Form/Layout'
 import FormRow from '../../../../components/Form/FormRow'
 import FocusError from '../../../../components/Form/FocusError'
@@ -17,37 +21,109 @@ import Dropzone from '../../../../components/Dropzone'
 import ACCEPT from '../../../../components/Dropzone/accept'
 import Table from './Table'
 import EditModal from './EditModal'
+import { FORM, FORM_ITEM } from './constants'
 
-// const putImageHost = getApiHost('VITE_AWS_PUT_IMAGE_HOST')
-// const putImageEndPoint = `${import.meta.env.VITE_AWS_HOST_PREFIX}/putimage`
+const putImageHost = getApiHost('VITE_AWS_PUT_IMAGE_HOST')
+const putImageEndPoint = `${import.meta.env.VITE_AWS_HOST_PREFIX}/putimage`
 
-const FORM = {
-  VIDEOS: 'videos',
-  ROWS: 'rows'
+const ACTION = {
+  NEW: 'new',
+  UPDATE: 'update'
+}
+
+const getParamsListFromRecognitionData = (row = {}) => {
+  const { name } = get(row, FORM_ITEM.UPLOAD_FILE, {})
+  const {
+    fishType,
+    itemSerial,
+    itemImages = [],
+    itemVideos = []
+  } = get(row, FORM_ITEM.RECOGNITION_DATA, {})
+  const paramsList = map([...itemVideos, ...itemImages], (fileName, index) => {
+    return {
+      fishType,
+      itemSerial,
+      fileName,
+      action: index === 0 ? ACTION.NEW : ACTION.UPDATE
+    }
+  })
+  return { name, paramsList }
 }
 
 const validationSchema = Yup.object().shape({
-  [FORM.VIDEOS]: Yup.array().min(1).required('Miss video!')
-}, [])
+  [FORM.ROWS]: Yup.array()
+    .min(1).required('Miss select video.')
+    .of(
+      Yup.object().shape({
+        [FORM_ITEM.IS_UPLOADED]: Yup.boolean()
+          .isTrue().required('Uploading or upload failed.')
+      })
+    )
+})
 
 const Batch = () => {
   const [editItem, setEditItem] = useState({})
   const dropzoneRef = useRef()
   const modalRef = useRef()
   const { t } = useTranslation()
-  // const { trigger: putImage } = useCreate(putImageHost)
+  const { trigger: putImage, isMutating } = useCreate(putImageHost)
 
-  // const onSubmit = async (formValues, { setSubmitting }) => {}
-  const onSubmit = async (formValues) => {
-    console.log(formValues)
+  const onSubmit = async (formValues, formProps) => {
+    const toastId = toast.loading('Creating...')
+    const rows = get(formValues, FORM.ROWS, [])
+    const batchParamsList = map(rows, getParamsListFromRecognitionData)
+    const [error, resultList] = await safeAwait(
+      Promise.all(map(batchParamsList, async ({ paramsList = [] }) => {
+        const [newParams, ...updateParamsList] = paramsList
+        const [newError] = await safeAwait(putImage({ url: putImageEndPoint, ...newParams }))
+        if (newError) {
+          console.log(newError)
+          return { isSuccess: false }
+        }
+
+        const [updateError] = await safeAwait(
+          Promise.all(updateParamsList.map((param) => {
+            return putImage({ url: putImageEndPoint, ...param })
+          }))
+        )
+        if (updateError) {
+          console.log(updateError)
+          return { isSuccess: false }
+        }
+
+        return { isSuccess: true }
+      }))
+    )
+
+    if (isUndefined(error)) {
+      toast.success('Finish!', { id: toastId })
+      formProps.resetForm()
+      return
+    }
+
+    const newRows = filter(rows, (row, index) => {
+      const { isSuccess } = get(resultList, index, {})
+      return !isSuccess
+    })
+    toast('Some records not success.', { id: toastId })
+    formProps.resetForm({
+      values: { [FORM.ROWS]: newRows }
+    })
   }
 
   const onSelectFilesFinish = (formProps) => (newFiles) => {
-    const rows = newFiles.map((newFile) => ({
-      uploadFile: newFile,
-      recognitionData: {},
-      isUploaded: false
-    }))
+    const currentRows = get(formProps.values, FORM.ROWS, [])
+    const rows = newFiles.map((newFile, index) => {
+      const {
+        [FORM_ITEM.RECOGNITION_DATA]: recognitionData = undefined,
+        [FORM_ITEM.IS_UPLOADED]: isUploaded = false
+      } = get(currentRows, index, {})
+      return {
+        [FORM_ITEM.UPLOAD_FILE]: newFile,
+        [FORM_ITEM.RECOGNITION_DATA]: recognitionData,
+        [FORM_ITEM.IS_UPLOADED]: isUploaded
+      }
+    })
     formProps.setFieldValue(FORM.ROWS, rows)
   }
 
@@ -59,9 +135,8 @@ const Batch = () => {
     formProps.setFieldValue(FORM.ROWS, filteredRows)
   }
 
-  const onEdit = (obj) => {
-    console.log(obj)
-    setEditItem(obj)
+  const onEdit = (newEditItem) => {
+    setEditItem(newEditItem)
     modalRef.current.open()
   }
 
@@ -71,17 +146,24 @@ const Batch = () => {
 
   const onCloseEditModal = () => setEditItem({})
 
+  const onRefreshAllFailedRows = () => {
+    const refreshBtns = document.querySelectorAll('button[data-role="triggerRefresh"]')
+    for (const btn of [...refreshBtns]) {
+      btn.click()
+    }
+  }
+
   return (
-    <>
-      <Formik
-        initialValues={{
-          [FORM.VIDEOS]: [],
-          [FORM.ROWS]: []
-        }}
-        validationSchema={validationSchema}
-        onSubmit={onSubmit}
-      >
-        {(formProps) => (
+    <Formik
+      initialValues={{
+        [FORM.VIDEOS]: [],
+        [FORM.ROWS]: []
+      }}
+      validationSchema={validationSchema}
+      onSubmit={onSubmit}
+    >
+      {(formProps) => (
+        <>
           <Form>
             <FormLayout>
               <div role='alert' className='alert'>
@@ -108,7 +190,7 @@ const Batch = () => {
               </FormRow>
               {isEmpty(formProps.values[FORM.ROWS]) && (
                 <FormRow>
-                  <div role='alert' className='alert'>
+                  <div role='alert' className='alert grid-flow-col justify-start'>
                     <MdWarning size='1.5em' />
                     <span>No video exist.</span>
                   </div>
@@ -116,13 +198,19 @@ const Batch = () => {
               )}
               {!isEmpty(formProps.values[FORM.ROWS]) && (
                 <FormRow>
-                  <div role='alert' className='alert'>
+                  <div role='alert' className='alert grid-flow-col'>
                     <MdChecklist size='1.5em' />
                     <span>
-                      Selected
-                      {` ${size(formProps.values[FORM.ROWS])} `}
-                      videos
+                      {`Selected ${size(formProps.values[FORM.ROWS])} videos`}
                     </span>
+                    <button
+                      type='button'
+                      className='btn btn-square btn-outline'
+                      disabled={formProps.isValid}
+                      onClick={onRefreshAllFailedRows}
+                    >
+                      <MdOutlineRefresh size='1.5em' />
+                    </button>
                   </div>
                   <Table
                     data={formProps.values[FORM.ROWS]}
@@ -137,23 +225,28 @@ const Batch = () => {
                 <button
                   type='submit'
                   className='btn btn-outline'
-                  // disabled={isMutating}
+                  disabled={(
+                    isMutating ||
+                    isEmpty(formProps.values[FORM.ROWS]) ||
+                    !isEmpty(formProps.errors)
+                  )}
                 >
                   <MdAdd size='1.5em' />
-                  {`${t('newItem')}`}
+                  {t('newItem')}
                 </button>
               </div>
               <FocusError />
             </FormLayout>
           </Form>
-        )}
-      </Formik>
-      <EditModal
-        modalRef={modalRef}
-        editItem={editItem}
-        onClose={onCloseEditModal}
-      />
-    </>
+          <EditModal
+            modalRef={modalRef}
+            editItem={editItem}
+            onClose={onCloseEditModal}
+            onUpdated={onUpdated(formProps)}
+          />
+        </>
+      )}
+    </Formik>
   )
 }
 

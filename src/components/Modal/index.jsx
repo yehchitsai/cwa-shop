@@ -8,6 +8,23 @@ import wait from '../../utils/wait'
 
 const ESC_KEY_CODE = 27
 
+const ModalActions = (props) => {
+  const { onModalClose, onModalOk, className } = props
+  return (
+    <div
+      className={clx(
+        'modal-action px-6 pb-6 space-x-2',
+        { [className]: className }
+      )}
+    >
+      <button type='button' className='btn' onClick={onModalClose}>Close</button>
+      <button type='submit' className='btn' onClick={() => onModalOk && onModalOk()}>
+        Ok
+      </button>
+    </div>
+  )
+}
+
 const Modal = (props) => {
   const {
     id,
@@ -17,6 +34,7 @@ const Modal = (props) => {
     isFullSize = false,
     isOkBtnVisible = false,
     isCloseBtnVisible = true,
+    isFormModal = false,
     onClose,
     onOpen,
     onOk,
@@ -25,7 +43,12 @@ const Modal = (props) => {
   } = props
   const [visible, setVisible] = useState(false)
 
-  const onModalOk = () => onOk && onOk()
+  const onModalOk = async () => {
+    if (onOk) {
+      await Promise.resolve(onOk())
+    }
+    document.querySelector(`#${id}`).close()
+  }
 
   const onModalVisibleChange = useCallback(() => {
     onVisibleChange && onVisibleChange(visible)
@@ -36,6 +59,9 @@ const Modal = (props) => {
     setVisible(true)
     onModalVisibleChange()
     onOpen && onOpen()
+    wait(0).then(() => {
+      document.querySelector(`#${id}-body`).scrollTop = 0
+    })
   }, [id, onOpen, onModalVisibleChange])
 
   const onModalClose = useCallback(() => {
@@ -96,7 +122,7 @@ const Modal = (props) => {
         <form method='dialog'>
           {/* if there is a button in form, it will close the modal */}
           <button
-            type='submit'
+            type='button'
             className='btn btn-circle btn-md absolute right-2 top-2 z-10'
             onClick={onModalClose}
           >
@@ -110,25 +136,36 @@ const Modal = (props) => {
           visible
             ? (
               <div
+                id={`${id}-body`}
                 className={clx(
                   'px-6',
-                  { 'overflow-y-auto max-h-[65vh]': !isFullSize }
+                  { 'overflow-y-auto': !isFullSize },
+                  { 'max-h-[65vh]': !isFormModal },
+                  { 'max-h-[80vh]': isFormModal }
                 )}
               >
-                {children}
+                {!isFormModal && children}
+                {
+                  isFormModal && children(
+                    <>
+                      <ModalActions
+                        className='absolute bottom-0 right-0 z-10 w-full bg-white pt-6'
+                        onModalClose={onModalClose}
+                      />
+                      <div className='h-[15vh]' />
+                    </>
+                  )
+                }
               </div>
             )
             : null
         }
         {
-          (isCloseBtnVisible || isOkBtnVisible) && (
-            <div className='modal-action px-6 pb-6'>
-              <form method='dialog' className='space-x-2'>
-                {/* if there is a button in form, it will close the modal */}
-                <button type='submit' className='btn' onClick={onModalClose}>Close</button>
-                <button type='submit' className='btn' onClick={onModalOk}>Ok</button>
-              </form>
-            </div>
+          (!isFormModal && (isCloseBtnVisible || isOkBtnVisible)) && (
+            <ModalActions
+              onModalClose={onModalClose}
+              onModalOk={onModalOk}
+            />
           )
         }
       </div>
