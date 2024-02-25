@@ -141,7 +141,7 @@ const Modal = (props) => {
                   'px-6',
                   { 'overflow-y-auto': !isFullSize },
                   { 'max-h-[65vh]': !isFormModal },
-                  { 'max-h-[80vh]': isFormModal }
+                  { 'max-sm:max-h-[70vh] sm:max-h-[80vh]': isFormModal }
                 )}
               >
                 {!isFormModal && children}
@@ -152,7 +152,7 @@ const Modal = (props) => {
                         className='absolute bottom-0 right-0 z-10 w-full bg-white pt-6'
                         onModalClose={onModalClose}
                       />
-                      <div className='h-[15vh]' />
+                      <div className='max-sm:h-[10vh] sm:h-[15vh]' />
                     </>
                   )
                 }
