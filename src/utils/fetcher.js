@@ -78,7 +78,7 @@ window.addEventListener('visibilitychange', (event) => {
 window.addEventListener('beforeunload', beforeUnloadHandler)
 
 const fetcher = async (config = {}, triggerArgs = {}) => {
-  const [forceMock] = getSearchValuesFromUrl(['MOCK'])
+  const [forceMock, forceDebug] = getSearchValuesFromUrl(['MOCK', 'DEBUG'])
   const isForceDisableMock = forceMock === '0'
   const { arg: { url: keyFromTrigger = '', ...body } = {} } = triggerArgs
   const { host = '', url: keyFromGet = '', options = {} } = config
@@ -127,7 +127,7 @@ const fetcher = async (config = {}, triggerArgs = {}) => {
         throw new Error(errorMessage)
       }
 
-      console.log(
+      forceDebug && console.log(
         'Fetch data failed, mock mode will will using mock data instead.',
         { url, options, error: e.toString() }
       )
