@@ -1,7 +1,9 @@
 import { useRef, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Formik, Field, Form } from 'formik'
-import { get, isEmpty } from 'lodash-es'
+import {
+  first, get, isEmpty, map
+} from 'lodash-es'
 import Modal from '../../../../components/Modal'
 import Video from '../../../../components/Video'
 import getVideoJsOptions from '../../../../components/Video/getVideoJsOptions'
@@ -10,7 +12,7 @@ import ACCEPT from '../../../../components/Dropzone/accept'
 import Dropzone from '../../../../components/Dropzone'
 
 const FORM = {
-  ID: 'id',
+  ITEM_SERIAL: 'itemSerial',
   FISH_TYPE: 'fishType',
   IMAGES: 'images'
 }
@@ -20,22 +22,29 @@ const EditModal = (props) => {
   const [isUpdated, setIsUpdated] = useState(false)
   const dropzoneRef = useRef()
   const { t } = useTranslation()
-  const { id, fishType, images = [] } = get(editItem, 'data', {})
-  const src = get(editItem, 'item.url')
-  const type = get(editItem, 'item.file.type')
+  const {
+    itemSerial,
+    fishType,
+    itemImages = [],
+    itemVideos = []
+  } = get(editItem, 'data', {})
 
   const onOpen = () => {
     setIsUpdated(false)
   }
 
   useEffect(() => {
-    if (isUpdated || isEmpty(images)) {
+    if (isUpdated || isEmpty(itemImages)) {
       return
     }
 
-    dropzoneRef.current.setAcceptedFiles(images)
+    const acceptFiles = map(itemImages, (itemImage) => ({
+      isVideo: false,
+      url: itemImage
+    }))
+    dropzoneRef.current.setAcceptedFiles(acceptFiles)
     setIsUpdated(true)
-  }, [setIsUpdated, isUpdated, images])
+  }, [setIsUpdated, isUpdated, itemImages])
 
   return (
     <Modal
@@ -52,21 +61,21 @@ const EditModal = (props) => {
         label={t('video')}
       >
         <Video
-          options={getVideoJsOptions({ src, type })}
+          options={getVideoJsOptions({ src: first(itemVideos) })}
           height='h-[30vh!important]'
         />
       </FormRow>
       <Formik
         initialValues={{
-          [FORM.ID]: id,
+          [FORM.ITEM_SERIAL]: itemSerial,
           [FORM.FISH_TYPE]: fishType,
-          [FORM.IMAGES]: images
+          [FORM.IMAGES]: itemImages
         }}
       >
         {() => (
           <Form>
             <FormRow label='Id'>
-              <Field name={FORM.ID} className='input input-bordered' required />
+              <Field name={FORM.ITEM_SERIAL} className='input input-bordered' required />
             </FormRow>
             <FormRow label='FishType'>
               <Field name={FORM.FISH_TYPE} className='input input-bordered' required />

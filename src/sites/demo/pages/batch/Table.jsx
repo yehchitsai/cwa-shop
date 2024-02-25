@@ -1,7 +1,13 @@
 import TableRow from './TableRow'
 
 const Table = (props) => {
-  const { data = [], onRemove, onEdit } = props
+  const {
+    field,
+    data,
+    onRemove,
+    onEdit,
+    onUpdated
+  } = props
 
   return (
     <div className='mt-4 overflow-x-auto'>
@@ -17,17 +23,17 @@ const Table = (props) => {
           </tr>
         </thead>
         <tbody>
-          {data.map((item, index) => {
-            return (
-              <TableRow
-                item={item}
-                index={index}
-                key={index}
-                onRemove={onRemove}
-                onEdit={onEdit}
-              />
-            )
-          })}
+          {data.map((item, index) => (
+            <TableRow
+              field={`${field}.${index}`}
+              item={item.uploadFile}
+              index={index}
+              key={index}
+              onRemove={onRemove}
+              onEdit={onEdit}
+              onUpdated={onUpdated}
+            />
+          ))}
         </tbody>
       </table>
     </div>
