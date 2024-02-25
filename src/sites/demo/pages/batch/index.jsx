@@ -6,8 +6,10 @@ import { GrMultiple } from 'react-icons/gr'
 import {
   MdAdd, MdWarning, MdChecklist
 } from 'react-icons/md'
-import { isEmpty, size } from 'lodash-es'
+import { get, isEmpty, size } from 'lodash-es'
 import wait from '../../../../utils/wait'
+// import getApiHost from '../../../../utils/getApiHost'
+// import useCreate from '../../../../hooks/useCreate'
 import FormLayout from '../../../../components/Form/Layout'
 import FormRow from '../../../../components/Form/FormRow'
 import FocusError from '../../../../components/Form/FocusError'
@@ -16,8 +18,12 @@ import ACCEPT from '../../../../components/Dropzone/accept'
 import Table from './Table'
 import EditModal from './EditModal'
 
+// const putImageHost = getApiHost('VITE_AWS_PUT_IMAGE_HOST')
+// const putImageEndPoint = `${import.meta.env.VITE_AWS_HOST_PREFIX}/putimage`
+
 const FORM = {
-  VIDEOS: 'videos'
+  VIDEOS: 'videos',
+  ROWS: 'rows'
 }
 
 const validationSchema = Yup.object().shape({
@@ -25,24 +31,32 @@ const validationSchema = Yup.object().shape({
 }, [])
 
 const Batch = () => {
-  const [files, setFiles] = useState([])
   const [editItem, setEditItem] = useState({})
   const dropzoneRef = useRef()
   const modalRef = useRef()
   const { t } = useTranslation()
+  // const { trigger: putImage } = useCreate(putImageHost)
 
   // const onSubmit = async (formValues, { setSubmitting }) => {}
-  const onSubmit = async () => {
-    console.log(dropzoneRef.current.getAcceptedFiles())
+  const onSubmit = async (formValues) => {
+    console.log(formValues)
   }
 
-  const onSelectFilesFinish = (newFiles) => setFiles(newFiles)
+  const onSelectFilesFinish = (formProps) => (newFiles) => {
+    const rows = newFiles.map((newFile) => ({
+      uploadFile: newFile,
+      recognitionData: {},
+      isUploaded: false
+    }))
+    formProps.setFieldValue(FORM.ROWS, rows)
+  }
 
-  const onRemove = async (index) => {
+  const onRemove = (formProps) => async (index) => {
+    const rows = get(formProps.values, FORM.ROWS, [])
     dropzoneRef.current.removeFile(index)
     await wait()
-    const newFiles = dropzoneRef.current.getAcceptedFiles()
-    setFiles(newFiles)
+    const filteredRows = rows.filter((row, rowIndex) => rowIndex !== index)
+    formProps.setFieldValue(FORM.ROWS, filteredRows)
   }
 
   const onEdit = (obj) => {
@@ -51,18 +65,23 @@ const Batch = () => {
     modalRef.current.open()
   }
 
+  const onUpdated = (formProps) => (field, row) => {
+    formProps.setFieldValue(field, row)
+  }
+
   const onCloseEditModal = () => setEditItem({})
 
   return (
     <>
       <Formik
         initialValues={{
-          [FORM.VIDEOS]: []
+          [FORM.VIDEOS]: [],
+          [FORM.ROWS]: []
         }}
         validationSchema={validationSchema}
         onSubmit={onSubmit}
       >
-        {({ errors, touched }) => (
+        {(formProps) => (
           <Form>
             <FormLayout>
               <div role='alert' className='alert'>
@@ -76,18 +95,18 @@ const Batch = () => {
               </div>
               <FormRow
                 label={`${t('video')}`}
-                error={touched[FORM.VIDEOS] && errors[FORM.VIDEOS]}
+                error={formProps.touched[FORM.VIDEOS] && formProps.errors[FORM.VIDEOS]}
               >
                 <Dropzone
                   dropzoneRef={dropzoneRef}
                   name={FORM.VIDEOS}
                   accept={ACCEPT.VIDEO}
-                  onFinish={onSelectFilesFinish}
+                  onFinish={onSelectFilesFinish(formProps)}
                   isShowPreview={false}
                   isSelectFolder
                 />
               </FormRow>
-              {isEmpty(files) && (
+              {isEmpty(formProps.values[FORM.ROWS]) && (
                 <FormRow>
                   <div role='alert' className='alert'>
                     <MdWarning size='1.5em' />
@@ -95,20 +114,22 @@ const Batch = () => {
                   </div>
                 </FormRow>
               )}
-              {!isEmpty(files) && (
+              {!isEmpty(formProps.values[FORM.ROWS]) && (
                 <FormRow>
                   <div role='alert' className='alert'>
                     <MdChecklist size='1.5em' />
                     <span>
                       Selected
-                      {` ${size(files)} `}
+                      {` ${size(formProps.values[FORM.ROWS])} `}
                       videos
                     </span>
                   </div>
                   <Table
-                    data={files}
-                    onRemove={onRemove}
+                    data={formProps.values[FORM.ROWS]}
+                    field={FORM.ROWS}
+                    onRemove={onRemove(formProps)}
                     onEdit={onEdit}
+                    onUpdated={onUpdated(formProps)}
                   />
                 </FormRow>
               )}

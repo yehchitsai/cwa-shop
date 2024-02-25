@@ -2,6 +2,7 @@ import qs from 'query-string'
 import {
   find, delay, flow, concat, values, isEmpty
 } from 'lodash-es'
+import getSearchValuesFromUrl from './getSearchValuesFromUrl'
 
 const defaultMockData = flow(
   () => import.meta.glob('../mock/**/*.js', { eager: true }),
@@ -25,6 +26,7 @@ const getMockData = () => {
 }
 
 const mockFetcher = async (key, authorization = {}, options = {}) => {
+  const [forceDebug] = getSearchValuesFromUrl(['DEBUG'])
   // prod build mock data 拿不到 Vite env variable
   // 所以額外在 mock 時判斷有 undefined 取代掉
   const mockData = getMockData()
@@ -35,7 +37,7 @@ const mockFetcher = async (key, authorization = {}, options = {}) => {
     timeout = 0
   } = find(mockData, (item) => {
     return (
-      item.url.includes(endpoint) &&
+      item.url.replace(/:.*/, '').includes(endpoint) &&
       (body ? (item.method === method.toLowerCase()) : true)
     )
   }) || {}
@@ -45,7 +47,7 @@ const mockFetcher = async (key, authorization = {}, options = {}) => {
         authorization: authorization.Authorization
       }
       const data = response({ query: qs.parse(queryString), headers, body })
-      console.log({ apiEndpoint: key, responseData: data })
+      forceDebug && console.log({ apiEndpoint: key, responseData: data })
       resolve(data)
     }, timeout)
   })
