@@ -149,7 +149,7 @@ const Modal = (props) => {
                   isFormModal && children(
                     <>
                       <ModalActions
-                        className='absolute bottom-0 right-0 z-10 w-full bg-white pt-6'
+                        className='absolute bottom-0 right-0 z-10 w-full bg-base-100 pt-6'
                         onModalClose={onModalClose}
                       />
                       <div className='max-sm:h-[10vh] sm:h-[15vh]' />
