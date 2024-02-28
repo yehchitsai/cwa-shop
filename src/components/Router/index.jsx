@@ -22,8 +22,6 @@ const withErrorElement = (routes) => routes.map((item) => {
   }
 })
 
-const defaultAuth = { message: 'NO USER' }
-
 const Router = (props) => {
   const { routes, basename = '/', isAuthRoutes = true } = props
   const appBaseName = `${window.APP_BASENAME}${basename}`
@@ -35,14 +33,12 @@ const Router = (props) => {
         const expectedAuthRoutes = [
           'external'
         ].some((authRoute) => pathname.startsWith(`/${authRoute}`))
-        if (!isAuthRoutes && !expectedAuthRoutes) {
-          return defaultAuth
-        }
-
+        const isRedirectUnauth = (isAuthRoutes || expectedAuthRoutes)
         const [error, auth, response] = await getAuth()
-        if (error) {
+        if (error && isRedirectUnauth) {
           throw response
         }
+
         return defer({ message: auth })
       },
       children: withErrorElement([
