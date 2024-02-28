@@ -50,8 +50,7 @@ export default ({ mode }) => {
   process.env = { ...process.env, ...modeEnv }
 
   const viteConfig = defineConfig({
-    appType: isDefaultEntry ? 'spa' : 'mpa',
-    base: isProd ? undefined : './',
+    base: isProd ? appBaseName : './',
     envDir,
     define: {
       'window.APP_VERSION': `"${version}"`,
