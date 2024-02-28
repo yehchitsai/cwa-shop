@@ -115,7 +115,7 @@ const Page = () => {
 
     setSelectedProducts([])
     toast.success('All items removed,\nback to products page in 3sec', { id: toastId })
-    setTimeout(() => navigate('../'), 3000)
+    setTimeout(() => navigate('../', { relative: 'path' }), 3000)
   }
 
   const onOrder = async () => {
@@ -132,7 +132,7 @@ const Page = () => {
 
     toast.success('Order complete!', { id: toastId })
     setOrderData(get(orderData, 'results', {}))
-    navigate('./complete')
+    navigate('../complete', { relative: 'path' })
   }
 
   useOnInit(() => {
