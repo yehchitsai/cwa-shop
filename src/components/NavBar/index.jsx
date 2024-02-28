@@ -35,13 +35,7 @@ const Logout = (props) => {
 
   return (
     <a
-      href={
-        window.IS_MOCK
-          ? window.location.href
-            .replace(window.location.pathname, `${window.APP_BASENAME}/${logoutUrl}`)
-            .replace(window.location.search, '')
-          : logoutUrl
-    }
+      href={window.IS_MOCK ? `${window.location.origin}/login` : logoutUrl}
       className='btn btn-ghost'
     >
       {children}

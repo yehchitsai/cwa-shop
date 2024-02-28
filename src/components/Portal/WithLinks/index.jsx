@@ -1,18 +1,20 @@
+import { Link } from 'react-router-dom'
 import Portal from '..'
 
 const PortalWithLinks = (props) => {
   const { links = [] } = props
+
   return (
     <Portal>
       {links.map((link) => {
         return (
-          <a
+          <Link
             key={link.url}
-            href={link.url}
+            to={link.url}
             className='btn btn-outline btn-lg'
           >
             {link.name}
-          </a>
+          </Link>
         )
       })}
     </Portal>

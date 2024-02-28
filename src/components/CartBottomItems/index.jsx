@@ -32,7 +32,7 @@ const CartBottomItems = (props) => {
         <span>{`${t('totalPrice')}: ${totalPrice} ${currency}`}</span>
       </li>
       <Link
-        to='/confirm'
+        to='./confirm'
         className={clx({ 'pointer-events-none': isNoProductSelected })}
       >
         <button
