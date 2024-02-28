@@ -26,7 +26,7 @@ const links = flow(
   (endpoints) => endpoints.map((endpoint) => {
     const path = endpoint.replace(/\.\/|\//g, '')
     return {
-      url: `${window.APP_BASENAME}/${path}`,
+      url: `/${path}`,
       name: path
     }
   })
