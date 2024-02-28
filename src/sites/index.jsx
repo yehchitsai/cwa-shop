@@ -8,20 +8,19 @@ import Router from '../components/Router'
 import getRoutes from '../components/Router/getRoutes'
 
 const links = flow(
-  () => keys(import.meta.glob('./**/index.html')),
+  () => keys(import.meta.glob('./*/index.jsx')),
   (paths) => paths.filter((path) => {
     return (
-      path !== './index.html' &&
       // login 只有在 mock 環境露出
       (window.IS_MOCK ? true : !path.includes('./login'))
     )
   }),
   (filteredPaths) => filteredPaths.map((path) => {
     if (window.APP_BASENAME === '') {
-      return path.replace('index.html', '')
+      return path.replace('index.jsx', '')
     }
 
-    return path.replace('./', '/').replace('index.html', '')
+    return path.replace('./', '/').replace('index.jsx', '')
   }),
   (endpoints) => endpoints.map((endpoint) => {
     const path = endpoint.replace(/\.\/|\//g, '')
