@@ -46,6 +46,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <Root>
     <Router
       routes={dynamicRoutes}
+      isAuthRoutes={false}
       isRootRoutes
     />
   </Root>
