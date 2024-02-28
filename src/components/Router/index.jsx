@@ -2,10 +2,8 @@ import { Suspense } from 'react'
 import {
   createBrowserRouter,
   RouterProvider,
-  redirect,
   defer
 } from 'react-router-dom'
-import { isEmpty } from 'lodash-es'
 import { preload } from 'swr'
 import fetcher from '../../utils/fetcher'
 import getApiHost from '../../utils/getApiHost'
@@ -62,13 +60,6 @@ const Router = (props) => {
     {
       element: <Layout appBaseName={appBaseName} />,
       loader: () => {
-        const redirectPath = window.sessionStorage.getItem('redirectPath')
-        if (!isEmpty(redirectPath)) {
-          window.sessionStorage.removeItem('redirectPath')
-          const nextPath = redirectPath.replace(window.location.pathname, '')
-          return redirect(nextPath.startsWith('/') ? nextPath : `/${nextPath}`)
-        }
-
         if (!isAuthRoutes) {
           return defaultAuth
         }

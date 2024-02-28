@@ -1,7 +1,27 @@
 import ReactDOM from 'react-dom/client'
-import { flow, keys, isEmpty } from 'lodash-es'
+import {
+  flow, keys, set
+} from 'lodash-es'
 import Root from '../components/Root'
 import PortalWithLinks from '../components/Portal/WithLinks'
+import Router from '../components/Router'
+import getRoutes from '../components/Router/getRoutes'
+
+const routes = flow(
+  () => import.meta.glob('./**/pages/**/index.jsx'),
+  Object.entries,
+  (pagesEntries) => pagesEntries.reduce((collect, pagesEntry) => {
+    const [path, page] = pagesEntry
+    const convertedPath = `./pages/${path.replace(/\/pages/, '').replace(/^\.\//, '')}`
+    if (collect[convertedPath]) {
+      return collect
+    }
+
+    set(collect, [`${convertedPath}`], page)
+    return collect
+  }, {}),
+  getRoutes
+)()
 
 const links = flow(
   () => keys(import.meta.glob('./**/index.html')),
@@ -19,26 +39,28 @@ const links = flow(
 
     return path.replace('./', '/').replace('index.html', '')
   }),
-  (endpoints) => endpoints.map((endpoint) => ({
-    url: `${window.APP_BASENAME}${endpoint}`,
-    name: endpoint.replace(/\.\/|\//g, '')
-  }))
+  (endpoints) => endpoints.map((endpoint) => {
+    const path = endpoint.replace(/\.\/|\//g, '')
+    return {
+      url: `${window.APP_BASENAME}/${path}`,
+      name: path
+    }
+  })
 )()
 
-window.sessionStorage.removeItem('redirectPath')
-
-const { pathname, search } = window.location
-const targetRouter = links.find((link) => pathname.startsWith(`/${link.name}/`))
-if (!isEmpty(targetRouter)) {
-  const nextPathName = window.location.href
-    .replace(window.location.search, '')
-    .replace(pathname, `/${targetRouter.name}/`)
-  sessionStorage.setItem('redirectPath', `${pathname}${search}`)
-  window.location.href = nextPathName
-}
+const dynamicRoutes = [
+  {
+    path: '/',
+    element: () => <PortalWithLinks links={links} />
+  },
+  ...routes
+]
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Root>
-    <PortalWithLinks links={links} />
+    <Router
+      routes={dynamicRoutes}
+      isAuthRoutes={false}
+    />
   </Root>
 )

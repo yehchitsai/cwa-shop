@@ -11,9 +11,9 @@ const getRoutes = (pages, loaderMap = {}) => {
         return collect
       }
 
-      const normalizedPathName = fileName.includes('$')
-        ? fileName.replace('$', ':')
-        : fileName.replace(/\/index/, '')
+      const normalizedPathName = fileName
+        .replace('$', ':')
+        .replace(/\/index/, '')
 
       const isIndex = fileName === 'index'
       collect.push({

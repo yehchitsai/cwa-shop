@@ -1,56 +1,46 @@
-import fs from 'fs'
 import { resolve } from 'path'
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import { viteMockServe } from 'vite-plugin-mock'
 import { sync } from 'glob'
 import {
-  flow, orderBy, size, uniq
+  pick
 } from 'lodash-es'
 import { version, name } from './package.json'
 
+const DEFAULT_ENTRY = '__index'
 const {
   NODE_ENV,
   BASENAME,
   PREVIEW,
   MOCK,
   MOCK_AWS_API,
-  VITE_AWS_HOST_PREFIX: awsHostPrefix
+  VITE_AWS_HOST_PREFIX: awsHostPrefix,
+  ENTRY = DEFAULT_ENTRY
 } = process.env
 const isMock = !!MOCK
 const isMockAwsApi = !!MOCK_AWS_API
 const isPreview = !!PREVIEW
+const isDefaultEntry = ENTRY === DEFAULT_ENTRY
 const appBaseName = (BASENAME && !isPreview) ? `/${name}` : ''
 
-const outDir = resolve(__dirname, 'dist')
+const defaultOutDir = 'dist'
+const outDir = resolve(__dirname, defaultOutDir)
 const envDir = resolve(__dirname, 'environments')
 const entriesDir = 'src/sites'
 const entries = sync(`${entriesDir}/**/index.html`)
-const entriesMap = Object.fromEntries(
-  entries.map((entry) => {
-    return [entry.replace(`${entriesDir}/`, '').replace('/index.html', ''), entry]
-  })
+const entriesMap = pick(
+  Object.fromEntries(
+    entries.map((entry) => {
+      const key = entry
+        .replace(`${entriesDir}/`, '')
+        .replace('/index.html', '')
+        .replace('index.html', DEFAULT_ENTRY)
+      return [key, entry]
+    })
+  ),
+  [ENTRY]
 )
-const rootRoutesMap = Object.fromEntries(
-  entries.map((entry) => {
-    return [entry.replace(entriesDir, '').replace('index.html', ''), entry]
-  })
-)
-const routes = flow(
-  () => sync(`${entriesDir}/**/index.jsx`).reduce((collect, file) => {
-    const route = file.replace('src/sites', '').replace('index.jsx', '').replace(/pages\//g, '')
-    if (route !== '/') {
-      const isEntryRoute = route in rootRoutesMap
-      collect.push(
-        `${appBaseName}${isEntryRoute ? route : route.replace(/\/$/, '')}`
-      )
-    }
-    return collect
-  }, []),
-  uniq,
-  (uniqRoutes) => orderBy(uniqRoutes, size, 'desc'),
-  (sortedRoutes) => sortedRoutes.filter((sortedRoute) => sortedRoute.endsWith('/'))
-)()
 
 // https://vitejs.dev/config/
 export default ({ mode }) => {
@@ -58,7 +48,9 @@ export default ({ mode }) => {
   const modeEnv = loadEnv(isMock ? 'mock' : mode, envDir)
   const targetEnv = loadEnv(isProd ? 'production' : 'development', envDir)
   process.env = { ...process.env, ...modeEnv }
-  const viteConfig = {
+
+  const viteConfig = defineConfig({
+    appType: isDefaultEntry ? 'spa' : 'mpa',
     base: isProd ? undefined : './',
     envDir,
     define: {
@@ -71,7 +63,7 @@ export default ({ mode }) => {
       'window.IS_PREVIEW': `${isPreview}`,
       'window.TARGET_ENV': `${JSON.stringify(targetEnv)}`
     },
-    root: `${entriesDir}/`,
+    root: `${entriesDir}/${isDefaultEntry ? '' : `/${ENTRY}`}`,
     plugins: [
       react(),
       viteMockServe({
@@ -79,72 +71,22 @@ export default ({ mode }) => {
         localEnabled: isMock
       })
     ],
-    experimental: {
-      renderBuiltUrl: (filename) => {
-        const prefix = 'assets'
-        if (!filename.startsWith(prefix) && filename.includes('/')) {
-          return `./${filename.split('/')[1]}`
-        }
-
-        return `./${filename.replace(/.*assets/, prefix)}`
-      }
-    },
     build: {
-      outDir,
+      outDir: isDefaultEntry ? outDir : resolve(__dirname, `${defaultOutDir}/${ENTRY}`),
       emptyOutDir: true,
       rollupOptions: {
-        input: entriesMap,
-        output: {
-          entryFileNames: (assetInfo) => {
-            const { name: entryName } = assetInfo
-            const file404 = `
-              <!DOCTYPE html>
-              <script>
-                sessionStorage.removeItem('redirectPath')
-                const pathname = window.location.pathname
-                const isFolderPath = pathname.endsWith('/')
-                const matchRoute = ${JSON.stringify(routes)}
-                  .find((route) => pathname.startsWith(route)) || ''
-                const isRouteExist = !!matchRoute
-                console.log(pathname, isRouteExist, matchRoute, '${entryName}')
-                let nextPathName
-                if (!isRouteExist) {
-                  nextPathName = window.location.origin + '${appBaseName}'
-                  window.location.href = nextPathName
-                } else {
-                  nextPathName = window.location.href
-                    .replace(window.location.search, '')
-                    .replace(pathname, matchRoute)
-                  sessionStorage.setItem('redirectPath', pathname + window.location.search)
-                }
-                console.log(nextPathName)
-                window.location.href = nextPathName
-              </script>
-            `
-            if (entryName === 'index.html') {
-              fs.writeFileSync('dist/404.html', file404, 'utf-8')
-              return '[name]-[hash].js'
-            }
-
-            fs.mkdirSync(`dist/${entryName}`)
-            fs.mkdirSync(`dist/${entryName}/assets`)
-            fs.writeFileSync(`dist/${entryName}/404.html`, file404, 'utf-8')
-            // return `${entryName}/assets/[name]-[hash].js`
-            return `${entryName}/[name]-[hash].js`
-          }
-        }
+        input: entriesMap
       }
     },
     server: {
       proxy: {
         [awsHostPrefix]: {
-          // target: isMock ? process.env.VITE_LOCAL_MOCK_API_HOST : process.env.VITE_MOCK_API_HOST,
           changeOrigin: true,
           secure: false,
           rewrite: (path) => path.replace(new RegExp(`^${awsHostPrefix}`), '')
         }
       }
     }
-  }
-  return defineConfig(viteConfig)
+  })
+  return viteConfig
 }
