@@ -22,7 +22,7 @@ const Complete = () => {
             <p className='my-2'>{`orderTotalQuantity: ${orderTotalQuantity}`}</p>
             <p className='my-2'>{`orderTotalPrice: ${orderTotalPrice} ${currency}`}</p>
           </h3>
-          <Link to='../' className='btn btn-primary'>
+          <Link to='../' relative='path' className='btn btn-primary'>
             Back to products
           </Link>
         </div>
