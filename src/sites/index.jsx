@@ -1,27 +1,11 @@
 import ReactDOM from 'react-dom/client'
 import {
-  flow, keys, set
+  flow, keys
 } from 'lodash-es'
 import Root from '../components/Root'
 import PortalWithLinks from '../components/Portal/WithLinks'
 import Router from '../components/Router'
 import getRoutes from '../components/Router/getRoutes'
-
-const routes = flow(
-  () => import.meta.glob('./**/pages/**/index.jsx'),
-  Object.entries,
-  (pagesEntries) => pagesEntries.reduce((collect, pagesEntry) => {
-    const [path, page] = pagesEntry
-    const convertedPath = `./pages/${path.replace(/\/pages/, '').replace(/^\.\//, '')}`
-    if (collect[convertedPath]) {
-      return collect
-    }
-
-    set(collect, [`${convertedPath}`], page)
-    return collect
-  }, {}),
-  getRoutes
-)()
 
 const links = flow(
   () => keys(import.meta.glob('./**/index.html')),
@@ -48,19 +32,21 @@ const links = flow(
   })
 )()
 
+const pages = import.meta.glob('./**/pages/**/index.jsx')
+const loaders = import.meta.glob('./**/pages/**/index.loader.js')
 const dynamicRoutes = [
   {
     path: '/',
     element: () => <PortalWithLinks links={links} />
   },
-  ...routes
+  ...getRoutes(pages, loaders, true)
 ]
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Root>
     <Router
       routes={dynamicRoutes}
-      isAuthRoutes={false}
+      isRootRoutes
     />
   </Root>
 )

@@ -5,7 +5,8 @@ import getRoutes from '../../components/Router/getRoutes'
 import Root from '../../components/Root'
 
 const pages = import.meta.glob('./pages/**/index.jsx')
-const dynamicRoutes = getRoutes(pages)
+const loaders = import.meta.glob('./pages/**/index.loader.js')
+const dynamicRoutes = getRoutes(pages, loaders)
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Root>
