@@ -132,7 +132,7 @@ const Page = () => {
 
     toast.success('Order complete!', { id: toastId })
     setOrderData(get(orderData, 'results', {}))
-    navigate('/complete')
+    navigate('../complete')
   }
 
   useOnInit(() => {
