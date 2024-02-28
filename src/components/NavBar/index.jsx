@@ -31,11 +31,11 @@ const HomeLogo = (props) => {
 }
 
 const Logout = (props) => {
-  const { children } = props
+  const { children, appBaseName } = props
 
   return (
     <a
-      href={window.IS_MOCK ? `${window.location.origin}/login` : logoutUrl}
+      href={window.IS_MOCK ? `${window.location.origin}${appBaseName}/login` : logoutUrl}
       className='btn btn-ghost'
     >
       {children}
@@ -140,7 +140,7 @@ const NavBar = (props) => {
               <FaUserCircle className='md:hidden' size='1.5em' />
             </div>
           </div>
-          <Logout>
+          <Logout appBaseName={appBaseName}>
             <MdLogout size='1.5em' />
           </Logout>
         </div>
