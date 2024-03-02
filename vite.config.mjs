@@ -42,6 +42,10 @@ const entriesMap = pick(
   [ENTRY]
 )
 
+if (!isDefaultEntry) {
+  console.log(`Build entry: ${entriesDir}/${ENTRY}`)
+}
+
 // https://vitejs.dev/config/
 export default ({ mode }) => {
   const isProd = NODE_ENV === 'production'
