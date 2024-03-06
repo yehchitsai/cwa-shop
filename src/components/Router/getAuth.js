@@ -17,7 +17,7 @@ const authConfig = {
 
 const getRedirectResp = () => {
   if (window.IS_MOCK) {
-    return redirect(`${window.location.origin}${window.APP_BASENAME || '/'}${loginUrl}`)
+    return redirect(`${window.location.origin}${window.APP_BASENAME}/${loginUrl}`)
   }
 
   return redirect(logoutUrl)
