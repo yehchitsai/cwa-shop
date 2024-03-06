@@ -1,8 +1,9 @@
 import { get, isEmpty } from 'lodash-es'
 import mockFetcher from './mockFetcher'
 import getSearchValuesFromUrl from './getSearchValuesFromUrl'
+import cookiejs from './cookies'
 
-const TOKEN_KEY = {
+export const TOKEN_KEY = {
   TOKEN_TYPE: 'token_type',
   ACCESS_TOKEN: 'access_token'
 }
@@ -11,21 +12,27 @@ let TMP_TOKEN = {}
 
 const TOKEN_KEYS = [TOKEN_KEY.TOKEN_TYPE, TOKEN_KEY.ACCESS_TOKEN]
 
-const removeTokens = () => TOKEN_KEYS.map((key) => window.localStorage.removeItem(key))
+export const removeTokens = () => {
+  TOKEN_KEYS.map((key) => cookiejs.remove(key))
+}
+
+export const clearTmpToken = () => {
+  TMP_TOKEN = {}
+}
 
 const getAuthorization = () => {
   let Authorization = {}
   const [
-    tokenTypeFromStorage, accessTokenFromStorage
-  ] = TOKEN_KEYS.map((key) => window.localStorage.getItem(key))
+    tokenTypeFromCookie, accessTokenFromCookie
+  ] = TOKEN_KEYS.map((key) => cookiejs.get(key))
   const [tokenTypeFromUrl, accessTokenFromUrl] = getSearchValuesFromUrl(
     TOKEN_KEYS,
     window.location.hash.replace('#', '?')
   )
   const isTempTokenExist = !isEmpty(TMP_TOKEN)
-  const isStorageTokenExist = !!(tokenTypeFromStorage && accessTokenFromStorage)
+  const isCookieTokenExist = !!(tokenTypeFromCookie && accessTokenFromCookie)
   const isUrlSearchTokenExist = !!(tokenTypeFromUrl && accessTokenFromUrl)
-  // always remove local storage token first
+  // always remove cookie token first
   removeTokens()
   // find user priority hash token > tmp variable token > storage token
   switch (true) {
@@ -41,10 +48,10 @@ const getAuthorization = () => {
       Authorization = TMP_TOKEN
       break
     }
-    case isStorageTokenExist: {
+    case isCookieTokenExist: {
       Authorization = {
-        [TOKEN_KEY.TOKEN_TYPE]: tokenTypeFromStorage,
-        [TOKEN_KEY.ACCESS_TOKEN]: accessTokenFromStorage
+        [TOKEN_KEY.TOKEN_TYPE]: tokenTypeFromCookie,
+        [TOKEN_KEY.ACCESS_TOKEN]: accessTokenFromCookie
       }
       break
     }
@@ -64,7 +71,7 @@ const getAuthorization = () => {
 
 const beforeUnloadHandler = () => {
   if (!isEmpty(TMP_TOKEN)) {
-    TOKEN_KEYS.map((key) => window.localStorage.setItem(key, TMP_TOKEN[key]))
+    TOKEN_KEYS.map((key) => cookiejs.set(key, TMP_TOKEN[key]))
   }
 }
 window.addEventListener('visibilitychange', (event) => {
@@ -89,7 +96,7 @@ const fetcher = async (config = {}, triggerArgs = {}) => {
   const isAwsApi = key.startsWith(window.AWS_HOST_PREFIX)
   const isGetRequest = isEmpty(body)
   // delay for multiple tab login with different user
-  // when tab change will trigger set last login user token into localstorage
+  // when tab change will trigger set last login user token into cookie
   const authorization = await new Promise((resolve) => {
     setTimeout(() => resolve(getAuthorization()), 10)
   })

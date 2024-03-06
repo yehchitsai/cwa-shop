@@ -1,17 +1,13 @@
-import { useEffect } from 'react'
 import { Formik, Field, Form } from 'formik'
 import qs from 'query-string'
+import { TOKEN_KEY } from '../../../utils/fetcher'
 
 const FORM = {
-  TOKEN_TYPE: 'token_type',
-  ACCESS_TOKEN: 'access_token'
+  TOKEN_TYPE: TOKEN_KEY.TOKEN_TYPE,
+  ACCESS_TOKEN: TOKEN_KEY.ACCESS_TOKEN
 }
 
 const Login = () => {
-  useEffect(() => {
-    [FORM.TOKEN_TYPE, FORM.ACCESS_TOKEN].map((key) => window.localStorage.removeItem(key))
-  }, [])
-
   return (
     <div className='hero fixed top-0 z-0 min-h-screen bg-base-200'>
       <div className='hero-content flex-col lg:flex-row-reverse'>

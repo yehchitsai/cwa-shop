@@ -14,6 +14,7 @@ const {
   NODE_ENV,
   BASENAME,
   PREVIEW,
+  ANALYZER,
   MOCK,
   MOCK_AWS_API,
   VITE_AWS_HOST_PREFIX: awsHostPrefix,
@@ -22,6 +23,7 @@ const {
 const isMock = !!MOCK
 const isMockAwsApi = !!MOCK_AWS_API
 const isPreview = !!PREVIEW
+const isAnalyzer = !!ANALYZER
 const isDefaultEntry = ENTRY === DEFAULT_ENTRY
 const appBaseName = (BASENAME && !isPreview) ? `/${name}` : ''
 
@@ -76,7 +78,7 @@ export default ({ mode }) => {
         mockPath: './src/mock',
         localEnabled: isMock
       }),
-      ...(isPreview ? [analyzer()] : [])
+      ...(isAnalyzer ? [analyzer()] : [])
     ],
     build: {
       outDir: isDefaultEntry ? outDir : resolve(__dirname, `${defaultOutDir}/${ENTRY}`),
