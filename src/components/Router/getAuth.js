@@ -3,6 +3,7 @@ import { preload } from 'swr'
 import fetcher from '../../utils/fetcher'
 import getApiHost from '../../utils/getApiHost'
 
+const loginUrl = import.meta.env.VITE_LOGIN_URL
 const logoutUrl = import.meta.env.VITE_LOGOUT_URL
 const host = getApiHost('VITE_AWS_CHECK_AUTHORIZE')
 const awsHostPrefix = import.meta.env.VITE_AWS_HOST_PREFIX
@@ -16,7 +17,7 @@ const authConfig = {
 
 const getRedirectResp = () => {
   if (window.IS_MOCK) {
-    return redirect('/login')
+    return redirect(`${window.location.origin}${window.APP_BASENAME || '/'}${loginUrl}`)
   }
 
   return redirect(logoutUrl)
