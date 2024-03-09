@@ -1,15 +1,19 @@
 import {
   MdEdit, MdDelete, MdCheckCircle, MdError, MdCloudUpload, MdOutlineRefresh
 } from 'react-icons/md'
+import { useTranslation } from 'react-i18next'
 import clx from 'classnames'
 import { get, toString } from 'lodash-es'
 import useRecognition from '../../../../hooks/useRecognition'
+import useFishTypes from '../../../../hooks/useFishTypes'
 import { FORM_ITEM } from './constants'
 
 const TableRow = (props) => {
   const {
     item, field, index, onRemove, onEdit, onUpdated
   } = props
+  const { i18n } = useTranslation()
+  const { fishTypeMap } = useFishTypes(i18n.language, false)
   const {
     trigger, isLoading, state, error
   } = useRecognition(item[FORM_ITEM.UPLOAD_FILE], (newData) => onUpdated(field, {
@@ -54,7 +58,7 @@ const TableRow = (props) => {
               <span className='text-error'>{toString(error)}</span>
             )}
           </td>
-          <td>{formData.fishType}</td>
+          <td>{get(fishTypeMap, `${formData.fishType}.fishName`)}</td>
         </>
       )}
       <td className='w-4'>
