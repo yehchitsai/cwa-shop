@@ -1,10 +1,12 @@
 import { useRef, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Formik, Field, Form } from 'formik'
+import clx from 'classnames'
 import {
   flow, get, isEmpty, isNull, map, pick
 } from 'lodash-es'
 import * as Yup from 'yup'
+import useFishTypes from '../../../../hooks/useFishTypes'
 import Modal from '../../../../components/Modal'
 import Video from '../../../../components/Video'
 import getVideoJsOptions from '../../../../components/Video/getVideoJsOptions'
@@ -34,7 +36,8 @@ const EditModal = (props) => {
   } = props
   const [isUpdated, setIsUpdated] = useState(false)
   const dropzoneRef = useRef()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const { fishTypes, isLoading } = useFishTypes(i18n.language, false)
   const initFormData = get(editItem, 'data', {})
   const {
     itemSerial,
@@ -136,10 +139,23 @@ const EditModal = (props) => {
                   error={formProps.touched[FORM.FISH_TYPE] && formProps.errors[FORM.FISH_TYPE]}
                 >
                   <Field
+                    as='select'
                     name={FORM.FISH_TYPE}
-                    className='input input-bordered'
-                    autoComplete='off'
-                  />
+                    className={clx(
+                      'select select-bordered w-full lg:max-w-xs'
+                    )}
+                    disabled={isLoading}
+                  >
+                    <option value={-1} disabled>Select fish type</option>
+                    {fishTypes.map((type) => {
+                      const { label, value } = type
+                      return (
+                        <option value={value} key={value}>
+                          {label}
+                        </option>
+                      )
+                    })}
+                  </Field>
                 </FormRow>
                 <FormRow
                   label={FORM.ITEM_IMAGES}
