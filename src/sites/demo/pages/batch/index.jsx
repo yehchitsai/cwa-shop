@@ -9,7 +9,7 @@ import {
 } from 'react-icons/md'
 import toast from 'react-hot-toast'
 import {
-  filter, get, isEmpty, isUndefined, map, size
+  filter, get, groupBy, isEmpty, isUndefined, map, size
 } from 'lodash-es'
 import wait from '../../../../utils/wait'
 import getApiHost from '../../../../utils/getApiHost'
@@ -31,20 +31,41 @@ const ACTION = {
   UPDATE: 'update'
 }
 
+const getGroupAssetsByPrefix = (urls) => {
+  return groupBy(urls, (url) => {
+    if (url.startsWith('data')) {
+      return 'base64'
+    }
+    return 's3Url'
+  })
+}
+
 const getParamsListFromRecognitionData = (row = {}) => {
   const { name } = get(row, FORM_ITEM.UPLOAD_FILE, {})
   const {
     fishType,
     itemSerial,
     itemImages = [],
-    itemVideos = []
+    itemVideo = ''
   } = get(row, FORM_ITEM.RECOGNITION_DATA, {})
-  const paramsList = map([...itemVideos, ...itemImages], (fileName, index) => {
+  const itemVideos = [itemVideo]
+  const [
+    { base64: base64Images = [], s3Url: s3Images = [] },
+    { base64: base64Videos = [], s3Url: s3Videos = [] }
+  ] = [itemImages, itemVideos].map(getGroupAssetsByPrefix)
+  const paramsList = map([...base64Videos, ...base64Images], (fileName, index) => {
+    const isNew = index === 0
     return {
       fishType,
       itemSerial,
       fileName,
-      action: index === 0 ? ACTION.NEW : ACTION.UPDATE
+      action: isNew ? ACTION.NEW : ACTION.UPDATE,
+      ...(
+        isNew && {
+          itemImages: s3Images,
+          itemVideos: s3Videos
+        }
+      )
     }
   })
   return { name, paramsList }
@@ -184,6 +205,7 @@ const Batch = () => {
                   name={FORM.VIDEOS}
                   accept={ACCEPT.VIDEO}
                   onFinish={onSelectFilesFinish(formProps)}
+                  maxSize={Infinity}
                   isShowPreview={false}
                   isSelectFolder
                 />

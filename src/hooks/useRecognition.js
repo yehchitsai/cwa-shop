@@ -1,21 +1,24 @@
 import { useState, useRef } from 'react'
 import safeAwait from 'safe-await'
 import qs from 'query-string'
-import { get } from 'lodash-es'
+import { get, isEmpty } from 'lodash-es'
 import getApiHost from '../utils/getApiHost'
 import retry from '../utils/retry'
 import useOnInit from './useOnInit'
-import useUpdate from './useUpdate'
 import useGet from './useGet'
+import useUploadS3 from './useUploadS3'
 
-const putVideHost = getApiHost('VITE_AWS_PUT_VIDEO')
 const getVideoRecognitionHost = getApiHost('VITE_AWS_GET_VIDEO_RECOGNITION')
 const awsHostPrefix = import.meta.env.VITE_AWS_HOST_PREFIX
 
 const retryAction = async (action) => {
   const checker = (result) => {
     const recognitionStatus = get(result, 'status')
-    return recognitionStatus === 'success'
+    const recognitionResults = get(result, 'results')
+    return (
+      recognitionStatus === 'success' &&
+      !isEmpty(recognitionResults)
+    )
   }
 
   const retryTimes = window.IS_MOCK ? 1 : 3
@@ -47,11 +50,9 @@ const useRecognition = (file, onSuccess) => {
   const [isLoading, setIsLoading] = useState(true)
   const [recognitionError, setRecognitionError] = useState(null)
   const [status, setStatus] = useState('')
+  const [fileKey, setFileKey] = useState(null)
   const [data, setData] = useState({})
-  const { name: fileName, url } = file
-  const {
-    trigger: uploadVideo
-  } = useUpdate(putVideHost)
+  const { uploadS3 } = useUploadS3()
   const {
     trigger: getVideoRecognition
   } = useGet(getVideoRecognitionHost)
@@ -59,21 +60,22 @@ const useRecognition = (file, onSuccess) => {
   const recognition = async () => {
     setIsLoading(true)
     setStatus('loading')
-    // prevent reupload video
+    let videoFileKey = fileKey
     if (!isVideoUploaded.current) {
-      const [uploadVideoError] = await safeAwait(
-        uploadVideo({ url: `/v1/ithomebucket/${fileName}`, File: url })
-      )
-      if (uploadVideoError) {
+      const { error: uploadS3Error, result: newFileKey } = await uploadS3(file)
+      if (uploadS3Error) {
         setIsLoading(false)
-        setRecognitionError(uploadVideoError)
+        setRecognitionError(uploadS3Error)
         setStatus('fail')
         return
       }
+
+      setFileKey(newFileKey)
+      videoFileKey = newFileKey
     }
 
     isVideoUploaded.current = true
-    const params = { file: fileName }
+    const params = { fileKey: videoFileKey }
     const getRecognitionUrl = `${awsHostPrefix}/getRecognition?${qs.stringify(params)}`
     const [videoRecognitionError, result] = await safeAwait(
       retryAction(() => getVideoRecognition({ url: getRecognitionUrl }))
