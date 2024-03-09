@@ -37,7 +37,7 @@ const TableRow = (props) => {
       <td>
         <div
           className={clx(
-            'badge gap-2 border-none'
+            'badge gap-2 border-none whitespace-nowrap'
           )}
         >
           {state.isSuccess && (<MdCheckCircle className='fill-success' size='1.5em' />)}
@@ -63,7 +63,7 @@ const TableRow = (props) => {
       )}
       {!isLoading && (
         <>
-          <td>
+          <td className='whitespace-nowrap'>
             {!state.isError && (
               <span>{formData.itemSerial}</span>
             )}
@@ -80,7 +80,7 @@ const TableRow = (props) => {
           </td>
           <td>
             {!state.isError && (
-              <span>
+              <span className='whitespace-nowrap'>
                 {`${get(fishTypeMap, `${formData.fishType}.fishName`)}(${formData.fishType})`}
               </span>
             )}
