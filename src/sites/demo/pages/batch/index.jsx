@@ -53,13 +53,14 @@ const getParamsListFromRecognitionData = (row = {}) => {
     { base64: base64Images = [], s3Url: s3Images = [] },
     { base64: base64Videos = [], s3Url: s3Videos = [] }
   ] = [itemImages, itemVideos].map(getGroupAssetsByPrefix)
-  const paramsList = map([...base64Videos, ...base64Images], (fileName, index) => {
+  const base64Files = [...base64Videos, ...base64Images]
+  const paramsList = map(isEmpty(base64Files) ? [''] : base64Files, (fileName, index) => {
     const isNew = index === 0
     return {
       fishType,
       itemSerial,
-      fileName,
       action: isNew ? ACTION.NEW : ACTION.UPDATE,
+      ...(isEmpty(fileName) ? {} : { fileName }),
       ...(
         isNew && {
           itemImages: s3Images,
