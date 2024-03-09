@@ -58,7 +58,9 @@ const TableRow = (props) => {
               <span className='text-error'>{toString(error)}</span>
             )}
           </td>
-          <td>{get(fishTypeMap, `${formData.fishType}.fishName`)}</td>
+          <td>
+            {`${get(fishTypeMap, `${formData.fishType}.fishName`)}(${formData.fishType})`}
+          </td>
         </>
       )}
       <td className='w-4'>
