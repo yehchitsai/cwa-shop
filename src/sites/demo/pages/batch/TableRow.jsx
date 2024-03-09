@@ -1,6 +1,7 @@
 import {
-  MdEdit, MdDelete, MdCheckCircle, MdError, MdCloudUpload, MdOutlineRefresh, MdOutlineManageSearch
+  MdEdit, MdDelete, MdCheckCircle, MdError, MdCloudUpload, MdOutlineRefresh
 } from 'react-icons/md'
+import { IoMdCloseCircle } from 'react-icons/io'
 import { useTranslation } from 'react-i18next'
 import clx from 'classnames'
 import { get, toString } from 'lodash-es'
@@ -9,7 +10,7 @@ import useFishTypes from '../../../../hooks/useFishTypes'
 import { FORM_ITEM } from './constants'
 
 const STATUS_MESSAGE_MAP = {
-  pending: 'pending',
+  pending: 'pending, please retry later',
   fail: 'recognition failed'
 }
 
@@ -40,9 +41,11 @@ const TableRow = (props) => {
           )}
         >
           {state.isSuccess && (<MdCheckCircle className='fill-success' size='1.5em' />)}
-          {(state.isError && !isPending) && (<MdError className='fill-error' size='1.5em' />)}
+          {(state.isError && !isPending) && (
+            <IoMdCloseCircle className='fill-error' size='1.5em' />
+          )}
           {(state.isError && isPending) && (
-            <MdOutlineManageSearch className='fill-info' size='1.5em' />
+            <MdError className='fill-warning' size='1.5em' />
           )}
           {state.isLoading && (<MdCloudUpload size='1.5em' />)}
           {item[FORM_ITEM.UPLOAD_FILE].name}
@@ -68,7 +71,7 @@ const TableRow = (props) => {
               <span
                 className={clx(
                   { 'text-error': !isPending },
-                  { 'text-info': isPending }
+                  { 'text-warning': isPending }
                 )}
               >
                 {get(STATUS_MESSAGE_MAP, errorMessage, errorMessage)}
