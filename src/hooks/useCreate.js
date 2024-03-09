@@ -1,9 +1,10 @@
 import { get } from 'lodash-es'
 import useSWRMutation from 'swr/mutation'
 
-const useCreate = (host) => {
+const useCreate = (host, customOptions = {}) => {
   const options = {
-    method: 'POST'
+    method: 'POST',
+    ...customOptions
   }
   const {
     data: defaultData = [], error, isMutating, trigger

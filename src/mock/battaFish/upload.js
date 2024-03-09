@@ -34,12 +34,6 @@ const resultError = (message = 'Request failed', { code = 0, result = null } = {
 
 export default [
   {
-    url: '/v1/ithomebucket/:file',
-    method: 'put',
-    timeout: 1500,
-    response: ({ query }) => console.log(query)
-  },
-  {
     url: `${getApiPrefix()}/getRecognition`,
     method: 'get',
     timeout: 1500,
@@ -60,7 +54,7 @@ export default [
       }
 
       const results = {
-        itemVideos: [videos[random(0, 2)]],
+        itemVideo: videos[random(0, 2)],
         fishType: `FF${random(1000, 2000)}L`,
         itemSerial: `${random(100, 1000)}`,
         itemImages: flow(

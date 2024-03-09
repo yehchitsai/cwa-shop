@@ -87,14 +87,30 @@ window.addEventListener('beforeunload', beforeUnloadHandler)
 const fetcher = async (config = {}, triggerArgs = {}) => {
   const [forceMock, forceDebug] = getSearchValuesFromUrl(['MOCK', 'DEBUG'])
   const isForceDisableMock = forceMock === '0'
-  const { arg: { url: keyFromTrigger = '', ...body } = {} } = triggerArgs
-  const { host = '', url: keyFromGet = '', options = {} } = config
+  const {
+    arg: {
+      host: hostFromTrigger,
+      url: keyFromTrigger = '',
+      isJsonResponse = true,
+      isJsonBody = true,
+      isAuthHeader = true,
+      singleBody,
+      customHeaders = {},
+      ...body
+    } = {}
+  } = triggerArgs
+  const {
+    host: hostFromHook = '',
+    url: keyFromGet = '',
+    options = {}
+  } = config
+  const host = hostFromTrigger || hostFromHook
   const { header = {}, errorMessage = '發生錯誤', ...restOptions } = options
   const key = keyFromGet || keyFromTrigger
-  const url = `${host}${key}`
+  const url = hostFromTrigger ? host : `${host}${key}`
   const isHttpRequest = host.startsWith('http')
   const isAwsApi = key.startsWith(window.AWS_HOST_PREFIX)
-  const isGetRequest = isEmpty(body)
+  const isGetRequest = isEmpty(body) && isEmpty(singleBody)
   // delay for multiple tab login with different user
   // when tab change will trigger set last login user token into cookie
   const authorization = await new Promise((resolve) => {
@@ -102,11 +118,17 @@ const fetcher = async (config = {}, triggerArgs = {}) => {
   })
   const newOptions = {
     headers: new Headers({
-      'Content-type': 'application/json',
-      ...authorization,
+      ...(
+        isJsonBody
+          ? { 'Content-type': 'application/json' }
+          : customHeaders
+      ),
+      ...(isAuthHeader ? authorization : {}),
       ...header
     }),
-    ...(!isGetRequest && { body: JSON.stringify(body) }),
+    ...(!isGetRequest && {
+      body: isJsonBody ? JSON.stringify(body) : singleBody
+    }),
     ...restOptions
   }
   const request = !isForceDisableMock && (
@@ -125,7 +147,10 @@ const fetcher = async (config = {}, triggerArgs = {}) => {
         error.status = res.status
         throw error
       }
-      return res.json()
+      if (isJsonResponse) {
+        return res.json()
+      }
+      return res
     })
     .catch((e) => {
       const isMockAwsApi = (window.IS_MOCK_AWS_API && key.startsWith(window.AWS_HOST_PREFIX))

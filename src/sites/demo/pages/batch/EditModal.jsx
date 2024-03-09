@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Formik, Field, Form } from 'formik'
 import {
-  first, flow, get, isEmpty, isNull, map, pick
+  flow, get, isEmpty, isNull, map, pick
 } from 'lodash-es'
 import * as Yup from 'yup'
 import Modal from '../../../../components/Modal'
@@ -19,13 +19,13 @@ const FORM = {
   ITEM_SERIAL: 'itemSerial',
   FISH_TYPE: 'fishType',
   ITEM_IMAGES: 'itemImages',
-  ITEM_VIDEOS: 'itemVideos'
+  ITEM_VIDEO: 'itemVideo'
 }
 
 const validationSchema = Yup.object().shape({
   [FORM.ITEM_SERIAL]: Yup.string().required(`Miss ${FORM.ITEM_SERIAL}!`),
   [FORM.FISH_TYPE]: Yup.string().required(`Miss ${FORM.FISH_TYPE}!`),
-  [FORM.ITEM_IMAGES]: Yup.array().min(1).required(`Miss ${FORM.ITEM_IMAGES}!`)
+  [FORM.ITEM_IMAGES]: Yup.array()
 })
 
 const EditModal = (props) => {
@@ -40,7 +40,7 @@ const EditModal = (props) => {
     itemSerial,
     fishType,
     itemImages = [],
-    itemVideos = []
+    itemVideo = ''
   } = initFormData
 
   const onEditModalOpen = () => {
@@ -65,7 +65,7 @@ const EditModal = (props) => {
       (newItemImages) => map(newItemImages, 'url')
     )()
     const updateFormValues = {
-      ...pick(formValues, [FORM.FISH_TYPE, FORM.ITEM_SERIAL, FORM.ITEM_VIDEOS]),
+      ...pick(formValues, [FORM.FISH_TYPE, FORM.ITEM_SERIAL, FORM.ITEM_VIDEO]),
       [FORM.ITEM_IMAGES]: convertedItemImages
     }
     onUpdated(`${editItem.field}.${FORM_ITEM.RECOGNITION_DATA}`, updateFormValues)
@@ -104,7 +104,7 @@ const EditModal = (props) => {
           >
             <Video
               options={getVideoJsOptions({
-                src: first(itemVideos)
+                src: itemVideo
               })}
               height='h-[30vh!important]'
             />
@@ -114,7 +114,7 @@ const EditModal = (props) => {
               [FORM.ITEM_SERIAL]: itemSerial,
               [FORM.FISH_TYPE]: fishType,
               [FORM.ITEM_IMAGES]: itemImages,
-              [FORM.ITEM_VIDEOS]: itemVideos
+              [FORM.ITEM_VIDEO]: itemVideo
             }}
             onSubmit={onEditModalOk}
             validationSchema={validationSchema}
