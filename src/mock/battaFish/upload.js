@@ -11,6 +11,12 @@ const getFakeImage = (size, text) => {
   return `https://fakeimg.pl/${size}x${size * 3}/?text=${text}&font=lobster&font_size=50`
 }
 
+const TYPE_KEY = [
+  'FF1301L',
+  'FF1301LF',
+  'FF1302L'
+]
+
 const RECOGNITION_STATUS = {
   SUCCESS: 'success',
   PENDING: 'pending',
@@ -55,7 +61,7 @@ export default [
 
       const results = {
         itemVideo: videos[random(0, 2)],
-        fishType: `FF${random(1000, 2000)}L`,
+        fishType: TYPE_KEY[random(0, 2)],
         itemSerial: `${random(100, 1000)}`,
         itemImages: flow(
           () => random(2, 3),
