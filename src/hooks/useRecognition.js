@@ -22,7 +22,12 @@ const retryAction = async (action) => {
   }
 
   const retryTimes = window.IS_MOCK ? 1 : 10
-  return retry('recognition failed')(action, checker, retryTimes)
+  const getMessage = ({ error, result }) => {
+    const status = get(result, 'status')
+    const errorMessage = get(error, 'message')
+    return status || errorMessage
+  }
+  return retry(getMessage)(action, checker, retryTimes)
 }
 
 const getRecognitionState = (status) => {

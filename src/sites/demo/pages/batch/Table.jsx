@@ -19,7 +19,6 @@ const Table = (props) => {
             <td>Id</td>
             <td>FishType</td>
             <th />
-            <th />
           </tr>
         </thead>
         <tbody>
