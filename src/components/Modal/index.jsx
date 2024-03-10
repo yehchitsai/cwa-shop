@@ -140,6 +140,7 @@ const Modal = (props) => {
                 className={clx(
                   'px-6',
                   { 'overflow-y-auto': !isFullSize },
+                  { 'overflow-x-hidden': !isFullSize },
                   { 'max-h-[65vh]': !isFormModal },
                   { 'max-sm:max-h-[70vh] sm:max-h-[80vh]': isFormModal }
                 )}
