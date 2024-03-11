@@ -3,9 +3,9 @@ import {
   get, size
 } from 'lodash-es'
 import qs from 'query-string'
-import axios from 'axios'
 import getApiHost from '../utils/getApiHost'
 import useGet from './useGet'
+import useUpdate from './useUpdate'
 import useCreate from './useCreate'
 
 const getPreSignedUrlsHost = getApiHost('VITE_AWS_GET_PRE_SIGNED_URLS')
@@ -35,6 +35,7 @@ const useUploadS3 = () => {
   const {
     trigger: getPreSignedUrls
   } = useGet(getPreSignedUrlsHost)
+  const { trigger: preSignedFile } = useUpdate('s3-signed-url', { method: 'putForm' })
   const { trigger: s3Finalize } = useCreate(getS3FinalizeHost)
 
   const uploadS3 = async (input) => {
@@ -51,13 +52,18 @@ const useUploadS3 = () => {
     const { fileId, fileKey = '', parts } = preSignedUrlResult
     const [preSignedFileError, preSignedFileResults] = await safeAwait(
       Promise.all(parts.map(async (part, index) => {
-        return axios.put(
-          get(part, 'signedUrl'),
-          get(chunkFiles, index),
-          {
-            headers: { 'content-type': input.file.type }
-          }
-        )
+        const chunkFile = get(chunkFiles, index)
+        const formData = new FormData()
+        formData.append('file', chunkFile)
+        return preSignedFile({
+          host: get(part, 'signedUrl'),
+          body: get(chunkFiles, index),
+          customHeaders: {
+            'Content-Type': input.file.type
+          },
+          isJsonResponse: false,
+          isAuthHeader: false
+        })
       }))
     )
     if (preSignedFileError) {
@@ -74,9 +80,11 @@ const useUploadS3 = () => {
     })
     const [s3FinalizeError] = await safeAwait(s3Finalize({
       url: s3FinalizeEndPoint,
-      fileId,
-      fileKey,
-      parts: finalizeParts,
+      body: {
+        fileId,
+        fileKey,
+        parts: finalizeParts
+      },
       isJsonResponse: false
     }))
     if (s3FinalizeError) {

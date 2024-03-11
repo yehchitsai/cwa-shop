@@ -3,7 +3,7 @@ import useSWRMutation from 'swr/mutation'
 
 const useUpdate = (host, customOptions = {}) => {
   const options = {
-    method: 'PUT',
+    method: 'put',
     ...customOptions
   }
   const {

@@ -3,7 +3,7 @@ import useSWRMutation from 'swr/mutation'
 
 const useCreate = (host, customOptions = {}) => {
   const options = {
-    method: 'POST',
+    method: 'post',
     ...customOptions
   }
   const {

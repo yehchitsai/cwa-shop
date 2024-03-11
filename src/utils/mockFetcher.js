@@ -31,14 +31,14 @@ const mockFetcher = async (key, authorization = {}, options = {}) => {
   // 所以額外在 mock 時判斷有 undefined 取代掉
   const mockData = getMockData()
   const [endpoint, queryString] = key.split('?')
-  const { body, method = '' } = options
+  const { data: body, method = '' } = options
   const {
     response = () => [],
     timeout = 0
   } = find(mockData, (item) => {
     return (
       item.url.replace(/:.*/, '').includes(endpoint) &&
-      (body ? (item.method === method.toLowerCase()) : true)
+      (body ? (item.method === method) : true)
     )
   }) || {}
   const resp = new Promise((resolve) => {
