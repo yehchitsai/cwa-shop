@@ -123,9 +123,11 @@ const CardsSection = (props) => {
     const clearItemSerials = map(newRemoveProducts, 'itemSerial')
     const [reserveError, reserveData] = await safeAwait(reserveByItemSerial({
       url: preOrderEndPoint,
-      fishType,
-      reserveItemSerials,
-      clearItemSerials
+      body: {
+        fishType,
+        reserveItemSerials,
+        clearItemSerials
+      }
     }))
     if (reserveError) {
       setSelectedProducts(selectedProducts)

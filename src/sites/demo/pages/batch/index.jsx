@@ -97,7 +97,9 @@ const Batch = () => {
     const [error, resultList] = await safeAwait(
       Promise.all(map(batchParamsList, async ({ paramsList = [] }) => {
         const [newParams, ...updateParamsList] = paramsList
-        const [newError] = await safeAwait(putImage({ url: putImageEndPoint, ...newParams }))
+        const [newError] = await safeAwait(
+          putImage({ url: putImageEndPoint, body: newParams })
+        )
         if (newError) {
           console.log(newError)
           return { isSuccess: false }
@@ -105,7 +107,7 @@ const Batch = () => {
 
         const [updateError] = await safeAwait(
           Promise.all(updateParamsList.map((param) => {
-            return putImage({ url: putImageEndPoint, ...param })
+            return putImage({ url: putImageEndPoint, body: param })
           }))
         )
         if (updateError) {

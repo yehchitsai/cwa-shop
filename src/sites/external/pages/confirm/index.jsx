@@ -81,9 +81,11 @@ const Page = () => {
     const fishType = get(remove, '0.fishType')
     const [reserveError, reserveData] = await safeAwait(reserveByItemSerial({
       url: preOrderEndPoint,
-      fishType,
-      reserveItemSerials,
-      clearItemSerials
+      body: {
+        fishType,
+        reserveItemSerials,
+        clearItemSerials
+      }
     }))
     if (reserveError) {
       toast.error(`Error! No.${targetItemSerial} ${reserveError.message}`, { id: toastId })
@@ -104,9 +106,11 @@ const Page = () => {
     const clearItemSerials = map(selectedProducts, 'itemSerial')
     const [reserveError] = await safeAwait(reserveByItemSerial({
       url: preOrderEndPoint,
-      fishType,
-      reserveItemSerials: [],
-      clearItemSerials
+      body: {
+        fishType,
+        reserveItemSerials: [],
+        clearItemSerials
+      }
     }))
     if (reserveError) {
       toast.error(`Error! ${reserveError.message}`, { id: toastId })
@@ -123,7 +127,9 @@ const Page = () => {
     const orderItems = map(selectedProducts, 'itemSerial')
     const [orderError, orderData] = await safeAwait(orderByItemSerial({
       url: orderEndPoint,
-      orderItems
+      body: {
+        orderItems
+      }
     }))
     if (orderError) {
       toast.error(`Error! ${orderError.message}`, { id: toastId })
