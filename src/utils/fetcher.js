@@ -1,7 +1,10 @@
-import { get, isEmpty } from 'lodash-es'
+import axios from 'axios'
+import { get, isEmpty, isString } from 'lodash-es'
 import mockFetcher from './mockFetcher'
 import getSearchValuesFromUrl from './getSearchValuesFromUrl'
 import cookiejs from './cookies'
+
+const axiosInstance = axios.create({})
 
 export const TOKEN_KEY = {
   TOKEN_TYPE: 'token_type',
@@ -92,11 +95,9 @@ const fetcher = async (config = {}, triggerArgs = {}) => {
       host: hostFromTrigger,
       url: keyFromTrigger = '',
       isJsonResponse = true,
-      isJsonBody = true,
       isAuthHeader = true,
-      singleBody,
       customHeaders = {},
-      ...body
+      body: data
     } = {}
   } = triggerArgs
   const {
@@ -110,27 +111,20 @@ const fetcher = async (config = {}, triggerArgs = {}) => {
   const url = hostFromTrigger ? host : `${host}${key}`
   const isHttpRequest = host.startsWith('http')
   const isAwsApi = key.startsWith(window.AWS_HOST_PREFIX)
-  const isGetRequest = isEmpty(body) && isEmpty(singleBody)
   // delay for multiple tab login with different user
   // when tab change will trigger set last login user token into cookie
   const authorization = await new Promise((resolve) => {
     setTimeout(() => resolve(getAuthorization()), 10)
   })
-  const newOptions = {
-    headers: new Headers({
-      ...(
-        isJsonBody
-          ? { 'Content-type': 'application/json' }
-          : customHeaders
-      ),
+  const { method, ...newOptions } = {
+    headers: {
+      ...customHeaders,
       ...(isAuthHeader ? authorization : {}),
       ...header
-    }),
-    ...(!isGetRequest && {
-      body: isJsonBody ? JSON.stringify(body) : singleBody
-    }),
+    },
     ...restOptions
   }
+  const isGetRequest = isEmpty(method)
   const request = !isForceDisableMock && (
     window.IS_MOCK &&
     window.IS_MOCK_AWS_API &&
@@ -138,17 +132,16 @@ const fetcher = async (config = {}, triggerArgs = {}) => {
     isAwsApi
   )
     ? Promise.reject(new Error('Skip no http aws api request'))
-    : fetch(url, newOptions)
+    : isGetRequest
+      ? axiosInstance.get(url, newOptions)
+      : axiosInstance[method](url, data, newOptions)
   return request
     .then(async (res) => {
-      if (!res.ok) {
-        const error = new Error('An error occurred while fetching the data.')
-        error.info = await res.json()
-        error.status = res.status
-        throw error
+      if (window.IS_MOCK && isString(res.data) && res.data.startsWith('<!doctype html>')) {
+        throw new Error('Endpoint not found.')
       }
       if (isJsonResponse) {
-        return res.json()
+        return res.data
       }
       return res
     })
@@ -163,7 +156,12 @@ const fetcher = async (config = {}, triggerArgs = {}) => {
         'Fetch data failed, mock mode will will using mock data instead.',
         { url, options, error: e.toString() }
       )
-      return mockFetcher(key, authorization, newOptions)
+      const optionsForMock = {
+        method,
+        data,
+        ...newOptions
+      }
+      return mockFetcher(key, authorization, optionsForMock)
     })
 }
 

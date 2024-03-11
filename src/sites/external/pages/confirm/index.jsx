@@ -81,9 +81,11 @@ const Page = () => {
     const fishType = get(remove, '0.fishType')
     const [reserveError, reserveData] = await safeAwait(reserveByItemSerial({
       url: preOrderEndPoint,
-      fishType,
-      reserveItemSerials,
-      clearItemSerials
+      body: {
+        fishType,
+        reserveItemSerials,
+        clearItemSerials
+      }
     }))
     if (reserveError) {
       toast.error(`Error! No.${targetItemSerial} ${reserveError.message}`, { id: toastId })
@@ -95,22 +97,32 @@ const Page = () => {
       () => get(reserveData, 'results'),
       (results) => find(results, { itemSerial: targetItemSerial }) || {}
     )()
-    toast.success(`No.${targetItemSerial} ${reason}`, { id: toastId })
+    if (!isEmpty(reserveItemSerials)) {
+      toast.success(`No.${targetItemSerial} ${reason}`, { id: toastId })
+      return
+    }
+
+    toast.success('All items removed,\nback to products page in 3sec', { id: toastId })
+    setTimeout(() => navigate('../', { relative: 'path' }), 3000)
   }
 
   const onRemoveAll = async () => {
     const toastId = toast.loading('Updating...')
     const fishType = get(selectedProducts, '0.fishType')
     const clearItemSerials = map(selectedProducts, 'itemSerial')
-    const [reserveError] = await safeAwait(reserveByItemSerial({
-      url: preOrderEndPoint,
-      fishType,
-      reserveItemSerials: [],
-      clearItemSerials
-    }))
-    if (reserveError) {
-      toast.error(`Error! ${reserveError.message}`, { id: toastId })
-      return
+    if (!isEmpty(clearItemSerials)) {
+      const [reserveError] = await safeAwait(reserveByItemSerial({
+        url: preOrderEndPoint,
+        body: {
+          fishType,
+          reserveItemSerials: [],
+          clearItemSerials
+        }
+      }))
+      if (reserveError) {
+        toast.error(`Error! ${reserveError.message}`, { id: toastId })
+        return
+      }
     }
 
     setSelectedProducts([])
@@ -123,7 +135,9 @@ const Page = () => {
     const orderItems = map(selectedProducts, 'itemSerial')
     const [orderError, orderData] = await safeAwait(orderByItemSerial({
       url: orderEndPoint,
-      orderItems
+      body: {
+        orderItems
+      }
     }))
     if (orderError) {
       toast.error(`Error! ${orderError.message}`, { id: toastId })

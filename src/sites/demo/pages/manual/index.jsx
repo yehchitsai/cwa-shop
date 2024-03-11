@@ -81,9 +81,11 @@ const Product = () => {
       const action = index === 0 ? ACTION.NEW : ACTION.UPDATE
       const params = {
         url: putImageEndPoint,
-        ...pick(convertedFormValues, [FORM.TYPE, FORM.ITEM_SERIAL]),
-        fileName: asset.data,
-        action
+        body: {
+          ...pick(convertedFormValues, [FORM.TYPE, FORM.ITEM_SERIAL]),
+          fileName: asset.data,
+          action
+        }
       }
       return params
     })

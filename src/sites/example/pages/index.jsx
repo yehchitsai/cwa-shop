@@ -36,7 +36,10 @@ const Example = () => {
             onClick={async () => {
               const toastId = toast.loading('Creating...')
               const url = '/posts'
-              await createPost({ url, uniqId: uniqueId('ex-new'), ...newPost }).then(console.log)
+              await createPost({
+                url,
+                body: { uniqId: uniqueId('ex-new'), ...newPost }
+              }).then(console.log)
               toast.success('Created', { id: toastId })
             }}
             disabled={isMutatingNewPost}
@@ -55,7 +58,10 @@ const Example = () => {
             onClick={async () => {
               const toastId = toast.loading('Updating...')
               const url = '/posts/1'
-              await updatePost({ url, uniqId: 'ex-updated', ...updatedPost }).then(console.log)
+              await updatePost({
+                url,
+                body: { uniqId: 'ex-updated', ...updatedPost }
+              }).then(console.log)
               toast.success('Updated', { id: toastId })
             }}
             disabled={isMutatingUpdatedPost}
