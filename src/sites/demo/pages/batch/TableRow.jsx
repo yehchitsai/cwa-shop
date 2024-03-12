@@ -81,7 +81,7 @@ const TableRow = (props) => {
           <td>
             {!state.isError && (
               <span className='whitespace-nowrap'>
-                {`${get(fishTypeMap, `${formData.fishType}.fishName`)}(${formData.fishType})`}
+                {`${get(fishTypeMap, `${formData.fishType}.fishName`, '')}(${formData.fishType})`}
               </span>
             )}
             {state.isError && (
