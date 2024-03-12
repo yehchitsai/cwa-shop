@@ -41,7 +41,7 @@ const EditModal = (props) => {
   const initFormData = get(editItem, 'data', {})
   const {
     itemSerial,
-    fishType,
+    fishType = -1,
     itemImages = [],
     itemVideo = ''
   } = initFormData
