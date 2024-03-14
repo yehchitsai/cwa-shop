@@ -49,7 +49,7 @@ const getRecognitionState = (status) => {
   return { isLoading, isSuccess, isError }
 }
 
-const useRecognition = (file, onSuccess) => {
+const useRecognition = (file, queue, controller, onSuccess) => {
   const isInit = useRef(false)
   const isVideoUploaded = useRef(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -57,7 +57,7 @@ const useRecognition = (file, onSuccess) => {
   const [status, setStatus] = useState('')
   const [fileKey, setFileKey] = useState(null)
   const [data, setData] = useState({})
-  const { uploadS3 } = useUploadS3()
+  const { uploadS3 } = useUploadS3(queue, controller)
   const {
     trigger: getVideoRecognition
   } = useGet(getVideoRecognitionHost)

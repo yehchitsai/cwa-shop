@@ -1,3 +1,4 @@
+import useQueue from '../../../../hooks/useQueue'
 import TableRow from './TableRow'
 
 const Table = (props) => {
@@ -8,6 +9,7 @@ const Table = (props) => {
     onEdit,
     onUpdated
   } = props
+  const { queue, controller } = useQueue()
 
   return (
     <div className='mt-4 overflow-x-auto'>
@@ -31,6 +33,8 @@ const Table = (props) => {
               onRemove={onRemove}
               onEdit={onEdit}
               onUpdated={onUpdated}
+              queue={queue}
+              controller={controller}
             />
           ))}
         </tbody>
