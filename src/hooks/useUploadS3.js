@@ -31,7 +31,9 @@ const getChunkFilesByMB = (file, megabytes) => {
   return chunkFiles
 }
 
-const useUploadS3 = () => {
+const abortedError = new Error('aborted upload')
+
+const useUploadS3 = (queue, controller) => {
   const {
     trigger: getPreSignedUrls
   } = useGet(getPreSignedUrlsHost)
@@ -41,20 +43,33 @@ const useUploadS3 = () => {
   const uploadS3 = async (input) => {
     const chunkFiles = getChunkFilesByMB(input.file, CHUNK_MB_SIZE)
     const chunkFileSize = size(chunkFiles)
-    const [preSignedUrlError, preSignedUrlResult] = await safeAwait(getPreSignedUrls({
-      url: `${getPreSignedUrlsEndPoint}?${qs.stringify({ parts: chunkFileSize })}`
-    }))
+    const preSignedUrlsRequest = () => {
+      if (controller.signal.aborted) {
+        throw abortedError
+      }
+
+      return getPreSignedUrls({
+        url: `${getPreSignedUrlsEndPoint}?${qs.stringify({ parts: chunkFileSize })}`
+      })
+    }
+    const [preSignedUrlError, preSignedUrlResult] = await safeAwait(
+      queue.add(preSignedUrlsRequest, { priority: 1 })
+    )
     if (preSignedUrlError) {
       const error = new Error(`preSigned error: ${preSignedUrlError.message}`)
       return { error }
     }
 
     const { fileId, fileKey = '', parts } = preSignedUrlResult
-    const [preSignedFileError, preSignedFileResults] = await safeAwait(
-      Promise.all(parts.map(async (part, index) => {
+    const tasks = parts.map((part, index) => {
+      return () => {
         const chunkFile = get(chunkFiles, index)
         const formData = new FormData()
         formData.append('file', chunkFile)
+        if (controller.signal.aborted) {
+          throw new Error('aborted upload')
+        }
+
         return preSignedFile({
           host: get(part, 'signedUrl'),
           body: get(chunkFiles, index),
@@ -64,7 +79,10 @@ const useUploadS3 = () => {
           isJsonResponse: false,
           isAuthHeader: false
         })
-      }))
+      }
+    })
+    const [preSignedFileError, preSignedFileResults] = await safeAwait(
+      queue.addAll(tasks)
     )
     if (preSignedFileError) {
       const error = new Error(`preSignedFile error: ${preSignedFileError.message}`)
@@ -78,15 +96,24 @@ const useUploadS3 = () => {
         ETag: headers ? headers.get('ETag') : ''
       }
     })
-    const [s3FinalizeError] = await safeAwait(s3Finalize({
-      url: s3FinalizeEndPoint,
-      body: {
-        fileId,
-        fileKey,
-        parts: finalizeParts
-      },
-      isJsonResponse: false
-    }))
+    const finalizeRequest = () => {
+      if (controller.signal.aborted) {
+        throw abortedError
+      }
+
+      return s3Finalize({
+        url: s3FinalizeEndPoint,
+        body: {
+          fileId,
+          fileKey,
+          parts: finalizeParts
+        },
+        isJsonResponse: false
+      })
+    }
+    const [s3FinalizeError] = await safeAwait(
+      queue.add(finalizeRequest, { priority: 1 })
+    )
     if (s3FinalizeError) {
       const error = new Error(`finalize error: ${s3FinalizeError.message}`)
       return { error }

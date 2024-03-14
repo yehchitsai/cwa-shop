@@ -16,17 +16,23 @@ const STATUS_MESSAGE_MAP = {
 
 const TableRow = (props) => {
   const {
-    item, field, index, onRemove, onEdit, onUpdated
+    item, field, index, onRemove, onEdit, onUpdated,
+    queue, controller
   } = props
   const { i18n } = useTranslation()
   const { fishTypeMap } = useFishTypes(i18n.language, false)
   const {
     trigger, isLoading, state, error
-  } = useRecognition(item[FORM_ITEM.UPLOAD_FILE], (newData) => onUpdated(field, {
-    ...item,
-    [FORM_ITEM.RECOGNITION_DATA]: newData,
-    [FORM_ITEM.IS_UPLOADED]: true
-  }))
+  } = useRecognition(
+    item[FORM_ITEM.UPLOAD_FILE],
+    queue,
+    controller,
+    (newData) => onUpdated(field, {
+      ...item,
+      [FORM_ITEM.RECOGNITION_DATA]: newData,
+      [FORM_ITEM.IS_UPLOADED]: true
+    })
+  )
   const formData = get(item, FORM_ITEM.RECOGNITION_DATA, {})
   const errorMessage = get(error, 'message', toString(error))
   const isPending = (errorMessage === 'pending')
