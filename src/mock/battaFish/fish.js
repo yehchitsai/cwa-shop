@@ -84,7 +84,7 @@ export default [
   {
     url: `${getApiPrefix()}/bettafish`,
     method: 'get',
-    timeout: 1500,
+    timeout: 100,
     response: ({ query: stringObject }) => {
       const {
         lang
@@ -111,7 +111,7 @@ export default [
   {
     url: `${getApiPrefix()}/bettafishinfo`,
     method: 'get',
-    timeout: 1500,
+    timeout: 100,
     response: ({ query: stringObject }) => {
       const {
         fishType
@@ -123,7 +123,7 @@ export default [
   {
     url: `${getApiPrefix()}/bettafishserialinfo`,
     method: 'get',
-    timeout: 1500,
+    timeout: 100,
     response: ({ query: stringObject }) => {
       const {
         itemSerial
@@ -135,7 +135,7 @@ export default [
   {
     url: `${getApiPrefix()}/bettafishpreorder`,
     method: 'get',
-    timeout: 1500,
+    timeout: 100,
     response: () => {
       const results = {
         [TYPE_KEY.A]: {
@@ -154,7 +154,7 @@ export default [
   {
     url: `${getApiPrefix()}/bettafishpreorder`,
     method: 'post',
-    timeout: 1500,
+    timeout: 100,
     response: ({ body }) => {
       const {
         reserveItemSerials = [],
@@ -178,7 +178,7 @@ export default [
   {
     url: `${getApiPrefix()}/fishorder`,
     method: 'post',
-    timeout: 1500,
+    timeout: 100,
     response: () => {
       const result = [TYPE_KEY.A, TYPE_KEY.B, TYPE_KEY.C]
         .map(getFishData)

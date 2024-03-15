@@ -22,7 +22,7 @@ export default [
   {
     url: postUrl,
     method: 'post',
-    timeout: 1500,
+    timeout: 100,
     response: () => ({
       code: 0,
       message: 'ok',
@@ -32,7 +32,7 @@ export default [
   {
     url: putUrl,
     method: 'put',
-    timeout: 1500,
+    timeout: 100,
     response: () => ({
       code: 0,
       message: 'ok',

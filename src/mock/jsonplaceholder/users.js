@@ -55,7 +55,7 @@ export default [
   {
     url,
     method: 'get',
-    timeout: 1500,
+    timeout: 100,
     response: () => ({
       code: 0,
       message: 'ok',

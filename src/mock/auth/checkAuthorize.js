@@ -5,7 +5,7 @@ export default [
   {
     url: `${getApiPrefix()}/checkAuthorize`,
     method: 'get',
-    timeout: 1500,
+    timeout: 100,
     response: (response) => {
       const authorization = get(response, 'headers.authorization')
       if (isEmpty(authorization)) {

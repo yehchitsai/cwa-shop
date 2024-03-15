@@ -7,7 +7,7 @@ export default [
   {
     url: `${getApiPrefix()}/getPreSignedUrls`,
     method: 'get',
-    timeout: 1500,
+    timeout: 100,
     response: ({ query: stringObject }) => {
       const {
         parts = 1
@@ -28,13 +28,13 @@ export default [
   {
     url: MOCK_SIGNED_URL,
     method: 'put',
-    timeout: 1500,
+    timeout: 100,
     response: () => ({})
   },
   {
     url: `${getApiPrefix()}/finalize`,
     method: 'post',
-    timeout: 1500,
+    timeout: 100,
     response: () => ({})
   }
 ]

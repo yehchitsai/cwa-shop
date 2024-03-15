@@ -6,7 +6,7 @@ export default [
   {
     url,
     method: 'post',
-    timeout: 1500,
+    timeout: 100,
     response: () => ({
       message: 'success',
       results: {

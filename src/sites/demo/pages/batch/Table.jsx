@@ -29,7 +29,7 @@ const Table = (props) => {
               field={`${field}.${index}`}
               item={item}
               index={index}
-              key={index}
+              key={item.uploadFile.name}
               onRemove={onRemove}
               onEdit={onEdit}
               onUpdated={onUpdated}
