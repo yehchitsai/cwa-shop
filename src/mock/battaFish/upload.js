@@ -42,7 +42,7 @@ export default [
   {
     url: `${getApiPrefix()}/getRecognition`,
     method: 'get',
-    timeout: 1500,
+    timeout: 100,
     response: ({ query: stringObject }) => {
       const {
         file
