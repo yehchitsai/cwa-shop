@@ -48,7 +48,9 @@ const Dropzone = (props) => {
     setIsPending(true)
     const fileRejections = isSelectFolder
       // select folder will ignore unaccept type file
-      ? filter(defaultFileRejections, (rejection) => (rejection.file.type in accept))
+      ? filter(defaultFileRejections, (rejection) => {
+        return (rejection.file.type in accept) && !rejection.file.name.startsWith('.')
+      })
       : defaultFileRejections
 
     if (isEmpty(acceptedFiles)) {
