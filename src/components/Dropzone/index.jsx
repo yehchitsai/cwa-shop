@@ -44,19 +44,28 @@ const Dropzone = (props) => {
     setSelectType(newSelectType)
   }
 
-  const onDrop = useCallback(async (acceptedFiles, defaultFileRejections) => {
+  const onDrop = useCallback(async (defaultAcceptedFiles, defaultFileRejections) => {
     setIsPending(true)
+    const acceptFilesMap = keyBy(files, 'name')
+    const acceptedFiles = filter(defaultAcceptedFiles, (acceptedFile) => {
+      return !(acceptedFile.name in acceptFilesMap)
+    })
     const fileRejections = isSelectFolder
       // select folder will ignore unaccept type file
       ? filter(defaultFileRejections, (rejection) => {
-        return (rejection.file.type in accept) && !rejection.file.name.startsWith('.')
+        const fileName = get(rejection, 'file.name')
+        return (
+          (rejection.file.type in accept) &&
+          !fileName.startsWith('.') &&
+          !(fileName in acceptFilesMap)
+        )
       })
       : defaultFileRejections
 
     if (isEmpty(acceptedFiles)) {
       setFieldValue(rejectField, fileRejections)
       setIsPending(false)
-      onFinish([])
+      onFinish(files)
       return
     }
 
