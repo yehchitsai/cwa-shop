@@ -1,3 +1,4 @@
+import { get } from 'lodash-es'
 import useQueue from '../../../../hooks/useQueue'
 import TableRow from './TableRow'
 
@@ -29,7 +30,7 @@ const Table = (props) => {
               field={`${field}.${index}`}
               item={item}
               index={index}
-              key={item.uploadFile.name}
+              key={get(item, 'uploadFile.name')}
               onRemove={onRemove}
               onEdit={onEdit}
               onUpdated={onUpdated}

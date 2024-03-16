@@ -164,8 +164,13 @@ const Batch = () => {
     modalRef.current.open()
   }
 
-  const onUpdated = (formProps) => (field, row) => {
+  const onUpdated = (formProps, isMarkAsUploaded = false) => (field, row) => {
     formProps.setFieldValue(field, row)
+    if (isMarkAsUploaded) {
+      // on recognition failed, if row can be update mark as uploaded
+      const isUploadedField = field.replace(FORM_ITEM.RECOGNITION_DATA, FORM_ITEM.IS_UPLOADED)
+      formProps.setFieldValue(isUploadedField, true)
+    }
   }
 
   const onCloseEditModal = () => setEditItem({})
@@ -267,7 +272,7 @@ const Batch = () => {
             modalRef={modalRef}
             editItem={editItem}
             onClose={onCloseEditModal}
-            onUpdated={onUpdated(formProps)}
+            onUpdated={onUpdated(formProps, true)}
           />
         </>
       )}
