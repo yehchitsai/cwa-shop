@@ -22,7 +22,7 @@ const TableRow = (props) => {
   const { i18n } = useTranslation()
   const { fishTypeMap } = useFishTypes(i18n.language, false)
   const {
-    trigger, isLoading, state, error
+    trigger, isLoading, isRecognitionError, state, error
   } = useRecognition(
     item[FORM_ITEM.UPLOAD_FILE],
     queue,
@@ -33,6 +33,7 @@ const TableRow = (props) => {
       [FORM_ITEM.IS_UPLOADED]: true
     })
   )
+  const isUploaded = get(item, FORM_ITEM.IS_UPLOADED, false)
   const formData = get(item, FORM_ITEM.RECOGNITION_DATA, {})
   const errorMessage = get(error, 'message', toString(error))
   const isPending = (errorMessage === 'pending')
@@ -70,10 +71,10 @@ const TableRow = (props) => {
       {!isLoading && (
         <>
           <td className='whitespace-nowrap'>
-            {!state.isError && (
+            {(!state.isError || isUploaded) && (
               <span>{formData.itemSerial}</span>
             )}
-            {state.isError && (
+            {(state.isError && !isUploaded) && (
               <span
                 className={clx(
                   { 'text-error': !isPending },
@@ -85,12 +86,12 @@ const TableRow = (props) => {
             )}
           </td>
           <td>
-            {!state.isError && (
+            {(!state.isError || isUploaded) && (
               <span className='whitespace-nowrap'>
                 {`${get(fishTypeMap, `${formData.fishType}.fishName`, '')}(${formData.fishType})`}
               </span>
             )}
-            {state.isError && (
+            {(state.isError && !isUploaded) && (
               <span>{' '}</span>
             )}
           </td>
@@ -98,7 +99,7 @@ const TableRow = (props) => {
       )}
       <th>
         <div className='space-x-4 text-right max-lg:w-32'>
-          {!state.isError && (
+          {(!state.isError || isRecognitionError) && (
             <button
               type='button'
               className='btn btn-square'
@@ -110,7 +111,7 @@ const TableRow = (props) => {
               <MdEdit size='1.5em' />
             </button>
           )}
-          {state.isError && (
+          {(state.isError && !isRecognitionError) && (
             <button
               type='button'
               data-role='triggerRefresh'

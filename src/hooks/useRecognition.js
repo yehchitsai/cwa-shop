@@ -53,7 +53,8 @@ const useRecognition = (file, queue, controller, onSuccess) => {
   const isInit = useRef(false)
   const isVideoUploaded = useRef(false)
   const [isLoading, setIsLoading] = useState(true)
-  const [recognitionError, setRecognitionError] = useState(null)
+  const [isRecognitionError, setIsRecognitionError] = useState(false)
+  const [error, setError] = useState(null)
   const [status, setStatus] = useState('')
   const [fileKey, setFileKey] = useState(null)
   const [data, setData] = useState({})
@@ -70,7 +71,7 @@ const useRecognition = (file, queue, controller, onSuccess) => {
       const { error: uploadS3Error, result: newFileKey } = await uploadS3(file)
       if (uploadS3Error) {
         setIsLoading(false)
-        setRecognitionError(uploadS3Error)
+        setError(uploadS3Error)
         setStatus('fail')
         return
       }
@@ -87,8 +88,11 @@ const useRecognition = (file, queue, controller, onSuccess) => {
     )
     if (videoRecognitionError) {
       setIsLoading(false)
-      setRecognitionError(videoRecognitionError)
+      setError(videoRecognitionError)
       setStatus('fail')
+      if (videoRecognitionError.message !== 'pending') {
+        setIsRecognitionError(true)
+      }
       return
     }
 
@@ -112,7 +116,8 @@ const useRecognition = (file, queue, controller, onSuccess) => {
   return {
     trigger: recognition,
     isLoading,
-    error: recognitionError,
+    isRecognitionError,
+    error,
     state: getRecognitionState(status),
     data
   }
