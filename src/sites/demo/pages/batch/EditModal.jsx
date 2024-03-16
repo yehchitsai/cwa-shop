@@ -26,7 +26,12 @@ const FORM = {
 
 const validationSchema = Yup.object().shape({
   [FORM.ITEM_SERIAL]: Yup.string().required(`Miss ${FORM.ITEM_SERIAL}!`),
-  [FORM.FISH_TYPE]: Yup.string().required(`Miss ${FORM.FISH_TYPE}!`),
+  [FORM.FISH_TYPE]: Yup
+    .string()
+    .transform((value) => {
+      return value === '-1' ? '' : value
+    })
+    .required(`Miss ${FORM.FISH_TYPE}!`),
   [FORM.ITEM_IMAGES]: Yup.array()
 })
 
