@@ -147,7 +147,7 @@ const EditModal = (props) => {
                     as='select'
                     name={FORM.FISH_TYPE}
                     className={clx(
-                      'select select-bordered w-full lg:max-w-xs'
+                      'select select-bordered w-full'
                     )}
                     disabled={isLoading}
                   >
