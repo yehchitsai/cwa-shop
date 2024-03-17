@@ -42,7 +42,7 @@ const getRecognitionState = (status) => {
     isSuccess = true
   }
 
-  if (status === 'fail') {
+  if (status === 'fail' || status.startsWith('fail')) {
     isError = true
   }
 
