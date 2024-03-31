@@ -82,6 +82,7 @@ const useRecognition = (file, queue, controller, onUpdate) => {
         setIsLoading(false)
         setError(uploadS3Error)
         setStatus('fail')
+        onUpdate({}, false)
         return
       }
 
@@ -102,6 +103,7 @@ const useRecognition = (file, queue, controller, onUpdate) => {
       if (videoRecognitionError.message !== 'pending') {
         setIsRecognitionError(true)
       }
+      onUpdate({}, false)
       return
     }
 

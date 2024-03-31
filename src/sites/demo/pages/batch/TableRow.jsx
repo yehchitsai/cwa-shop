@@ -1,3 +1,4 @@
+import { useFormikContext } from 'formik'
 import {
   MdEdit, MdDelete, MdCheckCircle, MdError, MdCloudUpload, MdOutlineRefresh
 } from 'react-icons/md'
@@ -43,9 +44,10 @@ const RowIcon = (props) => {
 
 const TableRow = (props) => {
   const {
-    item, field, index, onRemove, onEdit, onUpdated,
-    queue, controller
+    item, fileName, index, onRemove, onEdit, onUpdated,
+    queue, controller, isDisabledAction
   } = props
+  const formProps = useFormikContext()
   const { i18n } = useTranslation()
   const { fishTypeMap } = useFishTypes(i18n.language, false)
   const {
@@ -54,8 +56,7 @@ const TableRow = (props) => {
     item[FORM_ITEM.UPLOAD_FILE],
     queue,
     controller,
-    (newData, isSuccess) => onUpdated(field, {
-      ...item,
+    (newData, isSuccess) => onUpdated(formProps)(fileName, {
       [FORM_ITEM.RECOGNITION_DATA]: newData,
       [FORM_ITEM.IS_UPLOADED]: isSuccess
     })
@@ -68,6 +69,14 @@ const TableRow = (props) => {
       ? 'edit'
       : get(error, 'message', toString(error))
   const isPending = (errorMessage === 'pending')
+
+  const onRefresh = async () => {
+    await onUpdated(formProps)(fileName, {
+      [FORM_ITEM.RECOGNITION_DATA]: undefined,
+      [FORM_ITEM.IS_UPLOADED]: false
+    })
+    trigger()
+  }
 
   return (
     <tr>
@@ -133,7 +142,8 @@ const TableRow = (props) => {
               className={clx('btn btn-square', { invisible: isNoVideo })}
               disabled={isLoading}
               onClick={() => onEdit({
-                index, item: item[FORM_ITEM.UPLOAD_FILE], data: formData, field
+                item: item[FORM_ITEM.UPLOAD_FILE],
+                data: formData
               })}
             >
               <MdEdit size='1.5em' />
@@ -145,7 +155,7 @@ const TableRow = (props) => {
               data-role='triggerRefresh'
               className={clx('btn btn-square', { invisible: isNoVideo })}
               disabled={isLoading}
-              onClick={() => trigger()}
+              onClick={onRefresh}
             >
               <MdOutlineRefresh size='1.5em' />
             </button>
@@ -153,8 +163,8 @@ const TableRow = (props) => {
           <button
             type='button'
             className='btn btn-square'
-            disabled={isLoading}
-            onClick={() => onRemove(index)}
+            disabled={isLoading || isDisabledAction}
+            onClick={() => onRemove(formProps)(fileName)}
           >
             <MdDelete size='1.5em' />
           </button>

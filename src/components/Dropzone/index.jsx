@@ -30,6 +30,7 @@ const Dropzone = (props) => {
     customPreviewSize,
     isSelectFolder = false,
     isShowPreview = true,
+    onStart = () => {},
     onFinish = () => {}
   } = props
   const [isPending, setIsPending] = useState(false)
@@ -45,6 +46,7 @@ const Dropzone = (props) => {
   }
 
   const onDrop = useCallback(async (defaultAcceptedFiles, defaultFileRejections) => {
+    onStart()
     setIsPending(true)
     const acceptFilesMap = keyBy(files, 'name')
     const acceptedFiles = filter(defaultAcceptedFiles, (acceptedFile) => {
@@ -140,7 +142,7 @@ const Dropzone = (props) => {
     setFieldValue(name, allFiles)
     setIsPending(false)
     onFinish(allFiles)
-  }, [files, rejectField, name, maxSize, accept, isSelectFolder, setFieldValue, onFinish])
+  }, [files, rejectField, name, maxSize, accept, isSelectFolder, setFieldValue, onFinish, onStart])
 
   const {
     getRootProps,
@@ -155,6 +157,11 @@ const Dropzone = (props) => {
     setFieldValue(name, newFiles)
   }
 
+  const onRemoveFileByFileName = (fileName) => {
+    const newFiles = files.filter((file) => file.name !== fileName)
+    setFieldValue(name, newFiles)
+  }
+
   const open = () => {
     const { ref } = getInputProps()
     ref.current.click()
@@ -163,6 +170,7 @@ const Dropzone = (props) => {
   useImperativeHandle(dropzoneRef, () => {
     return {
       removeFile: (index) => onRemoveFile(index)(),
+      removeFileByFileName: (fileName) => onRemoveFileByFileName(fileName),
       setAcceptedFiles: (defaultFiles) => setFieldValue(name, defaultFiles),
       getAcceptedFiles: () => files
     }
