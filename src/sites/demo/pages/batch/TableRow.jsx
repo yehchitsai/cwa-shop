@@ -11,7 +11,34 @@ import { FORM_ITEM } from './constants'
 
 const STATUS_MESSAGE_MAP = {
   pending: 'pending, please retry later',
-  fail: 'recognition failed'
+  fail: 'recognition failed',
+  edit: 'some content can\'t recognize, please update field',
+  video: 'No video found, please delete the row'
+}
+
+const RowIcon = (props) => {
+  const { state, isPending, isUploaded } = props
+  if (isUploaded) {
+    return (
+      <MdCheckCircle className='fill-success' size='1.5em' />
+    )
+  }
+
+  if ((state.isError && !isPending)) {
+    return (
+      <IoMdCloseCircle className='fill-error' size='1.5em' />
+    )
+  }
+
+  if (state.isError && isPending) {
+    return (
+      <MdError className='fill-warning' size='1.5em' />
+    )
+  }
+
+  return (
+    <MdCloudUpload size='1.5em' />
+  )
 }
 
 const TableRow = (props) => {
@@ -22,20 +49,24 @@ const TableRow = (props) => {
   const { i18n } = useTranslation()
   const { fishTypeMap } = useFishTypes(i18n.language, false)
   const {
-    trigger, isLoading, isRecognitionError, state, error
+    trigger, isLoading, isRecognitionError, isNoVideo, state, error
   } = useRecognition(
     item[FORM_ITEM.UPLOAD_FILE],
     queue,
     controller,
-    (newData) => onUpdated(field, {
+    (newData, isSuccess) => onUpdated(field, {
       ...item,
       [FORM_ITEM.RECOGNITION_DATA]: newData,
-      [FORM_ITEM.IS_UPLOADED]: true
+      [FORM_ITEM.IS_UPLOADED]: isSuccess
     })
   )
   const isUploaded = get(item, FORM_ITEM.IS_UPLOADED, false)
   const formData = get(item, FORM_ITEM.RECOGNITION_DATA, {})
-  const errorMessage = get(error, 'message', toString(error))
+  const errorMessage = isNoVideo
+    ? 'video'
+    : state.isNeedEdit
+      ? 'edit'
+      : get(error, 'message', toString(error))
   const isPending = (errorMessage === 'pending')
 
   return (
@@ -47,14 +78,11 @@ const TableRow = (props) => {
             'badge gap-2 border-none whitespace-nowrap'
           )}
         >
-          {state.isSuccess && (<MdCheckCircle className='fill-success' size='1.5em' />)}
-          {(state.isError && !isPending) && (
-            <IoMdCloseCircle className='fill-error' size='1.5em' />
-          )}
-          {(state.isError && isPending) && (
-            <MdError className='fill-warning' size='1.5em' />
-          )}
-          {state.isLoading && (<MdCloudUpload size='1.5em' />)}
+          <RowIcon
+            state={state}
+            isPending={isPending}
+            isUploaded={isUploaded}
+          />
           {item[FORM_ITEM.UPLOAD_FILE].name}
         </div>
       </td>
@@ -102,7 +130,7 @@ const TableRow = (props) => {
           {(!state.isError || isRecognitionError) && (
             <button
               type='button'
-              className='btn btn-square'
+              className={clx('btn btn-square', { invisible: isNoVideo })}
               disabled={isLoading}
               onClick={() => onEdit({
                 index, item: item[FORM_ITEM.UPLOAD_FILE], data: formData, field
@@ -115,7 +143,7 @@ const TableRow = (props) => {
             <button
               type='button'
               data-role='triggerRefresh'
-              className='btn btn-square'
+              className={clx('btn btn-square', { invisible: isNoVideo })}
               disabled={isLoading}
               onClick={() => trigger()}
             >

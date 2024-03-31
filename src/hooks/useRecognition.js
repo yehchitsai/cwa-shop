@@ -16,7 +16,7 @@ const retryAction = async (action) => {
     const recognitionStatus = get(result, 'status')
     const recognitionResults = get(result, 'results')
     return (
-      recognitionStatus === 'success' &&
+      ['success', 'edit'].includes(recognitionStatus) &&
       !isEmpty(recognitionResults)
     )
   }
@@ -34,6 +34,7 @@ const getRecognitionState = (status) => {
   let isLoading = false
   let isSuccess = false
   let isError = false
+  let isNeedEdit = false
   if (status === 'loading') {
     isLoading = true
   }
@@ -46,14 +47,22 @@ const getRecognitionState = (status) => {
     isError = true
   }
 
-  return { isLoading, isSuccess, isError }
+  if (status === 'edit') {
+    isNeedEdit = true
+    isError = true
+  }
+
+  return {
+    isLoading, isSuccess, isError, isNeedEdit
+  }
 }
 
-const useRecognition = (file, queue, controller, onSuccess) => {
+const useRecognition = (file, queue, controller, onUpdate) => {
   const isInit = useRef(false)
   const isVideoUploaded = useRef(false)
   const [isLoading, setIsLoading] = useState(true)
   const [isRecognitionError, setIsRecognitionError] = useState(false)
+  const [isNoVideo, setIsNoVideo] = useState(false)
   const [error, setError] = useState(null)
   const [status, setStatus] = useState('')
   const [fileKey, setFileKey] = useState(null)
@@ -96,10 +105,20 @@ const useRecognition = (file, queue, controller, onSuccess) => {
       return
     }
 
-    setIsLoading(false)
     const newData = get(result, 'results', {})
+    setIsNoVideo(newData.itemVideo === '')
+    if (result.status === 'edit') {
+      setIsLoading(false)
+      setData(newData)
+      setStatus('edit')
+      onUpdate(newData, false)
+      setIsRecognitionError(true)
+      return
+    }
+
+    setIsLoading(false)
     setData(newData)
-    onSuccess(newData)
+    onUpdate(newData, true)
     setStatus('success')
   }
 
@@ -117,6 +136,7 @@ const useRecognition = (file, queue, controller, onSuccess) => {
     trigger: recognition,
     isLoading,
     isRecognitionError,
+    isNoVideo,
     error,
     state: getRecognitionState(status),
     data

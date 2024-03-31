@@ -46,10 +46,11 @@ const EditModal = (props) => {
   const initFormData = get(editItem, 'data', {})
   const {
     itemSerial,
-    fishType = -1,
+    fishType: initFishType,
     itemImages = [],
     itemVideo = ''
   } = initFormData
+  const fishType = (initFishType === '') ? -1 : initFishType
 
   const onEditModalOpen = () => {
     setIsUpdated(false)

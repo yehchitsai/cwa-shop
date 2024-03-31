@@ -78,7 +78,7 @@ const validationSchema = Yup.object().shape({
     .of(
       Yup.object().shape({
         [FORM_ITEM.IS_UPLOADED]: Yup.boolean()
-          .isTrue().required('Uploading or upload failed.')
+          .isTrue().required('Some field has error.')
       })
     )
 })
