@@ -9,10 +9,10 @@ import {
 } from 'react-icons/md'
 import toast from 'react-hot-toast'
 import {
-  filter, get, groupBy, isEmpty, isUndefined, map, size
+  filter, flow, get, groupBy, isEmpty, isUndefined, keyBy, map, size
 } from 'lodash-es'
-import wait from '../../../../utils/wait'
 import getApiHost from '../../../../utils/getApiHost'
+import wait from '../../../../utils/wait'
 import useCreate from '../../../../hooks/useCreate'
 import FormLayout from '../../../../components/Form/Layout'
 import FormRow from '../../../../components/Form/FormRow'
@@ -22,6 +22,7 @@ import ACCEPT from '../../../../components/Dropzone/accept'
 import Table from './Table'
 import EditModal from './EditModal'
 import { FORM, FORM_ITEM } from './constants'
+import useQueue from '../../../../hooks/useQueue'
 
 const putImageHost = getApiHost('VITE_AWS_PUT_IMAGE_HOST')
 const putImageEndPoint = `${import.meta.env.VITE_AWS_HOST_PREFIX}/putimage`
@@ -84,11 +85,13 @@ const validationSchema = Yup.object().shape({
 })
 
 const Batch = () => {
+  const [isCalculating, setIsCalculating] = useState(false)
   const [editItem, setEditItem] = useState({})
   const dropzoneRef = useRef()
   const modalRef = useRef()
   const { t } = useTranslation()
   const { trigger: putImage, isMutating } = useCreate(putImageHost)
+  const { queue } = useQueue({ concurrency: 1 })
 
   const onSubmit = async (formValues, formProps) => {
     const toastId = toast.loading('Creating...')
@@ -136,27 +139,39 @@ const Batch = () => {
   }
 
   const onSelectFilesFinish = (formProps) => (newFiles) => {
-    const currentRows = get(formProps.values, FORM.ROWS, [])
-    const rows = newFiles.map((newFile, index) => {
-      const {
-        [FORM_ITEM.RECOGNITION_DATA]: recognitionData = undefined,
-        [FORM_ITEM.IS_UPLOADED]: isUploaded = false
-      } = get(currentRows, index, {})
-      return {
-        [FORM_ITEM.UPLOAD_FILE]: newFile,
-        [FORM_ITEM.RECOGNITION_DATA]: recognitionData,
-        [FORM_ITEM.IS_UPLOADED]: isUploaded
-      }
-    })
-    formProps.setFieldValue(FORM.ROWS, rows)
+    return queue.add(async () => {
+      const currentRows = get(formProps.values, FORM.ROWS, [])
+      const existFileMap = flow(
+        () => map(currentRows, (row) => get(row, `${FORM_ITEM.UPLOAD_FILE}.name`)),
+        keyBy
+      )()
+      const rows = [
+        ...currentRows,
+        ...newFiles
+          .filter((newFile) => !(newFile.name in existFileMap))
+          .map((newFile) => {
+            return {
+              [FORM_ITEM.UPLOAD_FILE]: newFile,
+              [FORM_ITEM.RECOGNITION_DATA]: undefined,
+              [FORM_ITEM.IS_UPLOADED]: false
+            }
+          })
+      ]
+      await formProps.setValues({ [FORM.ROWS]: rows })
+      await wait(100)
+      setIsCalculating(false)
+    }, { priority: 1 })
   }
 
-  const onRemove = (formProps) => async (index) => {
-    const rows = get(formProps.values, FORM.ROWS, [])
-    dropzoneRef.current.removeFile(index)
-    await wait()
-    const filteredRows = rows.filter((row, rowIndex) => rowIndex !== index)
-    formProps.setFieldValue(FORM.ROWS, filteredRows)
+  const onRemove = (formProps) => async (fileName) => {
+    return queue.add(() => {
+      dropzoneRef.current.removeFileByFileName(fileName)
+      const rows = get(formProps.values, FORM.ROWS, [])
+      const filteredRows = rows.filter((row) => {
+        return fileName !== get(row, `${FORM_ITEM.UPLOAD_FILE}.name`)
+      })
+      return formProps.setFieldValue(FORM.ROWS, filteredRows)
+    }, { priority: 2 })
   }
 
   const onEdit = (newEditItem) => {
@@ -164,13 +179,16 @@ const Batch = () => {
     modalRef.current.open()
   }
 
-  const onUpdated = (formProps, isMarkAsUploaded = false) => (field, row) => {
-    formProps.setFieldValue(field, row)
-    if (isMarkAsUploaded) {
-      // on recognition failed, if row can be update mark as uploaded
-      const isUploadedField = field.replace(FORM_ITEM.RECOGNITION_DATA, FORM_ITEM.IS_UPLOADED)
-      formProps.setFieldValue(isUploadedField, true)
-    }
+  const onUpdated = (formProps) => (fileName, newRow) => {
+    return queue.add(() => {
+      const rows = get(formProps.values, FORM.ROWS, [])
+      const targetRowIndex = rows.findIndex((row) => {
+        return fileName === get(row, `${FORM_ITEM.UPLOAD_FILE}.name`)
+      })
+      const targetRow = get(rows, targetRowIndex, {})
+      const updatedRow = { ...targetRow, ...newRow }
+      return formProps.setFieldValue(`${FORM.ROWS}.${targetRowIndex}`, updatedRow)
+    }, { priority: 0 })
   }
 
   const onCloseEditModal = () => setEditItem({})
@@ -212,6 +230,7 @@ const Batch = () => {
                   dropzoneRef={dropzoneRef}
                   name={FORM.VIDEOS}
                   accept={ACCEPT.VIDEO}
+                  onStart={() => setIsCalculating(true)}
                   onFinish={onSelectFilesFinish(formProps)}
                   maxSize={Infinity}
                   isShowPreview={false}
@@ -243,11 +262,10 @@ const Batch = () => {
                     </button>
                   </div>
                   <Table
-                    data={formProps.values[FORM.ROWS]}
-                    field={FORM.ROWS}
-                    onRemove={onRemove(formProps)}
+                    onRemove={onRemove}
                     onEdit={onEdit}
-                    onUpdated={onUpdated(formProps)}
+                    onUpdated={onUpdated}
+                    isCalculating={isCalculating}
                   />
                 </FormRow>
               )}
@@ -272,7 +290,7 @@ const Batch = () => {
             modalRef={modalRef}
             editItem={editItem}
             onClose={onCloseEditModal}
-            onUpdated={onUpdated(formProps, true)}
+            onUpdated={onUpdated}
           />
         </>
       )}

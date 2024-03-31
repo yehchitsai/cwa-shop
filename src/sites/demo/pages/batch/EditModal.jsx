@@ -1,6 +1,8 @@
 import { useRef, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Formik, Field, Form } from 'formik'
+import {
+  Formik, Field, Form, useFormikContext
+} from 'formik'
 import clx from 'classnames'
 import {
   flow, get, isEmpty, isNull, map, pick
@@ -41,11 +43,13 @@ const EditModal = (props) => {
   const {
     modalRef, editItem, onClose, onUpdated
   } = props
+  const rootFormProps = useFormikContext()
   const [isUpdated, setIsUpdated] = useState(false)
   const dropzoneRef = useRef()
   const { t, i18n } = useTranslation()
   const { fishTypes, isLoading } = useFishTypes(i18n.language, false)
   const initFormData = get(editItem, 'data', {})
+  const fileName = get(editItem, 'item.name', {})
   const {
     itemSerial,
     originItemImage = '',
@@ -80,7 +84,10 @@ const EditModal = (props) => {
       ...pick(formValues, [FORM.FISH_TYPE, FORM.ITEM_SERIAL, FORM.ITEM_VIDEO]),
       [FORM.ITEM_IMAGES]: convertedItemImages
     }
-    onUpdated(`${editItem.field}.${FORM_ITEM.RECOGNITION_DATA}`, updateFormValues)
+    onUpdated(rootFormProps)(fileName, {
+      [FORM_ITEM.IS_UPLOADED]: true,
+      [FORM_ITEM.RECOGNITION_DATA]: updateFormValues
+    })
     modalRef.current.close()
   }
 
