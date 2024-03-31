@@ -13,12 +13,14 @@ import getVideoJsOptions from '../../../../components/Video/getVideoJsOptions'
 import FormRow from '../../../../components/Form/FormRow'
 import ACCEPT from '../../../../components/Dropzone/accept'
 import Dropzone from '../../../../components/Dropzone'
+import LazyImage from '../../../../components/LazyImage'
 import { FORM_ITEM } from './constants'
 
 const id = 'editBatchItem'
 
 const FORM = {
   ITEM_SERIAL: 'itemSerial',
+  ORIGIN_ITEM_IMAGE: 'originItemImage',
   FISH_TYPE: 'fishType',
   ITEM_IMAGES: 'itemImages',
   ITEM_VIDEO: 'itemVideo'
@@ -46,6 +48,7 @@ const EditModal = (props) => {
   const initFormData = get(editItem, 'data', {})
   const {
     itemSerial,
+    originItemImage = '',
     fishType: initFishType,
     itemImages = [],
     itemVideo = ''
@@ -123,13 +126,30 @@ const EditModal = (props) => {
               [FORM.ITEM_SERIAL]: itemSerial,
               [FORM.FISH_TYPE]: fishType,
               [FORM.ITEM_IMAGES]: itemImages,
-              [FORM.ITEM_VIDEO]: itemVideo
+              [FORM.ITEM_VIDEO]: itemVideo,
+              [FORM.ORIGIN_ITEM_IMAGE]: originItemImage
             }}
             onSubmit={onEditModalOk}
             validationSchema={validationSchema}
           >
             {(formProps) => (
               <Form>
+                <FormRow>
+                  <div className='collapse collapse-arrow bg-base-200'>
+                    <input type='checkbox' />
+                    <div className='collapse-title text-xl font-medium'>
+                      Origin image
+                    </div>
+                    <div className='collapse-content m-auto w-full'>
+                      <LazyImage
+                        src={originItemImage}
+                        className='rounded-md object-contain'
+                        alt='origin item image'
+                        loaderClassName='h-1/2 w-full'
+                      />
+                    </div>
+                  </div>
+                </FormRow>
                 <FormRow
                   label={FORM.ITEM_SERIAL}
                   error={formProps.touched[FORM.ITEM_SERIAL] && formProps.errors[FORM.ITEM_SERIAL]}

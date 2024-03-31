@@ -65,6 +65,7 @@ export default [
 
       const results = {
         itemVideo: videos[random(0, 2)],
+        originItemImage: getFakeImage(500, 'originItemImage'),
         fishType: TYPE_KEY[random(0, 2)],
         itemSerial: `${random(100, 1000)}`,
         itemImages: flow(
