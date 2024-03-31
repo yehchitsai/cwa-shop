@@ -1,4 +1,6 @@
-import { flow, random, times } from 'lodash-es'
+import {
+  flow, get, keys, random, times
+} from 'lodash-es'
 import getApiPrefix from '../../utils/getApiPrefix'
 
 const videos = [
@@ -20,13 +22,15 @@ const TYPE_KEY = [
 const RECOGNITION_STATUS = {
   SUCCESS: 'success',
   PENDING: 'pending',
-  FAIL: 'fail'
+  FAIL: 'fail',
+  EDIT: 'edit'
 }
 
 const RECOGNITION_STATUS_LIST = [
   RECOGNITION_STATUS.PENDING,
   RECOGNITION_STATUS.FAIL,
-  RECOGNITION_STATUS.SUCCESS
+  RECOGNITION_STATUS.SUCCESS,
+  RECOGNITION_STATUS.EDIT
 ]
 
 const resultError = (message = 'Request failed', { code = 0, result = null } = {}) => {
@@ -70,6 +74,18 @@ export default [
             return getFakeImage(size, `${file} ${index}`)
           })
         )()
+      }
+
+      if (status === RECOGNITION_STATUS.EDIT) {
+        const omitResults = flow(
+          () => keys(results),
+          (resultKeys) => get(resultKeys, random(0, resultKeys.length - 1)),
+          (resultKey) => ({ ...results, [resultKey]: resultKey === 'itemImages' ? [] : '' })
+        )()
+        return {
+          status,
+          results: omitResults
+        }
       }
       return {
         status,
