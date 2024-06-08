@@ -53,7 +53,7 @@ const Drawer = (props) => {
       />
       <div
         className={clx(
-          'drawer-content m-auto',
+          'drawer-content m-auto h-full',
           { [drawerContentClassName]: drawerContentClassName }
         )}
       >
