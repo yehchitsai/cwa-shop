@@ -4,23 +4,37 @@ import Logo from './Logo'
 import LangsAction from './LangsAction'
 import LogoutAction from './LogoutAction'
 import UserAction from './UserAction'
+import OrderAction from './OrderAction'
 
 const isDev = window.ENTRY_PATH === '/'
 const shopPaths = ['/external', '/internal', '/demo']
+const orderPaths = ['/order-domestic', '/order-export']
 
 const NavBarActions = (props) => {
   const { fixed } = props
   const location = useLocation()
-  const isShop = (
-    (isDev && shopPaths.some((shopPath) => location.pathname.startsWith(shopPath))) ||
-    (!isDev && shopPaths.includes(window.ENTRY_PATH))
-  )
+  const [isShop, isOrder] = [shopPaths, orderPaths].map((targetPaths) => {
+    return (
+      (isDev && targetPaths.some((shopPath) => location.pathname.startsWith(shopPath))) ||
+      (!isDev && targetPaths.includes(window.ENTRY_PATH))
+    )
+  })
 
   if (isShop) {
     return (
       <>
         <LangsAction />
         <UserAction fixed={fixed} />
+        <LogoutAction />
+      </>
+    )
+  }
+
+  if (isOrder) {
+    return (
+      <>
+        <LangsAction />
+        <OrderAction />
         <LogoutAction />
       </>
     )
