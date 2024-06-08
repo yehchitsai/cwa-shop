@@ -7,7 +7,6 @@ import {
 import SkeletonHome from '../Skeleton/Home'
 import ErrorElement from './ErrorElement'
 import Layout from './Layout'
-import NavBar from '../NavBar'
 import getAuth from './getAuth'
 import 'react-loading-skeleton/dist/skeleton.css'
 
@@ -59,10 +58,7 @@ const Router = (props) => {
   return (
     <Suspense
       fallback={(
-        <>
-          <NavBar fixed />
-          <SkeletonHome className='fixed top-0 z-0' />
-        </>
+        <SkeletonHome className='fixed top-0 z-0' />
       )}
     >
       <RouterProvider router={router} />
