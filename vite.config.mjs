@@ -69,7 +69,8 @@ export default ({ mode }) => {
       'window.IS_MOCK_AWS_API': `${isMockAwsApi}`,
       'window.IS_PROD': `${isProd}`,
       'window.IS_PREVIEW': `${isPreview}`,
-      'window.TARGET_ENV': `${JSON.stringify(targetEnv)}`
+      'window.TARGET_ENV': `${JSON.stringify(targetEnv)}`,
+      'window.ENTRY_PATH': `"/${isDefaultEntry ? '' : ENTRY}"`
     },
     root: `${entriesDir}/${isDefaultEntry ? '' : `/${ENTRY}`}`,
     plugins: [
