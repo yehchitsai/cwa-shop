@@ -5,20 +5,20 @@ import Logo from './Logo'
 import LangsAction from './LangsAction'
 import LogoutAction from './LogoutAction'
 import UserAction from './UserAction'
-import OrderAction from './OrderAction'
+import PurchaseAction from './PurchaseAction'
 
 const isDev = window.ENTRY_PATH === '/'
 const shopPaths = ['/external', '/internal', '/demo']
-const orderPaths = ['/order-domestic', '/order-export']
+const purchasePaths = ['/order-domestic', '/order-export']
 
 const NAV_BAR_TYPE = {
   SHOP: 'shop',
-  ORDER: 'order'
+  PURCHASE: 'purchase'
 }
 
 const useNavBarType = () => {
   const location = useLocation()
-  const [isShop, isOrder] = [shopPaths, orderPaths].map((targetPaths) => {
+  const [isShop, isPurchase] = [shopPaths, purchasePaths].map((targetPaths) => {
     return (
       (isDev && targetPaths.some((shopPath) => location.pathname.startsWith(shopPath))) ||
       (!isDev && targetPaths.includes(window.ENTRY_PATH))
@@ -27,8 +27,8 @@ const useNavBarType = () => {
 
   let navBarType
   switch (true) {
-    case isOrder: {
-      navBarType = NAV_BAR_TYPE.ORDER
+    case isPurchase: {
+      navBarType = NAV_BAR_TYPE.PURCHASE
       break
     }
     case isShop:
@@ -54,11 +54,11 @@ const NavBarActions = (props) => {
     )
   }
 
-  if (navBarType === NAV_BAR_TYPE.ORDER) {
+  if (navBarType === NAV_BAR_TYPE.PURCHASE) {
     return (
       <>
         <LangsAction />
-        <OrderAction />
+        <PurchaseAction />
         <LogoutAction />
       </>
     )
@@ -80,7 +80,7 @@ const NavBar = (props) => {
 
   const LOGO_TITLE = {
     [NAV_BAR_TYPE.SHOP]: t('shopLogoTitle'),
-    [NAV_BAR_TYPE.ORDER]: t('orderLogoTitle')
+    [NAV_BAR_TYPE.PURCHASE]: t('purchaseLogoTitle')
   }
 
   return (

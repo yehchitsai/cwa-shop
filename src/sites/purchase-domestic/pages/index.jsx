@@ -39,7 +39,7 @@ const ItemSelectSection = () => {
   )
 }
 
-const OrderDomestic = () => {
+const PurchaseDomestic = () => {
   const selectProducts = []
   return (
     <Drawer
@@ -115,4 +115,4 @@ const OrderDomestic = () => {
   )
 }
 
-export default OrderDomestic
+export default PurchaseDomestic

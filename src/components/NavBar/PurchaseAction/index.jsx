@@ -1,6 +1,6 @@
 import { FaInfoCircle } from 'react-icons/fa'
 
-const OrderAction = () => {
+const PurchaseAction = () => {
   return (
     <div className='dropdown dropdown-end form-control'>
       <label tabIndex={0} className='btn btn-ghost'>
@@ -36,4 +36,4 @@ const OrderAction = () => {
   )
 }
 
-export default OrderAction
+export default PurchaseAction
