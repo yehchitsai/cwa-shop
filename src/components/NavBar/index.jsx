@@ -1,26 +1,50 @@
 import { useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import clx from 'classnames'
 import Logo from './Logo'
 import LangsAction from './LangsAction'
 import LogoutAction from './LogoutAction'
 import UserAction from './UserAction'
-import OrderAction from './OrderAction'
+import PurchaseAction from './PurchaseAction'
 
 const isDev = window.ENTRY_PATH === '/'
 const shopPaths = ['/external', '/internal', '/demo']
-const orderPaths = ['/order-domestic', '/order-export']
+const purchasePaths = ['/order-domestic', '/order-export']
 
-const NavBarActions = (props) => {
-  const { fixed } = props
+const NAV_BAR_TYPE = {
+  SHOP: 'shop',
+  PURCHASE: 'purchase'
+}
+
+const useNavBarType = () => {
   const location = useLocation()
-  const [isShop, isOrder] = [shopPaths, orderPaths].map((targetPaths) => {
+  const [isShop, isPurchase] = [shopPaths, purchasePaths].map((targetPaths) => {
     return (
       (isDev && targetPaths.some((shopPath) => location.pathname.startsWith(shopPath))) ||
       (!isDev && targetPaths.includes(window.ENTRY_PATH))
     )
   })
 
-  if (isShop) {
+  let navBarType
+  switch (true) {
+    case isPurchase: {
+      navBarType = NAV_BAR_TYPE.PURCHASE
+      break
+    }
+    case isShop:
+    default: {
+      navBarType = NAV_BAR_TYPE.SHOP
+      break
+    }
+  }
+  return navBarType
+}
+
+const NavBarActions = (props) => {
+  const { fixed } = props
+  const navBarType = useNavBarType()
+
+  if (navBarType === NAV_BAR_TYPE.SHOP) {
     return (
       <>
         <LangsAction />
@@ -30,11 +54,11 @@ const NavBarActions = (props) => {
     )
   }
 
-  if (isOrder) {
+  if (navBarType === NAV_BAR_TYPE.PURCHASE) {
     return (
       <>
         <LangsAction />
-        <OrderAction />
+        <PurchaseAction />
         <LogoutAction />
       </>
     )
@@ -45,11 +69,18 @@ const NavBarActions = (props) => {
 
 const NavBar = (props) => {
   const { fixed, appBaseName } = props
+  const { t } = useTranslation()
   const location = useLocation()
+  const navBarType = useNavBarType()
   const isHiddenNavBar = isDev && location.pathname === '/'
 
   if (isHiddenNavBar) {
     return null
+  }
+
+  const LOGO_TITLE = {
+    [NAV_BAR_TYPE.SHOP]: t('shopLogoTitle'),
+    [NAV_BAR_TYPE.PURCHASE]: t('purchaseLogoTitle')
   }
 
   return (
@@ -61,7 +92,9 @@ const NavBar = (props) => {
       )}
     >
       <div className='flex-1'>
-        <Logo appBaseName={appBaseName} />
+        <Logo appBaseName={appBaseName}>
+          {LOGO_TITLE[navBarType]}
+        </Logo>
       </div>
       <div className='flex flex-1 justify-end'>
         <div className='flex items-stretch'>
