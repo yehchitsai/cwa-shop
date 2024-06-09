@@ -11,7 +11,7 @@ const PortalWithLinks = (props) => {
           <Link
             key={link.url}
             to={link.url}
-            className='btn btn-outline btn-lg'
+            className='btn btn-outline btn-lg my-2'
           >
             {link.name}
           </Link>
