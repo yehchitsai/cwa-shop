@@ -102,7 +102,7 @@ const PurchaseDomestic = () => {
         <div className='h-[calc(100dvh-12.5rem)] overflow-x-auto'>
           <table className='table table-pin-rows table-pin-cols'>
             <thead>
-              <tr>
+              <tr className='max-sm:-top-1'>
                 <th>項次</th>
                 <td>品名</td>
                 <td>尺寸</td>
