@@ -106,7 +106,7 @@ const PurchaseDomestic = () => {
           <MdOutlineDelete size='1.5em' className='!fill-red-500' />
           從購物車移除
         </p>
-        <div className='h-[calc(100dvh-12.5rem)] overflow-x-auto'>
+        <div className='h-[calc(100dvh-11.5rem)] overflow-x-auto'>
           <table className='table table-pin-rows table-pin-cols'>
             <thead>
               <tr className='max-sm:-top-1'>
