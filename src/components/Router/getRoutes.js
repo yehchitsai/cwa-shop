@@ -9,7 +9,8 @@ const getRoutes = (pages, loaders, isRoot = false) => {
     },
     (pagesEntries) => pagesEntries.reduce((collect, pagesEntry) => {
       const [path, page, rootPath] = pagesEntry
-      const fileName = (isRoot ? rootPath : path).match(/\.\/pages\/(.*)\.jsx$/)?.[1]
+      const convertedPath = (isRoot ? rootPath : path).match(/.*\/pages(.*)/)[1]
+      const fileName = `./pages/${convertedPath}`.match(/\.{1,2}\/pages\/(.*)\.jsx$/)?.[1]
       const loaderPath = path.replace('index.jsx', 'index.loader.js')
       if (!fileName) {
         return collect
