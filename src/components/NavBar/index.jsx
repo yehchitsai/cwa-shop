@@ -8,7 +8,7 @@ import UserAction from './UserAction'
 import PurchaseAction from './PurchaseAction'
 
 const isDev = window.ENTRY_PATH === '/'
-const shopPaths = ['/external', '/internal', '/demo']
+const shopPaths = ['/external', '/external-demo', '/internal', '/demo']
 const purchasePaths = ['/purchase-domestic', '/purchase-export']
 
 const NAV_BAR_TYPE = {

@@ -1,7 +1,7 @@
 import { MdLogout } from 'react-icons/md'
+import getLoginLogoutUrl from '../../../utils/getLoginLogoutUrl'
 
-const loginUrl = import.meta.env.VITE_LOGIN_URL
-const logoutUrl = import.meta.env.VITE_LOGOUT_URL
+const { loginUrl, logoutUrl } = getLoginLogoutUrl()
 
 const LogoutAction = () => {
   return (
