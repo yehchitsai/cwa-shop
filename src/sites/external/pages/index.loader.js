@@ -6,6 +6,7 @@ import { preload } from 'swr'
 import { defer } from 'react-router-dom'
 import getApiHost from '../../../utils/getApiHost'
 import fetcher from '../../../utils/fetcher'
+import clearExpiredLoginToken from '../../../utils/clearExpiredLoginToken'
 import getAuth from '../../../components/Router/getAuth'
 
 const awsHostPrefix = import.meta.env.VITE_AWS_HOST_PREFIX
@@ -52,6 +53,9 @@ const getSelectedFishData = async () => {
   const selectedFishData = filter(fishData, (item) => item.itemSerial in preOrderItemSerialMap)
   return selectedFishData
 }
+
+clearExpiredLoginToken()
+
 const loader = async () => {
   const [error, auth, response] = await getAuth()
   if (error) {
