@@ -22,18 +22,25 @@ const ItemSelectSection = () => {
     <div className='w-full'>
       <select
         className={clx(
-          'select select-bordered w-full'
+          'select select-sm select-bordered w-full'
         )}
         onChange={onSelectType}
         defaultValue={defaultType}
       >
         <option value={-1} disabled>Select type</option>
-        {types.map((type) => {
-          const { label, value } = type
+        <option value='all'>All</option>
+        {times(5, (index) => {
           return (
-            <option value={value} key={value}>
-              {label}
-            </option>
+            <optgroup key={index} label={`group-${index}`}>
+              {types.map((type) => {
+                const { label, value } = type
+                return (
+                  <option value={value} key={value}>
+                    {label}
+                  </option>
+                )
+              })}
+            </optgroup>
           )
         })}
       </select>
@@ -82,18 +89,18 @@ const PurchaseDomestic = () => {
       overlay
     >
       <div className='space-y-4 p-4'>
-        <div className='grid grid-flow-col gap-4'>
-          <div className='grid-cols-1'>
+        <div className='grid grid-flow-col grid-cols-2 gap-4'>
+          <div>
             <ItemSelectSection />
           </div>
-          <div className='grid-cols-1'>
-            <label className='input input-bordered flex items-center'>
+          <div>
+            <label className='input input-sm input-bordered flex items-center'>
               <input type='text' className='grow' placeholder='Search' autoComplete='off' />
               <MdSearch size='1.5em' />
             </label>
           </div>
         </div>
-        <p className='flex gap-2'>
+        <p className='flex gap-2 text-sm'>
           <GiClick size='1.5em' className='!fill-indigo-500' />
           加入購物車
           <MdOutlineDelete size='1.5em' className='!fill-red-500' />
