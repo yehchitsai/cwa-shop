@@ -1,4 +1,5 @@
 import { useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import clx from 'classnames'
 import Logo from './Logo'
 import LangsAction from './LangsAction'
@@ -10,8 +11,12 @@ const isDev = window.ENTRY_PATH === '/'
 const shopPaths = ['/external', '/internal', '/demo']
 const orderPaths = ['/order-domestic', '/order-export']
 
-const NavBarActions = (props) => {
-  const { fixed } = props
+const NAV_BAR_TYPE = {
+  SHOP: 'shop',
+  ORDER: 'order'
+}
+
+const useNavBarType = () => {
   const location = useLocation()
   const [isShop, isOrder] = [shopPaths, orderPaths].map((targetPaths) => {
     return (
@@ -20,7 +25,26 @@ const NavBarActions = (props) => {
     )
   })
 
-  if (isShop) {
+  let navBarType
+  switch (true) {
+    case isOrder: {
+      navBarType = NAV_BAR_TYPE.ORDER
+      break
+    }
+    case isShop:
+    default: {
+      navBarType = NAV_BAR_TYPE.SHOP
+      break
+    }
+  }
+  return navBarType
+}
+
+const NavBarActions = (props) => {
+  const { fixed } = props
+  const navBarType = useNavBarType()
+
+  if (navBarType === NAV_BAR_TYPE.SHOP) {
     return (
       <>
         <LangsAction />
@@ -30,7 +54,7 @@ const NavBarActions = (props) => {
     )
   }
 
-  if (isOrder) {
+  if (navBarType === NAV_BAR_TYPE.ORDER) {
     return (
       <>
         <LangsAction />
@@ -45,11 +69,18 @@ const NavBarActions = (props) => {
 
 const NavBar = (props) => {
   const { fixed, appBaseName } = props
+  const { t } = useTranslation()
   const location = useLocation()
+  const navBarType = useNavBarType()
   const isHiddenNavBar = isDev && location.pathname === '/'
 
   if (isHiddenNavBar) {
     return null
+  }
+
+  const LOGO_TITLE = {
+    [NAV_BAR_TYPE.SHOP]: t('shopLogoTitle'),
+    [NAV_BAR_TYPE.ORDER]: t('orderLogoTitle')
   }
 
   return (
@@ -61,7 +92,9 @@ const NavBar = (props) => {
       )}
     >
       <div className='flex-1'>
-        <Logo appBaseName={appBaseName} />
+        <Logo appBaseName={appBaseName}>
+          {LOGO_TITLE[navBarType]}
+        </Logo>
       </div>
       <div className='flex flex-1 justify-end'>
         <div className='flex items-stretch'>

@@ -1,16 +1,12 @@
-import { useTranslation } from 'react-i18next'
-
 const Logo = (props) => {
-  const { appBaseName } = props
-  const { t } = useTranslation()
-  const className = 'btn btn-ghost text-xl normal-case'
+  const { appBaseName, children } = props
 
   return (
     <a
       href={`${window.location.origin}${appBaseName}`}
-      className={className}
+      className='btn btn-ghost text-xl normal-case'
     >
-      {`${t('shop')}`}
+      {children}
     </a>
   )
 }
