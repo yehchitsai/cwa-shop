@@ -1,38 +1,22 @@
 import { Link } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
 import clx from 'classnames'
-import {
-  flow,
-  get,
-  round,
-  size, sumBy
-} from 'lodash-es'
-import useFishTypes from '../../hooks/useFishTypes'
+import { size } from 'lodash-es'
 
 const CartBottomItems = (props) => {
-  const { i18n } = useTranslation()
-  const { t } = useTranslation()
-  const {
-    fishTypeMap
-  } = useFishTypes(i18n.language)
-  const { items = [] } = props
+  const { items = [], confirmLinkTo, confirmLinkText } = props
   const selectedSize = size(items)
   const isNoProductSelected = selectedSize === 0
-  const totalPrice = flow(
-    () => sumBy(items, (item) => +get(fishTypeMap, `${item.fishType}.fishPrice`)),
-    (summaryPrice) => round(summaryPrice, 2)
-  )()
-  const currency = get(fishTypeMap, `${get(items, '0.fishType')}.currency`, '')
   return (
     <>
-      <li key='totalCount'>
-        <span>{`${t('totalCount')}: ${selectedSize}`}</span>
-      </li>
-      <li key='totalPrice'>
-        <span>{`${t('totalPrice')}: ${totalPrice} ${currency}`}</span>
-      </li>
+      {items.map((item, index) => {
+        return (
+          <li key={index}>
+            <span>{item}</span>
+          </li>
+        )
+      })}
       <Link
-        to='./confirm'
+        to={confirmLinkTo}
         className={clx({ 'pointer-events-none': isNoProductSelected })}
       >
         <button
@@ -42,7 +26,7 @@ const CartBottomItems = (props) => {
             { 'btn-disabled': isNoProductSelected }
           )}
         >
-          {`${t('confirmOrder')}`}
+          {confirmLinkText}
         </button>
       </Link>
     </>

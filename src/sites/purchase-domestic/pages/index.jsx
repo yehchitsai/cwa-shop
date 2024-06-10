@@ -4,10 +4,10 @@ import clx from 'classnames'
 import { MdShoppingCart, MdSearch, MdOutlineDelete } from 'react-icons/md'
 import { GiClick } from 'react-icons/gi'
 import { keyBy, size, times } from 'lodash-es'
-import CartBottomItems from '../../../components/CartBottomItems'
-import CartItems from '../../../components/CartItems'
 import Drawer from '../../../components/Drawer'
 import PurchaseModal from '../../../components/Modal/Purchase'
+import CustomCartItems from './CustomCartItems'
+import CustomCartBottomItems from './CustomCartBottomItems'
 
 const ItemSelectSection = () => {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -88,10 +88,10 @@ const PurchaseDomestic = () => {
     <Drawer
       id='rootSidebar'
       items={(
-        <CartItems items={selectProducts} />
+        <CustomCartItems items={selectProducts} />
       )}
       bottomItems={(
-        <CartBottomItems items={selectProducts} />
+        <CustomCartBottomItems items={selectProducts} />
       )}
       openIcon={MdShoppingCart}
       drawerContentClassName={clx(
