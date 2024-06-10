@@ -28,8 +28,8 @@ import Card from '../../../components/Card'
 import ProductModal from '../../../components/Modal/Product'
 import SkeletonHome from '../../../components/Skeleton/Home'
 import Drawer from '../../../components/Drawer'
-import CartItems from '../../../components/CartItems'
 import CartBottomItems from '../../../components/CartBottomItems'
+import CustomCartItems from './CustomCartItems'
 
 const productModalKey = 'productModal'
 
@@ -207,7 +207,7 @@ const Home = () => {
     <Drawer
       id='rootSidebar'
       items={(
-        <CartItems items={selectProducts} />
+        <CustomCartItems items={selectProducts} />
       )}
       bottomItems={(
         <CartBottomItems items={selectProducts} />
