@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import clx from 'classnames'
 import { MdShoppingCart, MdSearch, MdOutlineDelete } from 'react-icons/md'
@@ -7,6 +7,7 @@ import { keyBy, size, times } from 'lodash-es'
 import CartBottomItems from '../../../components/CartBottomItems'
 import CartItems from '../../../components/CartItems'
 import Drawer from '../../../components/Drawer'
+import PurchaseModal from '../../../components/Modal/Purchase'
 
 const ItemSelectSection = () => {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -49,6 +50,9 @@ const ItemSelectSection = () => {
 }
 
 const PurchaseDomestic = () => {
+  const modalRef = useRef()
+  const modalOkCallback = useRef()
+  const [clickRowId, setClickRowId] = useState(null)
   const [selectProducts, setSelectProducts] = useState([])
   const selectProductMap = keyBy(selectProducts, 'id')
 
@@ -64,12 +68,20 @@ const PurchaseDomestic = () => {
   }
 
   const onClickRow = (id) => {
+    setClickRowId(id)
+    modalRef.current.open()
     const isSelected = id in selectProductMap
     if (isSelected) {
-      onRemoveRow(id)
+      modalOkCallback.current = () => onRemoveRow(id)
       return
     }
-    onSelectRow(id)
+    modalOkCallback.current = () => onSelectRow(id)
+  }
+
+  const onPurchaseModalOk = () => modalOkCallback.current()
+
+  const onPurchaseModalClose = () => {
+    modalOkCallback.current = null
   }
 
   return (
@@ -172,6 +184,12 @@ const PurchaseDomestic = () => {
           </table>
         </div>
       </div>
+      <PurchaseModal
+        modalRef={modalRef}
+        onOk={onPurchaseModalOk}
+        onClose={onPurchaseModalClose}
+        isAddToCert={!(clickRowId in selectProductMap)}
+      />
     </Drawer>
   )
 }
