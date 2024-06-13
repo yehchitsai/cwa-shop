@@ -28,6 +28,7 @@ module.exports = {
     'no-nested-ternary': 'off',
     'arrow-body-style': 'off',
     semi: [2, 'never'],
+    camelcase: 'off',
     'comma-dangle': ['error', 'never'],
     'default-param-last': 'off',
     'jsx-quotes': ['error', 'prefer-single'],
