@@ -13,6 +13,7 @@ import {
 } from 'lodash-es'
 import getApiHost from '../../../../utils/getApiHost'
 import wait from '../../../../utils/wait'
+import getApiPrefix from '../../../../utils/getApiPrefix'
 import useCreate from '../../../../hooks/useCreate'
 import FormLayout from '../../../../components/Form/Layout'
 import FormRow from '../../../../components/Form/FormRow'
@@ -25,7 +26,8 @@ import { FORM, FORM_ITEM } from './constants'
 import useQueue from '../../../../hooks/useQueue'
 
 const putImageHost = getApiHost('VITE_AWS_PUT_IMAGE_HOST')
-const putImageEndPoint = `${import.meta.env.VITE_AWS_HOST_PREFIX}/putimage`
+const awsHostPrefix = getApiPrefix()
+const putImageEndPoint = `${awsHostPrefix}/putimage`
 
 const ACTION = {
   NEW: 'new',

@@ -11,6 +11,7 @@ import { Formik, Field, Form } from 'formik'
 import * as Yup from 'yup'
 import getFormValues from '../../../utils/getFormValues'
 import getApiHost from '../../../utils/getApiHost'
+import getApiPrefix from '../../../utils/getApiPrefix'
 import useFishTypes from '../../../hooks/useFishTypes'
 import useCreate from '../../../hooks/useCreate'
 import Dropzone from '../../../components/Dropzone'
@@ -19,7 +20,8 @@ import FormRow from '../../../components/Form/FormRow'
 import FocusError from '../../../components/Form/FocusError'
 
 const putImageHost = getApiHost('VITE_AWS_PUT_IMAGE_HOST')
-const putImageEndPoint = `${import.meta.env.VITE_AWS_HOST_PREFIX}/putimage`
+const awsHostPrefix = getApiPrefix()
+const putImageEndPoint = `${awsHostPrefix}/putimage`
 
 const FORM = {
   TYPE: 'fishType',

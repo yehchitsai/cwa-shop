@@ -8,8 +8,9 @@ import getApiHost from '../../../utils/getApiHost'
 import fetcher from '../../../utils/fetcher'
 import clearExpiredLoginToken from '../../../utils/clearExpiredLoginToken'
 import getAuth from '../../../components/Router/getAuth'
+import getApiPrefix from '../../../utils/getApiPrefix'
 
-const awsHostPrefix = import.meta.env.VITE_AWS_HOST_PREFIX
+const awsHostPrefix = getApiPrefix()
 const preorderHost = getApiHost('VITE_AWS_FISH_PREORDER')
 const preorderConfig = {
   host: preorderHost,

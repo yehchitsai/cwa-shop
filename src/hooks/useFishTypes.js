@@ -2,10 +2,11 @@ import useSWR from 'swr'
 import qs from 'query-string'
 import { get, isEmpty, keyBy } from 'lodash-es'
 import getApiHost from '../utils/getApiHost'
+import getApiPrefix from '../utils/getApiPrefix'
 
 const nonAuthHost = getApiHost('VITE_AWS_NO_AUTH_FISH_TYPE_HOST')
 const authHost = getApiHost('VITE_AWS_AUTH_FISH_TYPE_HOST')
-const awsHostPrefix = import.meta.env.VITE_AWS_HOST_PREFIX
+const awsHostPrefix = getApiPrefix()
 
 const useFishTypes = (lang, isAuthRequired = true) => {
   const host = isAuthRequired ? authHost : nonAuthHost

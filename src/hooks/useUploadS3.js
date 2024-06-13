@@ -4,14 +4,16 @@ import {
 } from 'lodash-es'
 import qs from 'query-string'
 import getApiHost from '../utils/getApiHost'
+import getApiPrefix from '../utils/getApiPrefix'
 import useGet from './useGet'
 import useUpdate from './useUpdate'
 import useCreate from './useCreate'
 
 const getPreSignedUrlsHost = getApiHost('VITE_AWS_GET_PRE_SIGNED_URLS')
 const getS3FinalizeHost = getApiHost('VITE_AWS_S3_FINALIZE')
-const getPreSignedUrlsEndPoint = `${import.meta.env.VITE_AWS_HOST_PREFIX}/getPreSignedUrls`
-const s3FinalizeEndPoint = `${import.meta.env.VITE_AWS_HOST_PREFIX}/finalize`
+const awsHostPrefix = getApiPrefix()
+const getPreSignedUrlsEndPoint = `${awsHostPrefix}/getPreSignedUrls`
+const s3FinalizeEndPoint = `${awsHostPrefix}/finalize`
 
 const CHUNK_MB_SIZE = 10
 

@@ -3,10 +3,11 @@ import { preload } from 'swr'
 import fetcher from '../../utils/fetcher'
 import getApiHost from '../../utils/getApiHost'
 import getLoginLogoutUrl from '../../utils/getLoginLogoutUrl'
+import getApiPrefix from '../../utils/getApiPrefix'
 
 const { loginUrl, logoutUrl } = getLoginLogoutUrl()
 const host = getApiHost('VITE_AWS_CHECK_AUTHORIZE')
-const awsHostPrefix = import.meta.env.VITE_AWS_HOST_PREFIX
+const awsHostPrefix = getApiPrefix()
 const authConfig = {
   host,
   url: `${awsHostPrefix}/checkAuthorize`,

@@ -24,6 +24,7 @@ import useFishData from '../../../hooks/useFishData'
 import useCreate from '../../../hooks/useCreate'
 import useOnInit from '../../../hooks/useOnInit'
 import getApiHost from '../../../utils/getApiHost'
+import getApiPrefix from '../../../utils/getApiPrefix'
 import Card from '../../../components/Card'
 import ProductModal from '../../../components/Modal/Product'
 import SkeletonHome from '../../../components/Skeleton/Home'
@@ -34,7 +35,8 @@ import CustomCartBottomItems from './CustomCartBottomItems'
 const productModalKey = 'productModal'
 
 const preOrderHost = getApiHost('VITE_AWS_FISH_PREORDER')
-const preOrderEndPoint = `${import.meta.env.VITE_AWS_HOST_PREFIX}/bettafishpreorder`
+const awsHostPrefix = getApiPrefix()
+const preOrderEndPoint = `${awsHostPrefix}/bettafishpreorder`
 
 const SelectSection = () => {
   const [searchParams, setSearchParams] = useSearchParams()
