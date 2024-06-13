@@ -34,7 +34,7 @@ import CustomCartBottomItems from './CustomCartBottomItems'
 
 const productModalKey = 'productModal'
 
-const preOrderHost = getApiHost('VITE_AWS_FISH_PREORDER')
+const preOrderHost = getApiHost('VITE_AWS_FISH_PREORDER_SHOP_HOST')
 const awsHostPrefix = getApiPrefix()
 const preOrderEndPoint = `${awsHostPrefix}/bettafishpreorder`
 

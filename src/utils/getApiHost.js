@@ -10,11 +10,11 @@ const getApiHost = (key) => {
     const { isShop, isPurchase } = getEntry()
     switch (true) {
       case isPurchase: {
-        return import.meta.env.VITE_AWS_CHECK_AUTHORIZE_PURCHASE
+        return import.meta.env.VITE_AWS_CHECK_AUTHORIZE_PURCHASE_HOST
       }
       case isShop:
       default: {
-        return import.meta.env.VITE_AWS_CHECK_AUTHORIZE_SHOP
+        return import.meta.env.VITE_AWS_CHECK_AUTHORIZE_SHOP_HOST
       }
     }
   }

@@ -9,8 +9,8 @@ import useGet from './useGet'
 import useUpdate from './useUpdate'
 import useCreate from './useCreate'
 
-const getPreSignedUrlsHost = getApiHost('VITE_AWS_GET_PRE_SIGNED_URLS')
-const getS3FinalizeHost = getApiHost('VITE_AWS_S3_FINALIZE')
+const getPreSignedUrlsHost = getApiHost('VITE_AWS_GET_PRE_SIGNED_URLS_SHOP_HOST')
+const getS3FinalizeHost = getApiHost('VITE_AWS_S3_FINALIZE_SHOP_HOST')
 const awsHostPrefix = getApiPrefix()
 const getPreSignedUrlsEndPoint = `${awsHostPrefix}/getPreSignedUrls`
 const s3FinalizeEndPoint = `${awsHostPrefix}/finalize`

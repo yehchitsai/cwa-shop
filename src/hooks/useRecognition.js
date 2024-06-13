@@ -9,7 +9,7 @@ import useOnInit from './useOnInit'
 import useGet from './useGet'
 import useUploadS3 from './useUploadS3'
 
-const getVideoRecognitionHost = getApiHost('VITE_AWS_GET_VIDEO_RECOGNITION')
+const getVideoRecognitionHost = getApiHost('VITE_AWS_GET_VIDEO_RECOGNITION_SHOP_HOST')
 const awsHostPrefix = getApiPrefix()
 
 const retryAction = async (action) => {

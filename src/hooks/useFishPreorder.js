@@ -4,7 +4,7 @@ import { get, isEmpty } from 'lodash-es'
 import getApiHost from '../utils/getApiHost'
 import getApiPrefix from '../utils/getApiPrefix'
 
-const host = getApiHost('VITE_AWS_FISH_PREORDER')
+const host = getApiHost('VITE_AWS_FISH_PREORDER_SHOP_HOST')
 const awsHostPrefix = getApiPrefix()
 
 const useFishPreorder = (itemSerial) => {

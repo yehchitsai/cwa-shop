@@ -25,7 +25,7 @@ import EditModal from './EditModal'
 import { FORM, FORM_ITEM } from './constants'
 import useQueue from '../../../../hooks/useQueue'
 
-const putImageHost = getApiHost('VITE_AWS_PUT_IMAGE_HOST')
+const putImageHost = getApiHost('VITE_AWS_PUT_IMAGE_SHOP_HOST')
 const awsHostPrefix = getApiPrefix()
 const putImageEndPoint = `${awsHostPrefix}/putimage`
 
