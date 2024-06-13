@@ -29,10 +29,14 @@ const mappingByEntry = {
   }
 }
 const getLoginLogoutUrl = () => {
-  const entry = window.ENTRY_PATH.replace('/', '')
+  let entry = window.ENTRY_PATH.replace('/', '')
+  const isMock = window.IS_MOCK
   if (entry === '') {
-    const url = 'login/'
-    return { loginUrl: url, logoutUrl: url }
+    if (isMock) {
+      const url = 'login/'
+      return { loginUrl: url, logoutUrl: url }
+    }
+    entry = 'external'
   }
 
   const { login, logout } = mappingByEntry[entry]

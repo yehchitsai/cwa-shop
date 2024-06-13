@@ -17,7 +17,6 @@ const {
   ANALYZER,
   MOCK,
   MOCK_AWS_API,
-  VITE_AWS_HOST_PREFIX: awsHostPrefix,
   ENTRY = DEFAULT_ENTRY
 } = process.env
 const isMock = !!MOCK
@@ -54,6 +53,7 @@ export default ({ mode }) => {
   const isProd = NODE_ENV === 'production'
   const modeEnv = loadEnv(isMock ? 'mock' : mode, envDir)
   const targetEnv = loadEnv(isProd ? 'production' : 'development', envDir)
+  const awsHostPrefix = modeEnv.VITE_AWS_HOST_PREFIX
   process.env = { ...process.env, ...modeEnv }
 
   const viteConfig = defineConfig({

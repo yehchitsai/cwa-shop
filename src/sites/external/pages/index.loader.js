@@ -8,14 +8,15 @@ import getApiHost from '../../../utils/getApiHost'
 import fetcher from '../../../utils/fetcher'
 import clearExpiredLoginToken from '../../../utils/clearExpiredLoginToken'
 import getAuth from '../../../components/Router/getAuth'
+import getApiPrefix from '../../../utils/getApiPrefix'
 
-const awsHostPrefix = import.meta.env.VITE_AWS_HOST_PREFIX
-const preorderHost = getApiHost('VITE_AWS_FISH_PREORDER')
+const awsHostPrefix = getApiPrefix()
+const preorderHost = getApiHost('VITE_AWS_FISH_PREORDER_SHOP_HOST')
 const preorderConfig = {
   host: preorderHost,
   url: `${awsHostPrefix}/bettafishpreorder`
 }
-const fishDataHost = getApiHost('VITE_AWS_FISH_INFO_HOST')
+const fishDataHost = getApiHost('VITE_AWS_FISH_INFO_SHOP_HOST')
 const getFishDataConfig = (fishType) => ({
   host: fishDataHost,
   url: `${awsHostPrefix}/bettafishinfo?fishType=${fishType}`

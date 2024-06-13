@@ -13,6 +13,7 @@ import {
 import { selectedProductsState } from '../../../../state/selectedProducts'
 import { orderDataState } from '../../../../state/orderData'
 import getApiHost from '../../../../utils/getApiHost'
+import getApiPrefix from '../../../../utils/getApiPrefix'
 import useFishTypes from '../../../../hooks/useFishTypes'
 import useOnInit from '../../../../hooks/useOnInit'
 import useCreate from '../../../../hooks/useCreate'
@@ -20,10 +21,11 @@ import SkeletonHome from '../../../../components/Skeleton/Home'
 import LazyImage from '../../../../components/LazyImage'
 import ProductModal from '../../../../components/Modal/Product'
 
-const preOrderHost = getApiHost('VITE_AWS_FISH_PREORDER')
-const preOrderEndPoint = `${import.meta.env.VITE_AWS_HOST_PREFIX}/bettafishpreorder`
-const orderHost = getApiHost('VITE_AWS_FISH_ORDER')
-const orderEndPoint = `${import.meta.env.VITE_AWS_HOST_PREFIX}/fishorder`
+const preOrderHost = getApiHost('VITE_AWS_FISH_PREORDER_SHOP_HOST')
+const orderHost = getApiHost('VITE_AWS_FISH_ORDER_SHOP_HOST')
+const awsHostPrefix = getApiPrefix()
+const preOrderEndPoint = `${awsHostPrefix}/bettafishpreorder`
+const orderEndPoint = `${awsHostPrefix}/fishorder`
 
 const productModalKey = 'productModal'
 

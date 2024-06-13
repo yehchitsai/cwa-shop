@@ -2,9 +2,10 @@ import useSWRMutation from 'swr/mutation'
 import qs from 'query-string'
 import { get, isEmpty } from 'lodash-es'
 import getApiHost from '../utils/getApiHost'
+import getApiPrefix from '../utils/getApiPrefix'
 
-const host = getApiHost('VITE_AWS_FISH_PREORDER')
-const awsHostPrefix = import.meta.env.VITE_AWS_HOST_PREFIX
+const host = getApiHost('VITE_AWS_FISH_PREORDER_SHOP_HOST')
+const awsHostPrefix = getApiPrefix()
 
 const useFishPreorder = (itemSerial) => {
   const params = { itemSerial }
