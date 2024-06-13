@@ -6,10 +6,7 @@ import LangsAction from './LangsAction'
 import LogoutAction from './LogoutAction'
 import UserAction from './UserAction'
 import PurchaseAction from './PurchaseAction'
-
-const isDev = window.ENTRY_PATH === '/'
-const shopPaths = ['/external', '/external-demo', '/internal', '/demo']
-const purchasePaths = ['/purchase-domestic', '/purchase-export']
+import getEntry from '../../utils/getEntry'
 
 const NAV_BAR_TYPE = {
   SHOP: 'shop',
@@ -18,12 +15,7 @@ const NAV_BAR_TYPE = {
 
 const useNavBarType = () => {
   const location = useLocation()
-  const [isShop, isPurchase] = [shopPaths, purchasePaths].map((targetPaths) => {
-    return (
-      (isDev && targetPaths.some((shopPath) => location.pathname.startsWith(shopPath))) ||
-      (!isDev && targetPaths.includes(window.ENTRY_PATH))
-    )
-  })
+  const { isShop, isPurchase } = getEntry(location)
 
   let navBarType
   switch (true) {
@@ -72,6 +64,7 @@ const NavBar = (props) => {
   const { t } = useTranslation()
   const location = useLocation()
   const navBarType = useNavBarType()
+  const { isDev } = getEntry(location)
   const isHiddenNavBar = isDev && location.pathname === '/'
 
   if (isHiddenNavBar) {
