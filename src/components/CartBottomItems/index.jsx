@@ -1,11 +1,10 @@
 import { Link } from 'react-router-dom'
 import clx from 'classnames'
-import { size } from 'lodash-es'
 
 const CartBottomItems = (props) => {
-  const { items = [], confirmLinkTo, confirmLinkText } = props
-  const selectedSize = size(items)
-  const isNoProductSelected = selectedSize === 0
+  const {
+    items = [], isNoProductSelected, confirmLinkTo, confirmLinkText
+  } = props
   return (
     <>
       {items.map((item, index) => {

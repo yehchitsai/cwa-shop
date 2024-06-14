@@ -25,9 +25,11 @@ const CustomCartBottomItems = (props) => {
     `${t('totalCount')}: ${selectedSize}`,
     `${t('totalPrice')}: ${totalPrice} ${currency}`
   ]
+  const isNoProductSelected = selectedSize === 0
   return (
     <CartBottomItems
       items={customItems}
+      isNoProductSelected={isNoProductSelected}
       confirmLinkTo='./confirm'
       confirmLinkText={`${t('confirmOrder')}`}
     />
