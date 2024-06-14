@@ -35,7 +35,8 @@ import CustomCartBottomItems from './CustomCartBottomItems'
 const productModalKey = 'productModal'
 
 const preOrderHost = getEnvVar('VITE_AWS_FISH_PREORDER_SHOP_HOST')
-const awsHostPrefix = getApiPrefix()
+const subPrefix = getEnvVar('VITE_AWS_SHOP_HOST_PREFIX')
+const awsHostPrefix = getApiPrefix(subPrefix)
 const preOrderEndPoint = `${awsHostPrefix}/bettafishpreorder`
 
 const SelectSection = () => {

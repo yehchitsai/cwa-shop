@@ -23,7 +23,8 @@ import ProductModal from '../../../../components/Modal/Product'
 
 const preOrderHost = getEnvVar('VITE_AWS_FISH_PREORDER_SHOP_HOST')
 const orderHost = getEnvVar('VITE_AWS_FISH_ORDER_SHOP_HOST')
-const awsHostPrefix = getApiPrefix()
+const subPrefix = getEnvVar('VITE_AWS_SHOP_HOST_PREFIX')
+const awsHostPrefix = getApiPrefix(subPrefix)
 const preOrderEndPoint = `${awsHostPrefix}/bettafishpreorder`
 const orderEndPoint = `${awsHostPrefix}/fishorder`
 

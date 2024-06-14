@@ -6,7 +6,8 @@ import getApiPrefix from '../utils/getApiPrefix'
 
 const nonAuthHost = getEnvVar('VITE_AWS_NO_AUTH_FISH_TYPE_SHOP_HOST')
 const authHost = getEnvVar('VITE_AWS_AUTH_FISH_TYPE_SHOP_HOST')
-const awsHostPrefix = getApiPrefix()
+const subPrefix = getEnvVar('VITE_AWS_SHOP_HOST_PREFIX')
+const awsHostPrefix = getApiPrefix(subPrefix)
 
 const useFishTypes = (lang, isAuthRequired = true) => {
   const host = isAuthRequired ? authHost : nonAuthHost

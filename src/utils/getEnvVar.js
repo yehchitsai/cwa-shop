@@ -1,7 +1,10 @@
 import getEntry from './getEntry'
 
 const getEnvVar = (key) => {
-  const isForceDisableMock = (new URLSearchParams(window.location.search)).get('MOCK') === '0'
+  const isClient = typeof window === 'object'
+  const isForceDisableMock = isClient
+    ? (new URLSearchParams(window.location.search)).get('MOCK') === '0'
+    : false
   if (isForceDisableMock) {
     return window.TARGET_ENV[key]
   }
@@ -10,15 +13,18 @@ const getEnvVar = (key) => {
     const { isShop, isPurchase } = getEntry()
     switch (true) {
       case isPurchase: {
-        return import.meta.env.VITE_AWS_CHECK_AUTHORIZE_PURCHASE_HOST
+        return window.CURRENT_ENV.VITE_AWS_CHECK_AUTHORIZE_PURCHASE_HOST
       }
       case isShop:
       default: {
-        return import.meta.env.VITE_AWS_CHECK_AUTHORIZE_SHOP_HOST
+        return window.CURRENT_ENV.VITE_AWS_CHECK_AUTHORIZE_SHOP_HOST
       }
     }
   }
-  return import.meta.env[key]
+  if (isClient) {
+    return window.CURRENT_ENV[key]
+  }
+  return process.env[key]
 }
 
 export default getEnvVar

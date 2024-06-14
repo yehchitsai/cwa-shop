@@ -5,7 +5,8 @@ import getEnvVar from '../utils/getEnvVar'
 import getApiPrefix from '../utils/getApiPrefix'
 
 const host = getEnvVar('VITE_AWS_GET_CATEGORY_INFO_PURCHASE_HOST')
-const awsHostPrefix = getApiPrefix()
+const subPrefix = getEnvVar('VITE_AWS_PURCHASE_HOST_PREFIX')
+const awsHostPrefix = getApiPrefix(subPrefix)
 const useCategoryInfo = (category) => {
   const params = { category }
   const qsStr = isEmpty(category) ? '' : `?${qs.stringify(params)}`

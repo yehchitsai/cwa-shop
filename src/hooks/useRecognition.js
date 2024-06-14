@@ -10,7 +10,8 @@ import useGet from './useGet'
 import useUploadS3 from './useUploadS3'
 
 const getVideoRecognitionHost = getEnvVar('VITE_AWS_GET_VIDEO_RECOGNITION_SHOP_HOST')
-const awsHostPrefix = getApiPrefix()
+const subPrefix = getEnvVar('VITE_AWS_SHOP_HOST_PREFIX')
+const awsHostPrefix = getApiPrefix(subPrefix)
 
 const retryAction = async (action) => {
   const checker = (result) => {

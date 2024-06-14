@@ -20,7 +20,8 @@ import FormRow from '../../../components/Form/FormRow'
 import FocusError from '../../../components/Form/FocusError'
 
 const putImageHost = getEnvVar('VITE_AWS_PUT_IMAGE_SHOP_HOST')
-const awsHostPrefix = getApiPrefix()
+const subPrefix = getEnvVar('VITE_AWS_SHOP_HOST_PREFIX')
+const awsHostPrefix = getApiPrefix(subPrefix)
 const putImageEndPoint = `${awsHostPrefix}/putimage`
 
 const FORM = {

@@ -26,7 +26,8 @@ import { FORM, FORM_ITEM } from './constants'
 import useQueue from '../../../../hooks/useQueue'
 
 const putImageHost = getEnvVar('VITE_AWS_PUT_IMAGE_SHOP_HOST')
-const awsHostPrefix = getApiPrefix()
+const subPrefix = getEnvVar('VITE_AWS_SHOP_HOST_PREFIX')
+const awsHostPrefix = getApiPrefix(subPrefix)
 const putImageEndPoint = `${awsHostPrefix}/putimage`
 
 const ACTION = {

@@ -2,12 +2,16 @@ import {
   isString, isUndefined, random, reduce, times
 } from 'lodash-es'
 import getApiPrefix from '../../utils/getApiPrefix'
+import getEnvVar from '../../utils/getEnvVar'
+
+const subPrefix = getEnvVar('VITE_AWS_PURCHASE_HOST_PREFIX')
+const awsHostPrefix = getApiPrefix(subPrefix)
 
 const counts = times(10, (index) => index + 0.5)
 
 export default [
   {
-    url: `${getApiPrefix()}/purchase/prepurchaseorder`,
+    url: `${awsHostPrefix}/prepurchaseorder`,
     method: 'post',
     timeout: 100,
     response: ({ body }) => {
@@ -33,7 +37,7 @@ export default [
     }
   },
   {
-    url: `${getApiPrefix()}/purchase/preconfirmorder`,
+    url: `${awsHostPrefix}/preconfirmorder`,
     method: 'post',
     timeout: 100,
     response: ({ body }) => {
@@ -77,7 +81,7 @@ export default [
     }
   },
   {
-    url: `${getApiPrefix()}/purchase/confirmorder`,
+    url: `${awsHostPrefix}/confirmorder`,
     method: 'post',
     timeout: 100,
     response: ({ body }) => {
@@ -97,7 +101,7 @@ export default [
     }
   },
   {
-    url: `${getApiPrefix()}/purchase/exportprepurchaseorder`,
+    url: `${awsHostPrefix}/exportprepurchaseorder`,
     method: 'post',
     timeout: 100,
     response: ({ body }) => {
@@ -123,7 +127,7 @@ export default [
     }
   },
   {
-    url: `${getApiPrefix()}/purchase/exportpreconfirmorder`,
+    url: `${awsHostPrefix}/exportpreconfirmorder`,
     method: 'post',
     timeout: 100,
     response: ({ body }) => {
@@ -167,7 +171,7 @@ export default [
     }
   },
   {
-    url: `${getApiPrefix()}/purchase/exportconfirmorder`,
+    url: `${awsHostPrefix}/exportconfirmorder`,
     method: 'post',
     timeout: 100,
     response: ({ body }) => {

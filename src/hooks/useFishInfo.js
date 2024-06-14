@@ -5,7 +5,8 @@ import getEnvVar from '../utils/getEnvVar'
 import getApiPrefix from '../utils/getApiPrefix'
 
 const host = getEnvVar('VITE_AWS_FISH_SERIAL_INFO_SHOP_HOST')
-const awsHostPrefix = getApiPrefix()
+const subPrefix = getEnvVar('VITE_AWS_SHOP_HOST_PREFIX')
+const awsHostPrefix = getApiPrefix(subPrefix)
 
 const useFishInfo = (itemSerial) => {
   const params = { itemSerial }
