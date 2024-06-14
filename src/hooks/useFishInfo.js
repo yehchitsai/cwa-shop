@@ -1,10 +1,10 @@
 import useSWRMutation from 'swr/mutation'
 import qs from 'query-string'
 import { get, isEmpty } from 'lodash-es'
-import getApiHost from '../utils/getApiHost'
+import getEnvVar from '../utils/getEnvVar'
 import getApiPrefix from '../utils/getApiPrefix'
 
-const host = getApiHost('VITE_AWS_FISH_SERIAL_INFO_SHOP_HOST')
+const host = getEnvVar('VITE_AWS_FISH_SERIAL_INFO_SHOP_HOST')
 const awsHostPrefix = getApiPrefix()
 
 const useFishInfo = (itemSerial) => {

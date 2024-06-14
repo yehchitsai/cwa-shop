@@ -23,7 +23,7 @@ import useFishTypes from '../../../hooks/useFishTypes'
 import useFishData from '../../../hooks/useFishData'
 import useCreate from '../../../hooks/useCreate'
 import useOnInit from '../../../hooks/useOnInit'
-import getApiHost from '../../../utils/getApiHost'
+import getEnvVar from '../../../utils/getEnvVar'
 import getApiPrefix from '../../../utils/getApiPrefix'
 import Card from '../../../components/Card'
 import ProductModal from '../../../components/Modal/Product'
@@ -34,7 +34,7 @@ import CustomCartBottomItems from './CustomCartBottomItems'
 
 const productModalKey = 'productModal'
 
-const preOrderHost = getApiHost('VITE_AWS_FISH_PREORDER_SHOP_HOST')
+const preOrderHost = getEnvVar('VITE_AWS_FISH_PREORDER_SHOP_HOST')
 const awsHostPrefix = getApiPrefix()
 const preOrderEndPoint = `${awsHostPrefix}/bettafishpreorder`
 

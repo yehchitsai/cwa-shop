@@ -11,7 +11,7 @@ import toast from 'react-hot-toast'
 import {
   filter, flow, get, groupBy, isEmpty, isUndefined, keyBy, map, size
 } from 'lodash-es'
-import getApiHost from '../../../../utils/getApiHost'
+import getEnvVar from '../../../../utils/getEnvVar'
 import wait from '../../../../utils/wait'
 import getApiPrefix from '../../../../utils/getApiPrefix'
 import useCreate from '../../../../hooks/useCreate'
@@ -25,7 +25,7 @@ import EditModal from './EditModal'
 import { FORM, FORM_ITEM } from './constants'
 import useQueue from '../../../../hooks/useQueue'
 
-const putImageHost = getApiHost('VITE_AWS_PUT_IMAGE_SHOP_HOST')
+const putImageHost = getEnvVar('VITE_AWS_PUT_IMAGE_SHOP_HOST')
 const awsHostPrefix = getApiPrefix()
 const putImageEndPoint = `${awsHostPrefix}/putimage`
 

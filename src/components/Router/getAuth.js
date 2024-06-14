@@ -1,12 +1,12 @@
 import { redirect } from 'react-router-dom'
 import { preload } from 'swr'
 import fetcher from '../../utils/fetcher'
-import getApiHost from '../../utils/getApiHost'
+import getEnvVar from '../../utils/getEnvVar'
 import getLoginLogoutUrl from '../../utils/getLoginLogoutUrl'
 import getApiPrefix from '../../utils/getApiPrefix'
 
 const { loginUrl, logoutUrl } = getLoginLogoutUrl()
-const host = getApiHost('VITE_AWS_CHECK_AUTHORIZE')
+const host = getEnvVar('VITE_AWS_CHECK_AUTHORIZE')
 const awsHostPrefix = getApiPrefix()
 const authConfig = {
   host,

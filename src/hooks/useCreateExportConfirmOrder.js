@@ -1,8 +1,8 @@
-import getApiHost from '../utils/getApiHost'
+import getEnvVar from '../utils/getEnvVar'
 import getApiPrefix from '../utils/getApiPrefix'
 import useCreate from './useCreate'
 
-const createExportConfirmOrderHost = getApiHost('VITE_AWS_CREATE_EXPORT_CONFIRM_ORDER_PURCHASE_HOST')
+const createExportConfirmOrderHost = getEnvVar('VITE_AWS_CREATE_EXPORT_CONFIRM_ORDER_PURCHASE_HOST')
 const awsHostPrefix = getApiPrefix()
 const createExportConfirmOrderEndPoint = `${awsHostPrefix}/exportconfirmorder`
 

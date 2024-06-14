@@ -2,14 +2,14 @@ import { useState, useRef } from 'react'
 import safeAwait from 'safe-await'
 import qs from 'query-string'
 import { get, isEmpty } from 'lodash-es'
-import getApiHost from '../utils/getApiHost'
+import getEnvVar from '../utils/getEnvVar'
 import retry from '../utils/retry'
 import getApiPrefix from '../utils/getApiPrefix'
 import useOnInit from './useOnInit'
 import useGet from './useGet'
 import useUploadS3 from './useUploadS3'
 
-const getVideoRecognitionHost = getApiHost('VITE_AWS_GET_VIDEO_RECOGNITION_SHOP_HOST')
+const getVideoRecognitionHost = getEnvVar('VITE_AWS_GET_VIDEO_RECOGNITION_SHOP_HOST')
 const awsHostPrefix = getApiPrefix()
 
 const retryAction = async (action) => {

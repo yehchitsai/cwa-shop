@@ -10,7 +10,7 @@ import safeAwait from 'safe-await'
 import { Formik, Field, Form } from 'formik'
 import * as Yup from 'yup'
 import getFormValues from '../../../utils/getFormValues'
-import getApiHost from '../../../utils/getApiHost'
+import getEnvVar from '../../../utils/getEnvVar'
 import getApiPrefix from '../../../utils/getApiPrefix'
 import useFishTypes from '../../../hooks/useFishTypes'
 import useCreate from '../../../hooks/useCreate'
@@ -19,7 +19,7 @@ import ACCEPT from '../../../components/Dropzone/accept'
 import FormRow from '../../../components/Form/FormRow'
 import FocusError from '../../../components/Form/FocusError'
 
-const putImageHost = getApiHost('VITE_AWS_PUT_IMAGE_SHOP_HOST')
+const putImageHost = getEnvVar('VITE_AWS_PUT_IMAGE_SHOP_HOST')
 const awsHostPrefix = getApiPrefix()
 const putImageEndPoint = `${awsHostPrefix}/putimage`
 
