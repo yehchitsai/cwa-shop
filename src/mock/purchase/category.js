@@ -29,7 +29,7 @@ const getFakeImage = (width, height, text) => {
 
 export default [
   {
-    url: `${getApiPrefix()}/categoryinfo`,
+    url: `${getApiPrefix()}/purchase/categoryinfo`,
     method: 'get',
     timeout: 100,
     response: ({ query: stringObject }) => {
@@ -65,7 +65,7 @@ export default [
     }
   },
   {
-    url: `${getApiPrefix()}/exportcategoryinfo`,
+    url: `${getApiPrefix()}/purchase/exportcategoryinfo`,
     method: 'get',
     timeout: 100,
     response: ({ query: stringObject }) => {

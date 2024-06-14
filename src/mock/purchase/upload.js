@@ -3,7 +3,7 @@ import getApiPrefix from '../../utils/getApiPrefix'
 
 export default [
   {
-    url: `${getApiPrefix()}/uploadquotation`,
+    url: `${getApiPrefix()}/purchase/uploadquotation`,
     method: 'post',
     timeout: 100,
     response: () => {

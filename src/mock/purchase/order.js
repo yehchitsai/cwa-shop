@@ -7,7 +7,7 @@ const counts = times(10, (index) => index + 0.5)
 
 export default [
   {
-    url: `${getApiPrefix()}/prepurchaseorder`,
+    url: `${getApiPrefix()}/purchase/prepurchaseorder`,
     method: 'post',
     timeout: 100,
     response: ({ body }) => {
@@ -33,7 +33,7 @@ export default [
     }
   },
   {
-    url: `${getApiPrefix()}/preconfirmorder`,
+    url: `${getApiPrefix()}/purchase/preconfirmorder`,
     method: 'post',
     timeout: 100,
     response: ({ body }) => {
@@ -77,7 +77,7 @@ export default [
     }
   },
   {
-    url: `${getApiPrefix()}/confirmorder`,
+    url: `${getApiPrefix()}/purchase/confirmorder`,
     method: 'post',
     timeout: 100,
     response: ({ body }) => {
@@ -97,7 +97,7 @@ export default [
     }
   },
   {
-    url: `${getApiPrefix()}/exportprepurchaseorder`,
+    url: `${getApiPrefix()}/purchase/exportprepurchaseorder`,
     method: 'post',
     timeout: 100,
     response: ({ body }) => {
@@ -123,7 +123,7 @@ export default [
     }
   },
   {
-    url: `${getApiPrefix()}/exportpreconfirmorder`,
+    url: `${getApiPrefix()}/purchase/exportpreconfirmorder`,
     method: 'post',
     timeout: 100,
     response: ({ body }) => {
@@ -167,7 +167,7 @@ export default [
     }
   },
   {
-    url: `${getApiPrefix()}/exportconfirmorder`,
+    url: `${getApiPrefix()}/purchase/exportconfirmorder`,
     method: 'post',
     timeout: 100,
     response: ({ body }) => {
