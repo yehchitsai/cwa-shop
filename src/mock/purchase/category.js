@@ -60,9 +60,6 @@ export default [
       return {
         status: 'success',
         results: {
-          update_date: '2024-05-27',
-          delivery_date: '2024-06-01',
-          category,
           items
         }
       }
@@ -96,8 +93,6 @@ export default [
       return {
         status: 'success',
         results: {
-          update_date: '2024-05-27',
-          category,
           items
         }
       }
