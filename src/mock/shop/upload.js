@@ -2,6 +2,10 @@ import {
   flow, get, keys, random, times
 } from 'lodash-es'
 import getApiPrefix from '../../utils/getApiPrefix'
+import getEnvVar from '../../utils/getEnvVar'
+
+const subPrefix = getEnvVar('VITE_AWS_SHOP_HOST_PREFIX')
+const awsHostPrefix = getApiPrefix(subPrefix)
 
 const videos = [
   'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
@@ -44,7 +48,7 @@ const resultError = (message = 'Request failed', { code = 0, result = null } = {
 
 export default [
   {
-    url: `${getApiPrefix()}/getRecognition`,
+    url: `${awsHostPrefix}/getRecognition`,
     method: 'get',
     timeout: 100,
     response: ({ query: stringObject }) => {

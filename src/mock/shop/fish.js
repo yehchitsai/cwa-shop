@@ -2,6 +2,10 @@ import {
   times, random, flow, values, concat, keyBy, get, map, size, sum, isString
 } from 'lodash-es'
 import getApiPrefix from '../../utils/getApiPrefix'
+import getEnvVar from '../../utils/getEnvVar'
+
+const subPrefix = getEnvVar('VITE_AWS_SHOP_HOST_PREFIX')
+const awsHostPrefix = getApiPrefix(subPrefix)
 
 const TYPE_KEY = {
   A: 'FF1301L',
@@ -82,7 +86,7 @@ const getFishInfo = (itemSerial) => ({
 
 export default [
   {
-    url: `${getApiPrefix()}/bettafish`,
+    url: `${awsHostPrefix}/bettafish`,
     method: 'get',
     timeout: 100,
     response: ({ query: stringObject }) => {
@@ -109,7 +113,7 @@ export default [
     }
   },
   {
-    url: `${getApiPrefix()}/bettafishinfo`,
+    url: `${awsHostPrefix}/bettafishinfo`,
     method: 'get',
     timeout: 100,
     response: ({ query: stringObject }) => {
@@ -121,7 +125,7 @@ export default [
     }
   },
   {
-    url: `${getApiPrefix()}/bettafishserialinfo`,
+    url: `${awsHostPrefix}/bettafishserialinfo`,
     method: 'get',
     timeout: 100,
     response: ({ query: stringObject }) => {
@@ -133,7 +137,7 @@ export default [
     }
   },
   {
-    url: `${getApiPrefix()}/bettafishpreorder`,
+    url: `${awsHostPrefix}/bettafishpreorder`,
     method: 'get',
     timeout: 100,
     response: () => {
@@ -152,7 +156,7 @@ export default [
     }
   },
   {
-    url: `${getApiPrefix()}/bettafishpreorder`,
+    url: `${awsHostPrefix}/bettafishpreorder`,
     method: 'post',
     timeout: 100,
     response: ({ body }) => {
@@ -176,7 +180,7 @@ export default [
     }
   },
   {
-    url: `${getApiPrefix()}/fishorder`,
+    url: `${awsHostPrefix}/fishorder`,
     method: 'post',
     timeout: 100,
     response: () => {

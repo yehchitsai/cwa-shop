@@ -3,15 +3,16 @@ import {
   get, size
 } from 'lodash-es'
 import qs from 'query-string'
-import getApiHost from '../utils/getApiHost'
+import getEnvVar from '../utils/getEnvVar'
 import getApiPrefix from '../utils/getApiPrefix'
 import useGet from './useGet'
 import useUpdate from './useUpdate'
 import useCreate from './useCreate'
 
-const getPreSignedUrlsHost = getApiHost('VITE_AWS_GET_PRE_SIGNED_URLS_SHOP_HOST')
-const getS3FinalizeHost = getApiHost('VITE_AWS_S3_FINALIZE_SHOP_HOST')
-const awsHostPrefix = getApiPrefix()
+const getPreSignedUrlsHost = getEnvVar('VITE_AWS_GET_PRE_SIGNED_URLS_SHOP_HOST')
+const getS3FinalizeHost = getEnvVar('VITE_AWS_S3_FINALIZE_SHOP_HOST')
+const subPrefix = getEnvVar('VITE_AWS_SHOP_HOST_PREFIX')
+const awsHostPrefix = getApiPrefix(subPrefix)
 const getPreSignedUrlsEndPoint = `${awsHostPrefix}/getPreSignedUrls`
 const s3FinalizeEndPoint = `${awsHostPrefix}/finalize`
 

@@ -70,6 +70,7 @@ export default ({ mode }) => {
       'window.IS_PROD': `${isProd}`,
       'window.IS_PREVIEW': `${isPreview}`,
       'window.TARGET_ENV': `${JSON.stringify(targetEnv)}`,
+      'window.CURRENT_ENV': `${JSON.stringify(modeEnv)}`,
       'window.ENTRY_PATH': `"/${isDefaultEntry ? '' : ENTRY}"`
     },
     root: `${entriesDir}/${isDefaultEntry ? '' : `/${ENTRY}`}`,

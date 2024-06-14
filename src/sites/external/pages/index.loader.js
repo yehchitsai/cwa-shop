@@ -4,19 +4,20 @@ import {
 import safeAwait from 'safe-await'
 import { preload } from 'swr'
 import { defer } from 'react-router-dom'
-import getApiHost from '../../../utils/getApiHost'
+import getEnvVar from '../../../utils/getEnvVar'
 import fetcher from '../../../utils/fetcher'
 import clearExpiredLoginToken from '../../../utils/clearExpiredLoginToken'
 import getAuth from '../../../components/Router/getAuth'
 import getApiPrefix from '../../../utils/getApiPrefix'
 
-const awsHostPrefix = getApiPrefix()
-const preorderHost = getApiHost('VITE_AWS_FISH_PREORDER_SHOP_HOST')
+const subPrefix = getEnvVar('VITE_AWS_SHOP_HOST_PREFIX')
+const awsHostPrefix = getApiPrefix(subPrefix)
+const preorderHost = getEnvVar('VITE_AWS_FISH_PREORDER_SHOP_HOST')
 const preorderConfig = {
   host: preorderHost,
   url: `${awsHostPrefix}/bettafishpreorder`
 }
-const fishDataHost = getApiHost('VITE_AWS_FISH_INFO_SHOP_HOST')
+const fishDataHost = getEnvVar('VITE_AWS_FISH_INFO_SHOP_HOST')
 const getFishDataConfig = (fishType) => ({
   host: fishDataHost,
   url: `${awsHostPrefix}/bettafishinfo?fishType=${fishType}`

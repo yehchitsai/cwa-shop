@@ -1,6 +1,9 @@
 import getApiPrefix from '../../utils/getApiPrefix'
+import getEnvVar from '../../utils/getEnvVar'
 
-const url = `${getApiPrefix()}/putimage`
+const subPrefix = getEnvVar('VITE_AWS_SHOP_HOST_PREFIX')
+const awsHostPrefix = getApiPrefix(subPrefix)
+const url = `${awsHostPrefix}/putimage`
 
 export default [
   {

@@ -1,12 +1,13 @@
 import useSWR from 'swr'
 import qs from 'query-string'
 import { get, isEmpty, keyBy } from 'lodash-es'
-import getApiHost from '../utils/getApiHost'
+import getEnvVar from '../utils/getEnvVar'
 import getApiPrefix from '../utils/getApiPrefix'
 
-const nonAuthHost = getApiHost('VITE_AWS_NO_AUTH_FISH_TYPE_SHOP_HOST')
-const authHost = getApiHost('VITE_AWS_AUTH_FISH_TYPE_SHOP_HOST')
-const awsHostPrefix = getApiPrefix()
+const nonAuthHost = getEnvVar('VITE_AWS_NO_AUTH_FISH_TYPE_SHOP_HOST')
+const authHost = getEnvVar('VITE_AWS_AUTH_FISH_TYPE_SHOP_HOST')
+const subPrefix = getEnvVar('VITE_AWS_SHOP_HOST_PREFIX')
+const awsHostPrefix = getApiPrefix(subPrefix)
 
 const useFishTypes = (lang, isAuthRequired = true) => {
   const host = isAuthRequired ? authHost : nonAuthHost

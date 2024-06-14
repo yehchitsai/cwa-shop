@@ -1,9 +1,10 @@
-import getApiHost from '../utils/getApiHost'
+import getEnvVar from '../utils/getEnvVar'
 import getApiPrefix from '../utils/getApiPrefix'
 import useCreate from './useCreate'
 
-const createExportPrepurchaseOrderHost = getApiHost('VITE_AWS_CREATE_EXPORT_PREPURCHASE_ORDER_PURCHASE_HOST')
-const awsHostPrefix = getApiPrefix()
+const createExportPrepurchaseOrderHost = getEnvVar('VITE_AWS_CREATE_EXPORT_PREPURCHASE_ORDER_PURCHASE_HOST')
+const subPrefix = getEnvVar('VITE_AWS_PURCHASE_HOST_PREFIX')
+const awsHostPrefix = getApiPrefix(subPrefix)
 const createExportPrepurchaseOrderEndPoint = `${awsHostPrefix}/exportprepurchaseorder`
 
 const useCreateExportPrepurchaseOrder = () => {
