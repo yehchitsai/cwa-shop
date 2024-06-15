@@ -56,14 +56,14 @@ export default [
   {
     url: `${awsHostPrefix}/categoryinfo`,
     method: 'get',
-    timeout: 100,
+    timeout: 1000,
     response: ({ query: stringObject }) => {
       const {
         category
       } = JSON.parse(JSON.stringify(stringObject))
       const items = times(random(10, 30), (index) => {
         const cat = category || CATEGORIES[random(0, 2)]
-        const fishName = `fish_name_${index}`
+        const fishName = `fish_name_${cat}_${index}`
         return {
           fish_code: `FF120L${index}`,
           science_name: `science_name_${index}`,
@@ -148,7 +148,7 @@ export default [
       } = JSON.parse(JSON.stringify(stringObject))
       const items = times(random(10, 30), (index) => {
         const cat = category || CATEGORIES[random(0, 2)]
-        const fishName = `fish_name_${index}`
+        const fishName = `fish_name_${cat}_${index}`
         return {
           fish_code: `FF120L${index}`,
           science_name: `science_name_${index}`,
