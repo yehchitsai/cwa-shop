@@ -125,11 +125,11 @@ const PurchaseDomestic = () => {
       overlay
     >
       <div className='space-y-4 p-4'>
-        <div className='grid grid-flow-col gap-4 max-sm:grid-cols-1 sm:grid-cols-2'>
-          <div>
+        <div className='flex gap-4 max-sm:flex-col sm:flex-row'>
+          <div className='flex-1'>
             <ItemSelectSection />
           </div>
-          <div>
+          <div className='flex-1'>
             <label
               className={clx(
                 'input input-sm input-bordered flex items-center !outline-none',
@@ -166,7 +166,7 @@ const PurchaseDomestic = () => {
               <div
                 className={clx(
                   'absolute top-0 left-0 z-10 w-full',
-                  'menu w-56 rounded-b-box bg-white border-base-content/20 border',
+                  'menu w-56 rounded-b-lg bg-white border-base-content/20 border',
                   { hidden: !isFilterMenuOpen }
                 )}
               >
@@ -218,7 +218,7 @@ const PurchaseDomestic = () => {
           <MdOutlineDelete size='1.5em' className='!fill-red-500' />
           從購物車移除
         </p>
-        <div className='h-[calc(100dvh-11.5rem)] overflow-x-auto'>
+        <div className='overflow-x-auto max-sm:h-[calc(100dvh-14.5rem)] sm:h-[calc(100dvh-11.5rem)]'>
           <table className='table table-pin-rows table-pin-cols'>
             <thead>
               <tr className='max-sm:-top-1'>
