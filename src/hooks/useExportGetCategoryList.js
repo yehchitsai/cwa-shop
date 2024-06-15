@@ -9,12 +9,12 @@ const awsHostPrefix = getApiPrefix(subPrefix)
 const useExportGetCategoryList = () => {
   const url = `${awsHostPrefix}/getexportcategorylist`
   const {
-    data: defaultData = [], error, isLoading
+    data: defaultData = [], error, isValidating, isLoading
   } = useSWR(() => ({ url, host }), { suspense: false })
   const data = get(defaultData, 'results', defaultData)
   return {
     data,
-    isLoading,
+    isLoading: isValidating || isLoading,
     isError: error
   }
 }

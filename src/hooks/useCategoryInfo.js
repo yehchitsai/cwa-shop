@@ -12,12 +12,12 @@ const useCategoryInfo = (category) => {
   const qsStr = isEmpty(category) ? '' : `?${qs.stringify(params)}`
   const url = `${awsHostPrefix}/categoryinfo${qsStr}`
   const {
-    data: defaultData = [], error, isLoading
+    data: defaultData = [], error, isValidating, isLoading
   } = useSWR(() => ({ url, host }), { suspense: false })
   const data = get(defaultData, 'results', defaultData)
   return {
     data,
-    isLoading,
+    isLoading: isValidating || isLoading,
     isError: error
   }
 }

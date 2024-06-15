@@ -14,7 +14,7 @@ const useFishTypes = (lang, isAuthRequired = true) => {
   const params = { lang }
   const url = isEmpty(lang) ? null : `${awsHostPrefix}/bettafish?${qs.stringify(params)}`
   const {
-    data: defaultData = [], error, isLoading
+    data: defaultData = [], error, isValidating, isLoading
   } = useSWR(() => ({ url, host }), { suspense: true })
   const data = get(defaultData, 'results', defaultData)
   const fishTypes = isEmpty(data) ? [] : data.map((item) => {
@@ -32,7 +32,7 @@ const useFishTypes = (lang, isAuthRequired = true) => {
     data,
     fishTypes,
     fishTypeMap,
-    isLoading,
+    isLoading: isValidating || isLoading,
     isError: error
   }
 }
