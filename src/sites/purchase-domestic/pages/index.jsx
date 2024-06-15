@@ -173,7 +173,7 @@ const PurchaseDomestic = () => {
                 <ul className='menu-dropdown'>
                   <li
                     className={clx({ disabled: isPhaseEmpty })}
-                    onClick={() => setPhaseType(PHASE_TYPE.AI)}
+                    onClick={() => !isPhaseEmpty && setPhaseType(PHASE_TYPE.AI)}
                   >
                     <span
                       className={clx(
@@ -191,7 +191,7 @@ const PurchaseDomestic = () => {
                   </li>
                   <li
                     className={clx({ disabled: isPhaseEmpty })}
-                    onClick={() => setPhaseType(PHASE_TYPE.NORMAL)}
+                    onClick={() => !isPhaseEmpty && setPhaseType(PHASE_TYPE.NORMAL)}
                   >
                     <span
                       className={clx(
