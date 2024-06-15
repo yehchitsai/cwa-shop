@@ -12,12 +12,12 @@ const useFishData = (fishType) => {
   const params = { fishType }
   const url = isEmpty(fishType) ? null : `${awsHostPrefix}/bettafishinfo?${qs.stringify(params)}`
   const {
-    data: defaultData = [], error, isLoading
+    data: defaultData = [], error, isValidating, isLoading
   } = useSWR(() => ({ url, host }), { suspense: false })
   const data = get(defaultData, 'results', defaultData)
   return {
     data,
-    isLoading,
+    isLoading: isValidating || isLoading,
     isError: error
   }
 }

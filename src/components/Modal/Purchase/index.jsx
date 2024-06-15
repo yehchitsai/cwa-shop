@@ -2,7 +2,7 @@ import Modal from '../index'
 
 const PurchaseModal = (props) => {
   const {
-    modalRef, onClose, onOk, isAddToCert
+    modalRef, onClose, onOk, isAddToCert, children
   } = props
   return (
     <Modal
@@ -12,7 +12,7 @@ const PurchaseModal = (props) => {
       onOk={onOk}
       title={isAddToCert ? '加入購物車' : '從購物車移除'}
     >
-      PurchaseModal
+      {children}
     </Modal>
   )
 }
