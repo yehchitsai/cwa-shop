@@ -143,7 +143,7 @@ const PurchaseDomestic = () => {
                 autoComplete='off'
                 defaultValue={phase}
                 onFocus={() => setIsFilterMenuOpen(true)}
-                onBlur={() => wait(200).then(() => setIsFilterMenuOpen(false))}
+                onBlur={() => wait(300).then(() => setIsFilterMenuOpen(false))}
                 onChange={onPhaseChange}
               />
               {phaseType === PHASE_TYPE.AI && (
