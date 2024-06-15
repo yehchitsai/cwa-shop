@@ -203,7 +203,7 @@ const PurchaseTable = (props) => {
       </thead>
       <tbody>
         {tableData.map((rowData, index) => {
-          const isSelected = index in selectProductMap
+          const isSelected = rowData.fish_code in selectProductMap
           return (
             <tr
               key={index}
