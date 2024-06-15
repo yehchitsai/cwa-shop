@@ -143,7 +143,7 @@ const PurchaseDomestic = () => {
                 autoComplete='off'
                 defaultValue={phase}
                 onFocus={() => setIsFilterMenuOpen(true)}
-                onBlur={() => wait(200).then(() => setIsFilterMenuOpen(false))}
+                onBlur={() => wait(300).then(() => setIsFilterMenuOpen(false))}
                 onChange={onPhaseChange}
               />
               {phaseType === PHASE_TYPE.AI && (
@@ -173,7 +173,7 @@ const PurchaseDomestic = () => {
                 <ul className='menu-dropdown'>
                   <li
                     className={clx({ disabled: isPhaseEmpty })}
-                    onClick={() => setPhaseType(PHASE_TYPE.AI)}
+                    onClick={() => !isPhaseEmpty && setPhaseType(PHASE_TYPE.AI)}
                   >
                     <span
                       className={clx(
@@ -191,7 +191,7 @@ const PurchaseDomestic = () => {
                   </li>
                   <li
                     className={clx({ disabled: isPhaseEmpty })}
-                    onClick={() => setPhaseType(PHASE_TYPE.NORMAL)}
+                    onClick={() => !isPhaseEmpty && setPhaseType(PHASE_TYPE.NORMAL)}
                   >
                     <span
                       className={clx(
