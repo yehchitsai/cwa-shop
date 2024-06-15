@@ -2,18 +2,18 @@ import { useState, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import clx from 'classnames'
 import {
-  MdShoppingCart, MdSearch, MdOutlineDelete, MdFilterAlt
+  MdShoppingCart, MdOutlineDelete
 } from 'react-icons/md'
 import { GiClick } from 'react-icons/gi'
-import { IoSparklesSharp } from 'react-icons/io5'
 import {
-  keyBy, size, times, isEmpty
+  keyBy, size, times
 } from 'lodash-es'
 import Drawer from '../../../components/Drawer'
 import PurchaseModal from '../../../components/Modal/Purchase'
 import CustomCartItems from './CustomCartItems'
 import CustomCartBottomItems from './CustomCartBottomItems'
-import wait from '../../../utils/wait'
+import SearchMenu from '../../../components/SearchMenu'
+import useSearchMenuAction from '../../../components/SearchMenu/useSearchMenuAction'
 
 const ItemSelectSection = () => {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -55,21 +55,13 @@ const ItemSelectSection = () => {
   )
 }
 
-const PHASE_TYPE = {
-  AI: 'ai',
-  NORMAL: 'normal'
-}
-
 const PurchaseDomestic = () => {
   const modalRef = useRef()
   const modalOkCallback = useRef()
   const [clickRowId, setClickRowId] = useState(null)
   const [selectProducts, setSelectProducts] = useState([])
-  const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false)
-  const [phase, setPhase] = useState('')
-  const [phaseType, setPhaseType] = useState(null)
+  const searchMenuAction = useSearchMenuAction()
   const selectProductMap = keyBy(selectProducts, 'id')
-  const isPhaseEmpty = isEmpty(phase)
 
   const onRemoveRow = (id) => {
     const newSelectProducts = selectProducts.filter((selectProduct) => {
@@ -99,15 +91,6 @@ const PurchaseDomestic = () => {
     modalOkCallback.current = null
   }
 
-  const onPhaseChange = (e) => {
-    const newPhase = e.target.value
-    setPhase(newPhase)
-    if (!isEmpty(newPhase)) {
-      return
-    }
-    setPhaseType(null)
-  }
-
   return (
     <Drawer
       id='rootSidebar'
@@ -130,86 +113,10 @@ const PurchaseDomestic = () => {
             <ItemSelectSection />
           </div>
           <div className='flex-1'>
-            <label
-              className={clx(
-                'input input-sm input-bordered flex items-center !outline-none',
-                { 'rounded-b-none !border-b-transparent': isFilterMenuOpen }
-              )}
-            >
-              <input
-                type='text'
-                className='grow'
-                placeholder='Search'
-                autoComplete='off'
-                defaultValue={phase}
-                onFocus={() => setIsFilterMenuOpen(true)}
-                onBlur={() => wait(300).then(() => setIsFilterMenuOpen(false))}
-                onChange={onPhaseChange}
-              />
-              {phaseType === PHASE_TYPE.AI && (
-                <IoSparklesSharp
-                  size='1.5em'
-                  className='!fill-yellow-300'
-                />
-              )}
-              {phaseType === PHASE_TYPE.NORMAL && (
-                <MdFilterAlt
-                  size='1.5em'
-                  className='!fill-indigo-500'
-                />
-              )}
-              {phaseType === null && (
-                <MdSearch size='1.5em' />
-              )}
-            </label>
-            <div className='relative'>
-              <div
-                className={clx(
-                  'absolute top-0 left-0 z-10 w-full',
-                  'menu w-56 rounded-b-lg bg-white border-base-content/20 border',
-                  { hidden: !isFilterMenuOpen }
-                )}
-              >
-                <ul className='menu-dropdown'>
-                  <li
-                    className={clx({ disabled: isPhaseEmpty })}
-                    onClick={() => !isPhaseEmpty && setPhaseType(PHASE_TYPE.AI)}
-                  >
-                    <span
-                      className={clx(
-                        'break-all',
-                        { active: phaseType === PHASE_TYPE.AI }
-                      )}
-                    >
-                      <IoSparklesSharp
-                        size='1.5em'
-                        className='!fill-yellow-300'
-                      />
-                      AI 搜尋
-                      {isPhaseEmpty ? '' : ` "${phase}"`}
-                    </span>
-                  </li>
-                  <li
-                    className={clx({ disabled: isPhaseEmpty })}
-                    onClick={() => !isPhaseEmpty && setPhaseType(PHASE_TYPE.NORMAL)}
-                  >
-                    <span
-                      className={clx(
-                        'break-all',
-                        { active: phaseType === PHASE_TYPE.NORMAL }
-                      )}
-                    >
-                      <MdFilterAlt
-                        size='1.5em'
-                        className='!fill-indigo-500'
-                      />
-                      一般過濾
-                      {isPhaseEmpty ? '' : ` "${phase}"`}
-                    </span>
-                  </li>
-                </ul>
-              </div>
-            </div>
+            <SearchMenu
+              name='search'
+              searchMenuAction={searchMenuAction}
+            />
           </div>
         </div>
         <p className='flex gap-2 text-sm'>
