@@ -162,7 +162,7 @@ const getTableCols = (rowData) => {
   )
 }
 
-const Table = (props) => {
+const PurchaseTable = (props) => {
   const {
     selectProductMap, onClickRow, phase, phaseType
   } = props
@@ -211,7 +211,7 @@ const Table = (props) => {
                 'whitespace-nowrap cursor-pointer',
                 { 'bg-base-200': isSelected }
               )}
-              onClick={() => isObject(rowData) && onClickRow(index)}
+              onClick={() => isObject(rowData) && onClickRow(rowData)}
             >
               <th className={clx({ 'bg-base-200': isSelected })}>
                 <label
@@ -238,35 +238,87 @@ const Table = (props) => {
   )
 }
 
+const PurchaseModalTable = (props) => {
+  const { rowData } = props
+  const {
+    fish_name,
+    fish_size,
+    unit_price,
+    retail_price,
+    inventory,
+    min_purchase_quantity,
+    note
+  } = rowData
+  return (
+    <div className='m-4 rounded-box border border-base-200'>
+      <table className='table table-sm'>
+        <tbody>
+          <tr>
+            <td>品名</td>
+            <td>{fish_name}</td>
+          </tr>
+          <tr>
+            <td>尺寸</td>
+            <td>{fish_size}</td>
+          </tr>
+          <tr>
+            <td>單價</td>
+            <td>{unit_price}</td>
+          </tr>
+          <tr>
+            <td>建議零售價</td>
+            <td>{retail_price}</td>
+          </tr>
+          <tr>
+            <td>在庫量</td>
+            <td>{inventory}</td>
+          </tr>
+          <tr>
+            <td>起購量</td>
+            <td>{min_purchase_quantity}</td>
+          </tr>
+          <tr>
+            <td>說明</td>
+            <td>{note}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
 const PurchaseDomestic = () => {
   const modalRef = useRef()
   const modalOkCallback = useRef()
-  const [clickRowId, setClickRowId] = useState(null)
+  const [clickRowData, setClickRowData] = useState({})
   const [selectProducts, setSelectProducts] = useState([])
   const searchMenuAction = useSearchMenuAction()
-  const selectProductMap = keyBy(selectProducts, 'id')
+  const selectProductMap = keyBy(selectProducts, 'fish_code')
   const { phase, phaseType } = searchMenuAction
 
-  const onRemoveRow = (id) => {
+  const onRemoveRow = (rowData) => {
+    const { fish_code } = rowData
     const newSelectProducts = selectProducts.filter((selectProduct) => {
-      return selectProduct.id !== id
+      return selectProduct.fish_code !== fish_code
     })
     setSelectProducts(newSelectProducts)
+    setClickRowData({})
   }
 
-  const onSelectRow = (id) => {
-    setSelectProducts([...selectProducts, { id }])
+  const onSelectRow = (rowData) => {
+    setSelectProducts([...selectProducts, rowData])
   }
 
-  const onClickRow = (id) => {
-    setClickRowId(id)
+  const onClickRow = (rowData) => {
+    const { fish_code } = rowData
+    setClickRowData(rowData)
     modalRef.current.open()
-    const isSelected = id in selectProductMap
+    const isSelected = fish_code in selectProductMap
     if (isSelected) {
-      modalOkCallback.current = () => onRemoveRow(id)
+      modalOkCallback.current = () => onRemoveRow(rowData)
       return
     }
-    modalOkCallback.current = () => onSelectRow(id)
+    modalOkCallback.current = () => onSelectRow(rowData)
   }
 
   const onPurchaseModalOk = () => modalOkCallback.current()
@@ -310,7 +362,7 @@ const PurchaseDomestic = () => {
           從購物車移除
         </p>
         <div className='overflow-x-auto max-sm:h-[calc(100dvh-14.5rem)] sm:h-[calc(100dvh-11.5rem)]'>
-          <Table
+          <PurchaseTable
             selectProductMap={selectProductMap}
             onClickRow={onClickRow}
             phase={phase}
@@ -322,8 +374,12 @@ const PurchaseDomestic = () => {
         modalRef={modalRef}
         onOk={onPurchaseModalOk}
         onClose={onPurchaseModalClose}
-        isAddToCert={!(clickRowId in selectProductMap)}
-      />
+        isAddToCert={!(clickRowData.fish_code in selectProductMap)}
+      >
+        <PurchaseModalTable
+          rowData={clickRowData}
+        />
+      </PurchaseModal>
     </Drawer>
   )
 }
