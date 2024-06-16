@@ -13,6 +13,7 @@ const Root = (props) => {
       <SWRConfig
         value={{
           // https://swr.vercel.app/docs/api
+          revalidateOnFocus: false,
           keepPreviousData: true,
           errorRetryCount: 3,
           suspense: false,
