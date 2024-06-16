@@ -40,8 +40,8 @@ const getLoginLogoutUrl = () => {
   }
 
   const { login, logout } = mappingByEntry[entry]
-  const loginUrl = import.meta.env[login]
-  const logoutUrl = import.meta.env[logout]
+  const loginUrl = import.meta[login]
+  const logoutUrl = import.meta[logout]
   return { loginUrl, logoutUrl }
 }
 

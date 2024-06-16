@@ -191,10 +191,10 @@ const Page = () => {
                 <tr key={index}>
                   <th>{index + 1}</th>
                   <th>
-                    <div className='h-20 w-20'>
+                    <div className='size-20'>
                       <LazyImage
                         src={imageURL}
-                        className='mask mask-square m-0 h-20 w-20 cursor-pointer'
+                        className='mask mask-square m-0 size-20 cursor-pointer'
                         alt={fishName}
                         loaderClassName='mask mask-square w-20 h-20'
                         onClick={openProductModal(selectedProduct)}
