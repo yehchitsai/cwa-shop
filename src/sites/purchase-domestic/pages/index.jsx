@@ -126,7 +126,7 @@ const getTableCols = (rowData) => {
   if (isEmpty(rowData)) {
     return (
       <>
-        {times(12).map((index) => (
+        {times(11).map((index) => (
           <td key={index}>
             <p className='skeleton h-4 w-16' />
           </td>
@@ -156,7 +156,6 @@ const getTableCols = (rowData) => {
       <td>{note}</td>
       <td>特殊要求</td>
       <td>購買數量</td>
-      <td>金額</td>
       {tableLinkCols}
     </>
   )
@@ -196,7 +195,6 @@ const PurchaseTable = (props) => {
           <td>說明</td>
           <td>特殊要求</td>
           <td>購買數量</td>
-          <td>金額</td>
           <td>圖片連結</td>
           <td>影片連結</td>
         </tr>
