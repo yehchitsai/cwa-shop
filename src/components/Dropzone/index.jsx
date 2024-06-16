@@ -214,7 +214,7 @@ const Dropzone = (props) => {
         >
           <span className='flex items-center space-x-2'>
             <MdOutlineCloudUpload
-              className='text-gray-600 max-sm:h-16 max-sm:w-16 sm:h-8 sm:w-8'
+              className='text-gray-600 max-sm:size-16 sm:size-8'
             />
             <span className='font-medium text-gray-600'>
               {

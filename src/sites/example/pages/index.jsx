@@ -5,8 +5,8 @@ import useCreate from '../../../hooks/useCreate'
 import useUpdate from '../../../hooks/useUpdate'
 
 const host = window.IS_MOCK
-  ? import.meta.env.VITE_LOCAL_MOCK_API_HOST
-  : import.meta.env.VITE_MOCK_API_HOST
+  ? import.meta.VITE_LOCAL_MOCK_API_HOST
+  : import.meta.VITE_MOCK_API_HOST
 
 const newPost = { aa: 123 }
 const updatedPost = { aa: 456, bb: 789 }
