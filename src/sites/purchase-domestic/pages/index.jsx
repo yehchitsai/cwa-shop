@@ -4,7 +4,7 @@ import clx from 'classnames'
 import {
   MdShoppingCart, MdOutlineDelete
 } from 'react-icons/md'
-import { GiClick } from 'react-icons/gi'
+import { TiShoppingCart } from 'react-icons/ti'
 import { FaLink } from 'react-icons/fa'
 import {
   filter,
@@ -222,7 +222,7 @@ const PurchaseTable = (props) => {
                     <MdOutlineDelete size='1.5em' className='!fill-red-500' />
                   </span>
                   <span className={clx('swap-off', { hidden: isSelected })}>
-                    <GiClick size='1.5em' className='!fill-indigo-500' />
+                    <TiShoppingCart size='1.5em' className='!fill-indigo-500' />
                   </span>
                   {index + 1}
                 </label>
@@ -354,7 +354,8 @@ const PurchaseDomestic = () => {
           </div>
         </div>
         <p className='flex gap-2 text-sm'>
-          <GiClick size='1.5em' className='!fill-indigo-500' />
+          點擊
+          <TiShoppingCart size='1.5em' className='!fill-indigo-500' />
           加入購物車
           <MdOutlineDelete size='1.5em' className='!fill-red-500' />
           從購物車移除
