@@ -2,7 +2,7 @@ import Modal from '../index'
 
 const PurchaseModal = (props) => {
   const {
-    modalRef, onClose, onOk, isAddToCert, children
+    modalRef, onClose, onOk, isAddToCart, children
   } = props
   return (
     <Modal
@@ -10,7 +10,8 @@ const PurchaseModal = (props) => {
       id='PURCHASE_MODAL'
       onClose={onClose}
       onOk={onOk}
-      title={isAddToCert ? '加入購物車' : '從購物車移除'}
+      title={isAddToCart ? '加入購物車' : '從購物車移除'}
+      isFormModal
     >
       {children}
     </Modal>
