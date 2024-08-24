@@ -23,7 +23,7 @@
     "style:fix": "npm run style -- --fix"
   },
   "dependencies": {
-    "axios": "^1.6.7",
+    "axios": "^1.7.4",
     "classnames": "^2.3.2",
     "daisyui": "^4.7.2",
     "date-fns": "^2.30.0",
