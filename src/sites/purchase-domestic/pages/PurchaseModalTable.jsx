@@ -1,5 +1,12 @@
+import { useEffect } from 'react'
+import { Field, useFormikContext } from 'formik'
+import clx from 'classnames'
+import { times } from 'lodash-es'
+import { FORM_ITEM } from './constants'
+
 const PurchaseModalTable = (props) => {
-  const { rowData } = props
+  const { rowData = {}, isAddToCart } = props
+  const { setValues, values } = useFormikContext()
   const {
     fish_name,
     fish_size,
@@ -8,7 +15,12 @@ const PurchaseModalTable = (props) => {
     inventory,
     min_purchase_quantity,
     note
-  } = rowData
+  } = values
+
+  useEffect(() => {
+    setValues(rowData)
+  }, [setValues, rowData])
+
   return (
     <div className='m-4 rounded-box border border-base-200'>
       <table className='table table-sm'>
@@ -40,6 +52,41 @@ const PurchaseModalTable = (props) => {
           <tr>
             <td>說明</td>
             <td>{note}</td>
+          </tr>
+          <tr>
+            <td>購買數量</td>
+            <td>
+              <Field
+                as='select'
+                name={FORM_ITEM.QUANTITY}
+                className={clx(
+                  'select select-bordered w-full lg:max-w-xs',
+                  { '!text-black': !isAddToCart }
+                )}
+                disabled={!isAddToCart}
+              >
+                <option value={-1} disabled>Select fish type</option>
+                {times(inventory - min_purchase_quantity + 1).map((index) => {
+                  const value = index + min_purchase_quantity
+                  return (
+                    <option value={value} key={value}>
+                      {`${value} 隻`}
+                    </option>
+                  )
+                })}
+              </Field>
+            </td>
+          </tr>
+          <tr>
+            <td>特殊要求</td>
+            <td>
+              <Field
+                as='textarea'
+                name={FORM_ITEM.REQUEST}
+                className='textarea textarea-bordered w-full resize-none'
+                disabled={!isAddToCart}
+              />
+            </td>
           </tr>
         </tbody>
       </table>

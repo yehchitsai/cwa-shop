@@ -7,6 +7,7 @@ import { TiShoppingCart } from 'react-icons/ti'
 import {
   keyBy, size
 } from 'lodash-es'
+import { Form, Formik } from 'formik'
 import Drawer from '../../../components/Drawer'
 import PurchaseModal from '../../../components/Modal/Purchase'
 import SearchMenu from '../../../components/SearchMenu'
@@ -25,6 +26,7 @@ const PurchaseDomestic = () => {
   const searchMenuAction = useSearchMenuAction()
   const selectProductMap = keyBy(selectProducts, 'fish_code')
   const { phase, phaseType } = searchMenuAction
+  const isAddToCart = !(clickRowData.fish_code in selectProductMap)
 
   const onRemoveRow = (rowData) => {
     const { fish_code } = rowData
@@ -51,7 +53,16 @@ const PurchaseDomestic = () => {
     modalOkCallback.current = () => onSelectRow(rowData)
   }
 
-  const onPurchaseModalOk = () => modalOkCallback.current()
+  // const onPurchaseModalOk = () => modalOkCallback.current()
+
+  const onPurchaseModalOk = (formValues) => {
+    modalRef.current.close()
+    if (isAddToCart) {
+      onSelectRow(formValues)
+      return
+    }
+    onRemoveRow(formValues)
+  }
 
   const onPurchaseModalClose = () => {
     modalOkCallback.current = null
@@ -101,16 +112,29 @@ const PurchaseDomestic = () => {
           />
         </div>
       </div>
-      <PurchaseModal
-        modalRef={modalRef}
-        onOk={onPurchaseModalOk}
-        onClose={onPurchaseModalClose}
-        isAddToCert={!(clickRowData.fish_code in selectProductMap)}
+      <Formik
+        initialValues={clickRowData}
+        // validationSchema={validationSchema}
+        onSubmit={onPurchaseModalOk}
       >
-        <PurchaseModalTable
-          rowData={clickRowData}
-        />
-      </PurchaseModal>
+        <PurchaseModal
+          modalRef={modalRef}
+          onClose={onPurchaseModalClose}
+          isAddToCart={isAddToCart}
+        >
+          {(footer) => {
+            return (
+              <Form>
+                <PurchaseModalTable
+                  isAddToCart={isAddToCart}
+                  rowData={clickRowData}
+                />
+                {footer}
+              </Form>
+            )
+          }}
+        </PurchaseModal>
+      </Formik>
     </Drawer>
   )
 }

@@ -98,7 +98,9 @@ const getTableCols = (rowData, isSelected) => {
     retail_price,
     inventory,
     min_purchase_quantity,
-    note
+    note,
+    quantity = 0,
+    request = ''
   } = rowData
   return (
     <>
@@ -109,8 +111,8 @@ const getTableCols = (rowData, isSelected) => {
       <td>{inventory}</td>
       <td>{min_purchase_quantity}</td>
       <td>{note}</td>
-      <td>特殊要求</td>
-      <td>購買數量</td>
+      <td>{request}</td>
+      <td>{quantity}</td>
       {tableLinkCols}
     </>
   )
@@ -156,6 +158,7 @@ const PurchaseTable = (props) => {
       </thead>
       <tbody>
         {tableData.map((rowData, index) => {
+          const selectRowData = get(selectProductMap, rowData.fish_code, rowData)
           const isSelected = rowData.fish_code in selectProductMap
           return (
             <tr
@@ -182,7 +185,7 @@ const PurchaseTable = (props) => {
                   {index + 1}
                 </label>
               </th>
-              {getTableCols(rowData, isSelected)}
+              {getTableCols(selectRowData, isSelected)}
             </tr>
           )
         })}
