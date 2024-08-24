@@ -7,6 +7,9 @@ const ACCEPT = {
   VIDEO: {
     'video/mp4': ['.mp4'],
     'video/mov': ['.mov']
+  },
+  EXCEL: {
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx']
   }
 }
 
