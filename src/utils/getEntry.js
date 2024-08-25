@@ -1,5 +1,5 @@
 const shopPaths = ['/external', '/external-demo', '/internal', '/demo']
-const purchasePaths = ['/purchase-domestic', '/purchase-export']
+const purchasePaths = ['/purchase-domestic', '/purchase-export', '/purchase-internal']
 
 const getEntry = (location = window.location) => {
   const isDev = window.ENTRY_PATH === '/'
