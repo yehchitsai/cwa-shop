@@ -80,7 +80,10 @@ const SearchMenu = (props) => {
         >
           <ul className='menu-dropdown'>
             <li
-              className={clx({ disabled: isPhaseEmpty })}
+              className={clx(
+                'disabled pointer-events-none',
+                { disabled: isPhaseEmpty }
+              )}
               onClick={() => !isPhaseEmpty && setPhaseType(PHASE_TYPE.AI)}
             >
               <span
