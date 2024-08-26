@@ -61,7 +61,7 @@ export default [
       const {
         category
       } = JSON.parse(JSON.stringify(stringObject))
-      const items = times(random(40, 100), (index) => {
+      const items = times(random(500, 1000), (index) => {
         const cat = category || CATEGORIES[random(0, 2)]
         const fishName = `fish_name_${cat}_${index}`
         return {
