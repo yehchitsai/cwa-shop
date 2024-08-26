@@ -23,6 +23,7 @@
     "style:fix": "npm run style -- --fix"
   },
   "dependencies": {
+    "@react-hooks-library/core": "^0.6.2",
     "axios": "^1.7.4",
     "classnames": "^2.3.2",
     "daisyui": "^4.7.2",
