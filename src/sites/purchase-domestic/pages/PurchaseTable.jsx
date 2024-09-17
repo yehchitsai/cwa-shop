@@ -157,7 +157,7 @@ const PurchaseTable = (props) => {
           return true
         }
         const { fish_name, science_name, note } = rowData
-        return [fish_name, science_name, note].some((item) => item.includes(phase))
+        return [fish_name, science_name, note].some((item = '') => item.includes(phase))
       }
     ).slice(0, page * PAGE_SIZE)
     const nextTableDataSize = size(nextTableData)
