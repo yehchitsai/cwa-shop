@@ -13,7 +13,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <Router
       routes={dynamicRoutes}
       basename={getRouterBase('/purchase-domestic')}
-      isAuthRoutes={false}
+      isAuthRoutes
     />
   </Root>
 )
