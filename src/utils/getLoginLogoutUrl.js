@@ -32,12 +32,19 @@ const getLoginLogoutUrl = () => {
       const url = `login/?to=${window.location.pathname}`
       return { loginUrl: url, logoutUrl: url }
     }
-    entry = 'external'
+    entry = (
+      (
+        window.IS_GH_PAGE
+          ? window.location.pathname.split('/')[1]
+          : window.ENTRY_PATH.replace('/', '')
+      ) ||
+      'external'
+    )
   }
 
-  const { login, logout } = mappingByEntry[entry]
-  const loginUrl = import.meta[login]
-  const logoutUrl = import.meta[logout]
+  const { login, logout } = mappingByEntry[entry] || {}
+  const loginUrl = import.meta.env[login]
+  const logoutUrl = import.meta.env[logout]
   return { loginUrl, logoutUrl }
 }
 
