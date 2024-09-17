@@ -24,22 +24,22 @@ const mappingByEntry = {
     logout: 'VITE_LOGOUT_URL_PURCHASE_EXPORT'
   }
 }
-const getLoginLogoutUrl = () => {
+const getLoginLogoutUrl = (location = window.location) => {
   let entry = window.ENTRY_PATH.replace('/', '')
   const isMock = window.IS_MOCK
   if (entry === '') {
-    if (isMock) {
-      const url = `login/?to=${window.location.pathname}`
-      return { loginUrl: url, logoutUrl: url }
-    }
     entry = (
       (
-        window.IS_GH_PAGE
-          ? window.location.pathname.split('/')[1]
+        (window.IS_GH_PAGE)
+          ? location.pathname.split('/')[1]
           : window.ENTRY_PATH.replace('/', '')
       ) ||
       'external'
     )
+  }
+  if (isMock) {
+    const url = `login/?to=${location.pathname}`
+    return { loginUrl: url, logoutUrl: url }
   }
 
   const { login, logout } = mappingByEntry[entry] || {}

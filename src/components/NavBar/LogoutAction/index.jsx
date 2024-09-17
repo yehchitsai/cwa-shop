@@ -1,9 +1,10 @@
 import { MdLogout } from 'react-icons/md'
+import { useLocation } from 'react-router-dom'
 import getLoginLogoutUrl from '../../../utils/getLoginLogoutUrl'
 
-const { loginUrl, logoutUrl } = getLoginLogoutUrl()
-
 const LogoutAction = () => {
+  const location = useLocation()
+  const { loginUrl, logoutUrl } = getLoginLogoutUrl(location)
   return (
     <a
       href={window.IS_MOCK ? `${window.location.origin}${window.APP_BASENAME}/${loginUrl}` : logoutUrl}
