@@ -22,10 +22,6 @@ const mappingByEntry = {
   'purchase-export': {
     login: 'VITE_LOGIN_URL_PURCHASE_EXPORT',
     logout: 'VITE_LOGOUT_URL_PURCHASE_EXPORT'
-  },
-  'purchase-internal': {
-    login: 'VITE_LOGIN_URL_PURCHASE_INTERNAL',
-    logout: 'VITE_LOGOUT_URL_PURCHASE_INTERNAL'
   }
 }
 const getLoginLogoutUrl = () => {
