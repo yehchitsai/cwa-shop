@@ -29,7 +29,7 @@ const getLoginLogoutUrl = () => {
   const isMock = window.IS_MOCK
   if (entry === '') {
     if (isMock) {
-      const url = 'login/'
+      const url = `login/?to=${window.location.pathname}`
       return { loginUrl: url, logoutUrl: url }
     }
     entry = 'external'
