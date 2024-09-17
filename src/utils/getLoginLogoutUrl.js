@@ -11,7 +11,7 @@ const mappingByEntry = {
     login: 'VITE_LOGIN_URL_INTERNAL',
     logout: 'VITE_LOGOUT_URL_INTERNAL'
   },
-  demo: {
+  staff: {
     login: 'VITE_LOGIN_URL_INTERNAL',
     logout: 'VITE_LOGOUT_URL_INTERNAL'
   },
