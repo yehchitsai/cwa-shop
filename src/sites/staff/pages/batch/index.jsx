@@ -64,7 +64,7 @@ const getParamsListFromRecognitionData = (row = {}) => {
       fishType,
       itemSerial,
       action: isNew ? ACTION.NEW : ACTION.UPDATE,
-      ...(isEmpty(fileName) ? {} : { fileName }),
+      ...(isEmpty(fileName) ? {} : { file_name: fileName }),
       ...(
         isNew && {
           itemImages: s3Images,

@@ -85,7 +85,7 @@ const Product = () => {
         url: putImageEndPoint,
         body: {
           ...pick(convertedFormValues, [FORM.TYPE, FORM.ITEM_SERIAL]),
-          fileName: asset.data,
+          file_name: asset.data,
           action
         }
       }
