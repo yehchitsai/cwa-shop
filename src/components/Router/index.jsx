@@ -30,7 +30,7 @@ const Router = (props) => {
       loader: async ({ request }) => {
         const { pathname } = new URL(request.url)
         const expectedAuthRoutes = [
-          'external'
+          'external', 'staff', 'purchase-domestic', 'purchase-export'
         ].some((authRoute) => pathname.startsWith(`/${authRoute}`))
         const isRedirectUnauth = (isAuthRoutes || expectedAuthRoutes)
         const [error, auth, response] = await getAuth()

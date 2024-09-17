@@ -24,6 +24,7 @@ const isMockAwsApi = !!MOCK_AWS_API
 const isPreview = !!PREVIEW
 const isAnalyzer = !!ANALYZER
 const isDefaultEntry = ENTRY === DEFAULT_ENTRY
+const isGhPage = BASENAME === '1'
 const appBaseName = (BASENAME && !isPreview) ? `/${name}` : ''
 
 const defaultOutDir = 'dist'
@@ -69,6 +70,7 @@ export default ({ mode }) => {
       'window.IS_MOCK_AWS_API': `${isMockAwsApi}`,
       'window.IS_PROD': `${isProd}`,
       'window.IS_PREVIEW': `${isPreview}`,
+      'window.IS_GH_PAGE': `${isGhPage}`,
       'window.TARGET_ENV': `${JSON.stringify(targetEnv)}`,
       'window.CURRENT_ENV': `${JSON.stringify(modeEnv)}`,
       'window.ENTRY_PATH': `"/${isDefaultEntry ? '' : ENTRY}"`

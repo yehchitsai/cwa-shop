@@ -30,7 +30,7 @@ const getAuthorization = () => {
   ] = TOKEN_KEYS.map((key) => cookiejs.get(key))
   const [tokenTypeFromUrl, accessTokenFromUrl] = getSearchValuesFromUrl(
     TOKEN_KEYS,
-    window.location.hash.replace('#', '?')
+    window.location.hash.replace(/\?to.*/, '').replace('#', '?')
   )
   const isTempTokenExist = !isEmpty(TMP_TOKEN)
   const isCookieTokenExist = !!(tokenTypeFromCookie && accessTokenFromCookie)

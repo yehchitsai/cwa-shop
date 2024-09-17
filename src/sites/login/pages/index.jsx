@@ -1,5 +1,6 @@
 import { Formik, Field, Form } from 'formik'
 import qs from 'query-string'
+import { useSearchParams } from 'react-router-dom'
 import { TOKEN_KEY } from '../../../utils/fetcher'
 
 const FORM = {
@@ -8,6 +9,8 @@ const FORM = {
 }
 
 const Login = () => {
+  const [searchParams] = useSearchParams()
+  const loginPathName = searchParams.get('to') || '/external'
   return (
     <div className='hero fixed top-0 z-0 min-h-screen bg-base-200'>
       <div className='hero-content flex-col lg:flex-row-reverse'>
@@ -35,7 +38,7 @@ const Login = () => {
                 <div className='form-control mt-6'>
                   <a
                     className='btn btn-primary'
-                    href={window.location.href.replace(window.location.pathname, `${window.APP_BASENAME}/external/#${qs.stringify(values)}`)}
+                    href={window.location.href.replace(window.location.pathname, `${window.APP_BASENAME}${loginPathName}#${qs.stringify(values)}`)}
                   >
                     Login
                   </a>
