@@ -56,7 +56,7 @@ const Quotation = () => {
       url: uploadExcelEndPoint,
       body: {
         delivery_date: get(formValues, FORM.DATE),
-        fileName: get(convertedFormValues, `${FORM.EXCEL}.0`)
+        file_name: get(convertedFormValues, `${FORM.EXCEL}.0`)
       }
     }
     const toastId = toast.loading('Uploading...')
