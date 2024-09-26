@@ -18,9 +18,10 @@ const getRedirectResp = () => {
 }
 
 const getAuth = () => {
-  const { isShop, isPurchase } = getEntry()
+  const { isShop, isPurchase, isStaff } = getEntry()
   let subPrefix
   switch (true) {
+    case isStaff:
     case isPurchase: {
       subPrefix = getEnvVar('VITE_AWS_PURCHASE_HOST_PREFIX')
       break

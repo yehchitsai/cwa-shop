@@ -10,17 +10,22 @@ import getEntry from '../../utils/getEntry'
 
 const NAV_BAR_TYPE = {
   SHOP: 'shop',
-  PURCHASE: 'purchase'
+  PURCHASE: 'purchase',
+  STAFF: 'staff'
 }
 
 const useNavBarType = () => {
   const location = useLocation()
-  const { isShop, isPurchase } = getEntry(location)
+  const { isShop, isPurchase, isStaff } = getEntry(location)
 
   let navBarType
   switch (true) {
     case isPurchase: {
       navBarType = NAV_BAR_TYPE.PURCHASE
+      break
+    }
+    case isStaff: {
+      navBarType = NAV_BAR_TYPE.STAFF
       break
     }
     case isShop:
@@ -56,6 +61,15 @@ const NavBarActions = (props) => {
     )
   }
 
+  if (navBarType === NAV_BAR_TYPE.STAFF) {
+    return (
+      <>
+        <LangsAction />
+        <LogoutAction />
+      </>
+    )
+  }
+
   return null
 }
 
@@ -73,7 +87,8 @@ const NavBar = (props) => {
 
   const LOGO_TITLE = {
     [NAV_BAR_TYPE.SHOP]: t('shopLogoTitle'),
-    [NAV_BAR_TYPE.PURCHASE]: t('purchaseLogoTitle')
+    [NAV_BAR_TYPE.PURCHASE]: t('purchaseLogoTitle'),
+    [NAV_BAR_TYPE.STAFF]: t('purchaseLogoTitle')
   }
 
   return (
