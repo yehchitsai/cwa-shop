@@ -141,6 +141,7 @@ const PurchaseTable = (props) => {
     selectProductMap, onClickRow, phase, phaseType
   } = props
   const modalRef = useRef()
+  const tableRef = useRef()
   const loadmoreRef = useRef()
   const isAllowLoadmoreRef = useRef(true)
   const [selectedRow, setSelectedRow] = useState({})
@@ -161,7 +162,13 @@ const PurchaseTable = (props) => {
       }
     ).slice(0, page * PAGE_SIZE)
     const nextTableDataSize = size(nextTableData)
-    const nextIsAllDataVisible = totalTableDataSize === nextTableDataSize
+    const nextIsAllDataVisible = (
+      totalTableDataSize === nextTableDataSize ||
+      nextTableDataSize === 0
+    )
+    if (nextIsAllDataVisible) {
+      isAllowLoadmoreRef.current = false
+    }
     return [nextIsAllDataVisible, nextTableData]
   }, [isLoading, data, phase, phaseType, page])
   const { inView } = useIntersectionObserver(loadmoreRef)
@@ -186,9 +193,18 @@ const PurchaseTable = (props) => {
     loadmore()
   }, [inView, page])
 
+  useEffect(() => {
+    tableRef.current.scrollIntoView()
+    isAllowLoadmoreRef.current = true
+    setPage(1)
+  }, [phase])
+
   return (
     <>
-      <table className='table table-pin-rows table-pin-cols'>
+      <table
+        ref={tableRef}
+        className='table table-pin-rows table-pin-cols'
+      >
         <thead>
           <tr className='max-sm:-top-1'>
             <th>項次</th>
@@ -204,7 +220,7 @@ const PurchaseTable = (props) => {
             <td>檢視連結</td>
           </tr>
         </thead>
-        <tbody>
+        <tbody className='content-visibility-auto'>
           {tableData.map((rowData, index) => {
             return (
               <TableRow
@@ -219,14 +235,15 @@ const PurchaseTable = (props) => {
           })}
         </tbody>
       </table>
-      {!isAllDataVisible && (
-        <div
-          ref={loadmoreRef}
-          className='flex h-16 w-full justify-center'
-        >
-          <span className='loading loading-spinner loading-md' />
-        </div>
-      )}
+      <div
+        ref={loadmoreRef}
+        className={clx(
+          'flex h-16 w-full justify-center',
+          { hidden: isAllDataVisible }
+        )}
+      >
+        <span className='loading loading-spinner loading-md' />
+      </div>
       <ViewFileModal
         id='view-file-modal'
         modalRef={modalRef}
