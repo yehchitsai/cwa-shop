@@ -1,4 +1,6 @@
+import * as React from 'react'
 import ReactDOM from 'react-dom/client'
+import { Outlet } from 'react-router-dom'
 import {
   flow, keys
 } from 'lodash-es'
@@ -42,11 +44,15 @@ const dynamicRoutes = [
 ]
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <Root>
+  <React.StrictMode>
     <Router
       routes={dynamicRoutes}
       isAuthRoutes={false}
-      isRootRoutes
+      layout={() => (
+        <Root>
+          <Outlet />
+        </Root>
+      )}
     />
-  </Root>
+  </React.StrictMode>
 )

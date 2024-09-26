@@ -1,13 +1,10 @@
 import { Suspense } from 'react'
 import {
   createBrowserRouter,
-  RouterProvider,
-  defer
+  RouterProvider
 } from 'react-router-dom'
 import SkeletonHome from '../Skeleton/Home'
 import ErrorElement from './ErrorElement'
-import Layout from './Layout'
-import getAuth from './getAuth'
 import 'react-loading-skeleton/dist/skeleton.css'
 
 const withErrorElement = (routes) => routes.map((item) => {
@@ -22,24 +19,17 @@ const withErrorElement = (routes) => routes.map((item) => {
 })
 
 const Router = (props) => {
-  const { routes, basename = '/', isAuthRoutes = true } = props
+  const {
+    routes,
+    basename = '/',
+    layout: SiteLayout,
+    loader: siteLoader
+  } = props
   const appBaseName = `${window.APP_BASENAME}${basename}`
   const totalRoutes = [
     {
-      element: <Layout appBaseName={appBaseName} />,
-      loader: async ({ request }) => {
-        const { pathname } = new URL(request.url)
-        const expectedAuthRoutes = [
-          'external', 'purchase-domestic', 'purchase-export'
-        ].some((authRoute) => pathname.startsWith(`/${authRoute}`))
-        const isRedirectUnauth = (isAuthRoutes || expectedAuthRoutes)
-        const [error, auth, response] = await getAuth()
-        if (error && isRedirectUnauth) {
-          throw response
-        }
-
-        return defer({ message: auth })
-      },
+      element: <SiteLayout appBaseName={appBaseName} />,
+      loader: siteLoader,
       children: withErrorElement([
         ...routes,
         {
