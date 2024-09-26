@@ -80,6 +80,7 @@
     "prettier-plugin-sh": "^0.14.0",
     "stylelint": "^16.6.1",
     "stylelint-config-standard": "^36.0.0",
+    "tailwindcss-content-visibility": "^1.0.0",
     "vite": "^5.4.6",
     "vite-bundle-analyzer": "^0.8.1",
     "vite-plugin-mock": "^2.9.8"

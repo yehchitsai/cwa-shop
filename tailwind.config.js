@@ -1,5 +1,6 @@
 const typography = require('@tailwindcss/typography')
 const aspectRatio = require('@tailwindcss/aspect-ratio')
+const contentVisibility = require('tailwindcss-content-visibility')
 const daisyui = require('daisyui')
 
 /** @type {import('tailwindcss').Config} */
@@ -21,6 +22,7 @@ export default {
   plugins: [
     typography,
     aspectRatio,
+    contentVisibility,
     daisyui
   ],
   daisyui: {

@@ -220,7 +220,7 @@ const PurchaseTable = (props) => {
             <td>檢視連結</td>
           </tr>
         </thead>
-        <tbody>
+        <tbody className='content-visibility-auto'>
           {tableData.map((rowData, index) => {
             return (
               <TableRow
