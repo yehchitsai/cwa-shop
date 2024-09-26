@@ -1,4 +1,3 @@
-import React from 'react'
 import { SWRConfig } from 'swr'
 import { RecoilRoot } from 'recoil'
 import { Toaster } from 'react-hot-toast'
@@ -9,7 +8,7 @@ import '../../index.css'
 const Root = (props) => {
   const { children } = props
   return (
-    <React.StrictMode>
+    <>
       <SWRConfig
         value={{
           // https://swr.vercel.app/docs/api
@@ -25,7 +24,7 @@ const Root = (props) => {
         </RecoilRoot>
       </SWRConfig>
       <Toaster />
-    </React.StrictMode>
+    </>
   )
 }
 
