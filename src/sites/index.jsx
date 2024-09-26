@@ -47,7 +47,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Router
       routes={dynamicRoutes}
-      isAuthRoutes={false}
       layout={() => (
         <Root>
           <Outlet />
