@@ -10,7 +10,7 @@ const FORM = {
 
 const Login = () => {
   const [searchParams] = useSearchParams()
-  const loginPathName = searchParams.get('to') || '/external'
+  const loginPathName = (searchParams.get('to') || '/external').replace(window.APP_BASENAME, '')
   return (
     <div className='hero fixed top-0 z-0 min-h-screen bg-base-200'>
       <div className='hero-content flex-col lg:flex-row-reverse'>
@@ -38,7 +38,7 @@ const Login = () => {
                 <div className='form-control mt-6'>
                   <a
                     className='btn btn-primary'
-                    href={window.location.href.replace(window.location.pathname, `${window.APP_BASENAME}${loginPathName}#${qs.stringify(values)}`)}
+                    href={window.location.href.replace('/login', `${loginPathName}#${qs.stringify(values)}`)}
                   >
                     Login
                   </a>
