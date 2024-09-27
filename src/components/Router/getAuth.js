@@ -15,6 +15,7 @@ const getRedirectResp = () => {
     return redirect(`${window.location.origin}${window.APP_BASENAME}/${loginUrl}`)
   }
 
+  window.location.href = logoutUrl
   return redirect(logoutUrl)
 }
 
