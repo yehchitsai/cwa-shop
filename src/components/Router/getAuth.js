@@ -10,6 +10,7 @@ const { loginUrl, logoutUrl } = getLoginLogoutUrl()
 const host = getEnvVar('VITE_AWS_CHECK_AUTHORIZE')
 
 const getRedirectResp = () => {
+  clearExpiredLoginToken(true)
   if (window.IS_MOCK) {
     return redirect(`${window.location.origin}${window.APP_BASENAME}/${loginUrl}`)
   }
