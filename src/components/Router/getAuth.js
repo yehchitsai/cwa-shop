@@ -4,6 +4,7 @@ import fetcher from '../../utils/fetcher'
 import getEnvVar from '../../utils/getEnvVar'
 import getLoginLogoutUrl from '../../utils/getLoginLogoutUrl'
 import getApiPrefix from '../../utils/getApiPrefix'
+import wait from '../../utils/wait'
 import clearExpiredLoginToken from '../../utils/clearExpiredLoginToken'
 
 const { loginUrl, logoutUrl } = getLoginLogoutUrl()
@@ -15,7 +16,9 @@ const getRedirectResp = () => {
     return redirect(`${window.location.origin}${window.APP_BASENAME}/${loginUrl}`)
   }
 
-  window.location.href = logoutUrl
+  wait(300).then(() => {
+    window.location.href = logoutUrl
+  })
   return redirect(logoutUrl)
 }
 
