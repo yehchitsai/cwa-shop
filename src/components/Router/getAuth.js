@@ -4,6 +4,7 @@ import fetcher from '../../utils/fetcher'
 import getEnvVar from '../../utils/getEnvVar'
 import getLoginLogoutUrl from '../../utils/getLoginLogoutUrl'
 import getApiPrefix from '../../utils/getApiPrefix'
+import clearExpiredLoginToken from '../../utils/clearExpiredLoginToken'
 
 const { loginUrl, logoutUrl } = getLoginLogoutUrl()
 const host = getEnvVar('VITE_AWS_CHECK_AUTHORIZE')
@@ -30,6 +31,7 @@ const getAuth = (subPrefix) => {
       if (res.message === 'Unauthorized') {
         return [res.message, null, getRedirectResp()]
       }
+      clearExpiredLoginToken()
       return [null, res.message]
     })
     .catch((e) => {
