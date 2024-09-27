@@ -1,11 +1,12 @@
+import * as React from 'react'
 import ReactDOM from 'react-dom/client'
 import {
   flow, keys
 } from 'lodash-es'
-import Root from '../components/Root'
 import PortalWithLinks from '../components/Portal/WithLinks'
-import Router from '../components/Router'
 import getRoutes from '../components/Router/getRoutes'
+import GlobalRouter from '../components/GlobalRouter'
+import Root from '../components/Root'
 
 const links = flow(
   () => keys(import.meta.glob('./*/index.jsx')),
@@ -42,11 +43,11 @@ const dynamicRoutes = [
 ]
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <Root>
-    <Router
-      routes={dynamicRoutes}
-      isAuthRoutes={false}
-      isRootRoutes
-    />
-  </Root>
+  <React.StrictMode>
+    <Root>
+      <GlobalRouter
+        routes={dynamicRoutes}
+      />
+    </Root>
+  </React.StrictMode>
 )

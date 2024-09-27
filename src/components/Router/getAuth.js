@@ -4,7 +4,6 @@ import fetcher from '../../utils/fetcher'
 import getEnvVar from '../../utils/getEnvVar'
 import getLoginLogoutUrl from '../../utils/getLoginLogoutUrl'
 import getApiPrefix from '../../utils/getApiPrefix'
-import getEntry from '../../utils/getEntry'
 
 const { loginUrl, logoutUrl } = getLoginLogoutUrl()
 const host = getEnvVar('VITE_AWS_CHECK_AUTHORIZE')
@@ -17,21 +16,7 @@ const getRedirectResp = () => {
   return redirect(logoutUrl)
 }
 
-const getAuth = () => {
-  const { isShop, isPurchase, isStaff } = getEntry()
-  let subPrefix
-  switch (true) {
-    case isStaff:
-    case isPurchase: {
-      subPrefix = getEnvVar('VITE_AWS_PURCHASE_HOST_PREFIX')
-      break
-    }
-    case isShop:
-    default: {
-      subPrefix = getEnvVar('VITE_AWS_SHOP_HOST_PREFIX')
-      break
-    }
-  }
+const getAuth = (subPrefix) => {
   const awsHostPrefix = getApiPrefix(subPrefix)
   const authConfig = {
     host,
