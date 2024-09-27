@@ -19,7 +19,6 @@ import {
 } from 'lodash-es'
 import { useIntersectionObserver } from '@react-hooks-library/core'
 import useCategoryInfo from '../../../hooks/useCategoryInfo'
-import { PHASE_TYPE } from '../../../components/SearchMenu/constants'
 import ViewFileModal from './ViewFileModal'
 import wait from '../../../utils/wait'
 
@@ -138,7 +137,7 @@ const PAGE_SIZE = 20
 
 const PurchaseTable = (props) => {
   const {
-    selectProductMap, onClickRow, phase, phaseType
+    selectProductMap, onClickRow, phase
   } = props
   const modalRef = useRef()
   const tableRef = useRef()
@@ -149,18 +148,23 @@ const PurchaseTable = (props) => {
   const [searchParams] = useSearchParams()
   const category = searchParams.get('type') || 'all'
   const { data, isLoading } = useCategoryInfo(category === 'all' ? '' : category)
-  const [isAllDataVisible, tableData] = useMemo(() => {
-    const totalTableDataSize = size(get(data, 'items', []))
-    const nextTableData = filter(
-      isLoading ? times(PAGE_SIZE) : get(data, 'items', []),
+  const totalTableData = useMemo(() => {
+    if (isLoading) {
+      return times(PAGE_SIZE)
+    }
+
+    const tableData = filter(
+      get(data, 'items', []),
       (rowData) => {
-        if (isLoading || (phaseType !== PHASE_TYPE.NORMAL)) {
-          return true
-        }
         const { fish_name, science_name, note } = rowData
         return [fish_name, science_name, note].some((item = '') => item.includes(phase))
       }
-    ).slice(0, page * PAGE_SIZE)
+    )
+    return tableData
+  }, [isLoading, phase, data])
+  const [isAllDataVisible, tableData] = useMemo(() => {
+    const totalTableDataSize = size(totalTableData)
+    const nextTableData = totalTableData.slice(0, page * PAGE_SIZE)
     const nextTableDataSize = size(nextTableData)
     const nextIsAllDataVisible = (
       totalTableDataSize === nextTableDataSize ||
@@ -170,7 +174,8 @@ const PurchaseTable = (props) => {
       isAllowLoadmoreRef.current = !nextIsAllDataVisible
     })
     return [nextIsAllDataVisible, nextTableData]
-  }, [isLoading, data, phase, phaseType, page])
+  }, [totalTableData, page])
+  console.log({ totalTableData, tableData })
   const { inView } = useIntersectionObserver(loadmoreRef)
 
   const onViewFileModalClick = (row) => {
