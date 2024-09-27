@@ -152,7 +152,7 @@ const PurchaseTable = (props) => {
   const [isAllDataVisible, tableData] = useMemo(() => {
     const totalTableDataSize = size(get(data, 'items', []))
     const nextTableData = filter(
-      isLoading ? times(PAGE_SIZE) : get(data, 'items', times(PAGE_SIZE)),
+      isLoading ? times(PAGE_SIZE) : get(data, 'items', []),
       (rowData) => {
         if (isLoading || (phaseType !== PHASE_TYPE.NORMAL)) {
           return true
@@ -166,9 +166,9 @@ const PurchaseTable = (props) => {
       totalTableDataSize === nextTableDataSize ||
       nextTableDataSize === 0
     )
-    if (nextIsAllDataVisible) {
-      isAllowLoadmoreRef.current = false
-    }
+    wait(200).then(() => {
+      isAllowLoadmoreRef.current = !nextIsAllDataVisible
+    })
     return [nextIsAllDataVisible, nextTableData]
   }, [isLoading, data, phase, phaseType, page])
   const { inView } = useIntersectionObserver(loadmoreRef)
@@ -187,8 +187,6 @@ const PurchaseTable = (props) => {
       isAllowLoadmoreRef.current = false
       await wait(600)
       setPage(page + 1)
-      await wait(400)
-      isAllowLoadmoreRef.current = true
     }
     loadmore()
   }, [inView, page])
