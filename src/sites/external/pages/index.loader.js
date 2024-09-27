@@ -9,8 +9,8 @@ import fetcher from '../../../utils/fetcher'
 import clearExpiredLoginToken from '../../../utils/clearExpiredLoginToken'
 import getAuth from '../../../components/Router/getAuth'
 import getApiPrefix from '../../../utils/getApiPrefix'
+import subPrefix from '../layout/subPrefix'
 
-const subPrefix = getEnvVar('VITE_AWS_SHOP_HOST_PREFIX')
 const awsHostPrefix = getApiPrefix(subPrefix)
 const preorderHost = getEnvVar('VITE_AWS_FISH_PREORDER_SHOP_HOST')
 const preorderConfig = {
@@ -59,7 +59,7 @@ const getSelectedFishData = async () => {
 clearExpiredLoginToken()
 
 const loader = async () => {
-  const [error, auth, response] = await getAuth()
+  const [error, auth, response] = await getAuth(subPrefix)
   if (error) {
     throw response
   }

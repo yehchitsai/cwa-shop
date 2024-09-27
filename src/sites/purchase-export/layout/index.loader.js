@@ -1,8 +1,6 @@
 import { defer } from 'react-router-dom'
-import getEnvVar from '../../../utils/getEnvVar'
 import getAuth from '../../../components/Router/getAuth'
-
-const subPrefix = getEnvVar('VITE_AWS_PURCHASE_HOST_PREFIX')
+import subPrefix from './subPrefix'
 
 const loader = async () => {
   const [error, auth, response] = await getAuth(subPrefix)
