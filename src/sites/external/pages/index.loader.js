@@ -6,8 +6,6 @@ import { preload } from 'swr'
 import { defer } from 'react-router-dom'
 import getEnvVar from '../../../utils/getEnvVar'
 import fetcher from '../../../utils/fetcher'
-import clearExpiredLoginToken from '../../../utils/clearExpiredLoginToken'
-import getAuth from '../../../components/Router/getAuth'
 import getApiPrefix from '../../../utils/getApiPrefix'
 import subPrefix from '../layout/subPrefix'
 
@@ -56,17 +54,9 @@ const getSelectedFishData = async () => {
   return selectedFishData
 }
 
-clearExpiredLoginToken()
-
 const loader = async () => {
-  const [error, auth, response] = await getAuth(subPrefix)
-  if (error) {
-    throw response
-  }
-
   return defer({
-    selectedFishData: getSelectedFishData(),
-    auth
+    selectedFishData: getSelectedFishData()
   })
 }
 
