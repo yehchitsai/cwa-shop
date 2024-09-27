@@ -175,7 +175,6 @@ const PurchaseTable = (props) => {
     })
     return [nextIsAllDataVisible, nextTableData]
   }, [totalTableData, page])
-  console.log({ totalTableData, tableData })
   const { inView } = useIntersectionObserver(loadmoreRef)
 
   const onViewFileModalClick = (row) => {
