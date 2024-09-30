@@ -1,10 +1,16 @@
 import { useRef, useState } from 'react'
 import { Formik, Field, Form } from 'formik'
 import { format } from 'date-fns'
-import { MdAdd } from 'react-icons/md'
+import { MdAdd, MdError } from 'react-icons/md'
 import { useTranslation } from 'react-i18next'
 import * as Yup from 'yup'
-import { get, isEmpty, isUndefined } from 'lodash-es'
+import {
+  get,
+  isEmpty,
+  isUndefined,
+  keyBy,
+  size
+} from 'lodash-es'
 import toast from 'react-hot-toast'
 import safeAwait from 'safe-await'
 import FormRow from '../../../../components/Form/FormRow'
@@ -52,6 +58,7 @@ const Quotation = () => {
   const dropzoneRef = useRef()
   const [isAssetsUploaded, setIsAssetsUploaded] = useState(true)
   const [isExcelUploaded, setIsExcelUploaded] = useState(false)
+  const [uploadedAssets, setUploadedAssets] = useState([])
   const { queue, controller } = useQueue()
   const { uploadS3 } = useUploadS3(queue, controller, s3Env)
   const {
@@ -60,15 +67,38 @@ const Quotation = () => {
   } = useCreate(uploadExcelHost)
 
   const onDropAssets = async (assetFiles) => {
-    const isAcceptFile = isUndefined(get(excelFiles, '0.code')) && !isEmpty(excelFiles)
-    if (!isAcceptFile) {
+    const uploadedMap = keyBy(uploadedAssets, 'name')
+    const acceptFiles = assetFiles.filter((file) => {
+      return (
+        isUndefined(get(file, 'code')) &&
+        !(file.name in uploadedMap)
+      )
+    })
+    const isUnacceptFilesExist = (
+      size(assetFiles) !== size(acceptFiles) ||
+      isEmpty(acceptFiles)
+    )
+    if (isUnacceptFilesExist) {
       return
     }
-    console.log(assetFiles)
-    
+    setUploadedAssets([...uploadedAssets, ...acceptFiles])
+
     const toastId = toast.loading('Uploading...')
     setIsAssetsUploaded(false)
-    const { error: uploadS3Error } = await uploadS3(file)
+    const [uploadS3Error] = await safeAwait(
+      Promise.all(
+        acceptFiles.map((file) => {
+          return uploadS3(file).then((result) => {
+            const { error } = result
+            if (error) {
+              throw error
+            }
+
+            return result
+          })
+        })
+      )
+    )
     if (uploadS3Error) {
       toast.error(`Error! ${uploadS3Error.message}`, { id: toastId })
       return
@@ -121,6 +151,10 @@ const Quotation = () => {
       {({ errors, touched }) => (
         <Form>
           <div className='m-auto flex w-full flex-col max-lg:m-auto max-lg:max-w-2xl max-sm:min-w-full max-sm:p-4 sm:p-12 lg:max-w-5xl'>
+            <div role='alert' className='alert flex text-left'>
+              <MdError size='1.5em' />
+              <span>先把影片與圖片上傳完成後再上傳 Excel</span>
+            </div>
             <FormRow
               label='上傳圖片與影片'
               error={touched[FORM.ASSETS] && errors[FORM.ASSETS]}
