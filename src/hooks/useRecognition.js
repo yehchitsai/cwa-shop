@@ -13,6 +13,13 @@ const getVideoRecognitionHost = getEnvVar('VITE_AWS_GET_VIDEO_RECOGNITION_SHOP_H
 const subPrefix = getEnvVar('VITE_AWS_SHOP_HOST_PREFIX')
 const awsHostPrefix = getApiPrefix(subPrefix)
 
+const s3Env = {
+  getPreSignedUrlsHost: getEnvVar('VITE_AWS_GET_PRE_SIGNED_URLS_SHOP_HOST'),
+  getS3FinalizeHost: getEnvVar('VITE_AWS_S3_FINALIZE_SHOP_HOST'),
+  getPreSignedUrlsEndPoint: `${awsHostPrefix}/getPreSignedUrls`,
+  s3FinalizeEndPoint: `${awsHostPrefix}/finalize`
+}
+
 const retryAction = async (action) => {
   const checker = (result) => {
     const recognitionStatus = get(result, 'status')
@@ -69,7 +76,7 @@ const useRecognition = (file, queue, controller, onUpdate) => {
   const [status, setStatus] = useState('')
   const [fileKey, setFileKey] = useState(null)
   const [data, setData] = useState({})
-  const { uploadS3 } = useUploadS3(queue, controller)
+  const { uploadS3 } = useUploadS3(queue, controller, s3Env)
   const {
     trigger: getVideoRecognition
   } = useGet(getVideoRecognitionHost)
