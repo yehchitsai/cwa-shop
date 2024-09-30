@@ -10,6 +10,12 @@ const ACCEPT = {
   },
   EXCEL: {
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx']
+  },
+  COMPRESSED: {
+    'application/zip': ['.zip'],
+    'application/x-zip-compressed': ['.zip'],
+    'application/vnd.rar': ['.rar'],
+    'application/x-7z-compressed': ['.7z']
   }
 }
 
