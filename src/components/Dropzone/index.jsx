@@ -1,6 +1,11 @@
 import { useCallback, useState, useImperativeHandle } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { MdOutlineCloudUpload, MdDelete, MdError } from 'react-icons/md'
+import {
+  MdOutlineCloudUpload,
+  MdDelete,
+  MdError,
+  MdClose
+} from 'react-icons/md'
 import clx from 'classnames'
 import {
   filter,
@@ -34,6 +39,7 @@ const Dropzone = (props) => {
     onFinish = () => {}
   } = props
   const [isPending, setIsPending] = useState(false)
+  const [isRejectionsVisible, setIsRejectionsVisible] = useState(true)
   const [selectType, setSelectType] = useState(true)
   const { values, setFieldValue } = useFormikContext()
   const rejectField = `${name}Error`
@@ -48,6 +54,7 @@ const Dropzone = (props) => {
   const onDrop = useCallback(async (defaultAcceptedFiles, defaultFileRejections) => {
     onStart()
     setIsPending(true)
+    setIsRejectionsVisible(true)
     const acceptFilesMap = keyBy(files, 'name')
     const acceptedFiles = filter(defaultAcceptedFiles, (acceptedFile) => {
       return !(acceptedFile.name in acceptFilesMap)
@@ -255,16 +262,23 @@ const Dropzone = (props) => {
           )}
         </label>
       </div>
-      {!isEmpty(rejections) && (
+      {(!isEmpty(rejections) && isRejectionsVisible) && (
         <div className='alert alert-error my-4 flex flex-wrap'>
-          <div className='flex w-full justify-between'>
+          <div className='flex w-full items-center justify-between'>
             <div className='flex'>
               <MdError size='1.5em' className='mr-2' />
               <span>{' Some files get rejected'}</span>
             </div>
-            <div className='justify-end'>aaa</div>
+            <div className='flex justify-end'>
+              <button
+                type='button'
+                className='btn btn-circle btn-ghost btn-md'
+                onClick={() => setIsRejectionsVisible(false)}
+              >
+                <MdClose size='1.5em' />
+              </button>
+            </div>
           </div>
-          <br />
           <div className='flex w-full'>
             <ol>
               {rejections.map((rejection) => {
