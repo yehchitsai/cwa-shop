@@ -17,7 +17,7 @@ const FORM = {
 
 const today = new Date()
 
-const uploadExcelHost = getEnvVar('VITE_AWS_CREATE_UPLOAD_QUOTATION_PURCHASE_HOST')
+const purchaseHost = getEnvVar('VITE_AWS_CREATE_UPLOAD_QUOTATION_PURCHASE_HOST')
 const subPrefix = getEnvVar('VITE_AWS_PURCHASE_HOST_PREFIX')
 const awsHostPrefix = getApiPrefix(subPrefix)
 const demandreportEndPoint = `${awsHostPrefix}/demandreport`
@@ -28,7 +28,7 @@ const DemandOrder = () => {
   const {
     trigger,
     isMutating
-  } = useCreate(uploadExcelHost)
+  } = useCreate(purchaseHost)
 
   const clearForm = () => {
     resetBtn.current.click()
