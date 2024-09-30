@@ -14,10 +14,13 @@ import useCreate from '../../../../hooks/useCreate'
 import getEnvVar from '../../../../utils/getEnvVar'
 import getApiPrefix from '../../../../utils/getApiPrefix'
 import getFormValues from '../../../../utils/getFormValues'
+import useUploadS3 from '../../../../hooks/useUploadS3'
+import useQueue from '../../../../hooks/useQueue'
 
 const FORM = {
   DATE: 'delivery_date',
-  EXCEL: 'excel'
+  EXCEL: 'excel',
+  ASSETS: 'assets'
 }
 
 const today = new Date()
@@ -27,21 +30,56 @@ const subPrefix = getEnvVar('VITE_AWS_PURCHASE_HOST_PREFIX')
 const awsHostPrefix = getApiPrefix(subPrefix)
 const uploadExcelEndPoint = `${awsHostPrefix}/uploadquotation`
 
+const s3Env = {
+  getPreSignedUrlsHost: getEnvVar('VITE_AWS_GET_PRE_SIGNED_URLS_SHOP_HOST'),
+  getS3FinalizeHost: getEnvVar('VITE_AWS_S3_FINALIZE_SHOP_HOST'),
+  getPreSignedUrlsEndPoint: `${awsHostPrefix}/presignedurls`,
+  s3FinalizeEndPoint: `${awsHostPrefix}/uploadfinalize`
+}
+
 const validationSchema = Yup.object().shape({
   [FORM.EXCEL]: Yup.array().required('Miss excel!')
 })
 
+const ASSETS_ACCEPT = {
+  ...ACCEPT.IMAGE,
+  ...ACCEPT.VIDEO
+}
+
 const Quotation = () => {
   const { t } = useTranslation()
   const resetBtn = useRef()
+  const dropzoneRef = useRef()
+  const [isAssetsUploaded, setIsAssetsUploaded] = useState(true)
   const [isExcelUploaded, setIsExcelUploaded] = useState(false)
+  const { queue, controller } = useQueue()
+  const { uploadS3 } = useUploadS3(queue, controller, s3Env)
   const {
     trigger,
     isMutating
   } = useCreate(uploadExcelHost)
 
-  const onDropFile = (allFiles) => {
-    const isAcceptFile = isUndefined(get(allFiles, '0.code')) && !isEmpty(allFiles)
+  const onDropAssets = async (assetFiles) => {
+    const isAcceptFile = isUndefined(get(excelFiles, '0.code')) && !isEmpty(excelFiles)
+    if (!isAcceptFile) {
+      return
+    }
+    console.log(assetFiles)
+    
+    const toastId = toast.loading('Uploading...')
+    setIsAssetsUploaded(false)
+    const { error: uploadS3Error } = await uploadS3(file)
+    if (uploadS3Error) {
+      toast.error(`Error! ${uploadS3Error.message}`, { id: toastId })
+      return
+    }
+
+    toast.success('Finish!', { id: toastId })
+    setIsAssetsUploaded(true)
+  }
+
+  const onDropExcels = (excelFiles) => {
+    const isAcceptFile = isUndefined(get(excelFiles, '0.code')) && !isEmpty(excelFiles)
     setIsExcelUploaded(isAcceptFile)
   }
 
@@ -84,6 +122,20 @@ const Quotation = () => {
         <Form>
           <div className='m-auto flex w-full flex-col max-lg:m-auto max-lg:max-w-2xl max-sm:min-w-full max-sm:p-4 sm:p-12 lg:max-w-5xl'>
             <FormRow
+              label='上傳圖片與影片'
+              error={touched[FORM.ASSETS] && errors[FORM.ASSETS]}
+            >
+              <Dropzone
+                dropzoneRef={dropzoneRef}
+                name={FORM.ASSETS}
+                accept={ASSETS_ACCEPT}
+                onStart={() => setIsAssetsUploaded(false)}
+                onFinish={onDropAssets}
+                maxSize={Infinity}
+                isShowPreview={false}
+              />
+            </FormRow>
+            <FormRow
               label='預計出貨日期'
               required
             >
@@ -92,7 +144,7 @@ const Quotation = () => {
                 name={FORM.DATE}
                 className='input input-bordered w-full lg:max-w-xs'
                 autoComplete='off'
-                disabled={isMutating}
+                disabled={isMutating || !isAssetsUploaded}
               />
             </FormRow>
             <FormRow
@@ -103,8 +155,8 @@ const Quotation = () => {
               <Dropzone
                 name={FORM.EXCEL}
                 accept={ACCEPT.EXCEL}
-                disabled={isMutating || isExcelUploaded}
-                onFinish={onDropFile}
+                disabled={isMutating || !isAssetsUploaded || isExcelUploaded}
+                onFinish={onDropExcels}
                 isShowPreview={false}
               />
               {isExcelUploaded && (
@@ -124,7 +176,7 @@ const Quotation = () => {
               <button
                 type='submit'
                 className='btn btn-outline'
-                disabled={isMutating}
+                disabled={isMutating || !isAssetsUploaded}
               >
                 <MdAdd size='1.5em' />
                 {`${t('newItem')}`}
