@@ -3,33 +3,32 @@ import { Formik, Field, Form } from 'formik'
 import { add, format } from 'date-fns'
 import { MdAdd } from 'react-icons/md'
 import { useTranslation } from 'react-i18next'
-// import { get, isEmpty, isUndefined } from 'lodash-es'
 import toast from 'react-hot-toast'
-// import safeAwait from 'safe-await'
+import safeAwait from 'safe-await'
 import FormRow from '../../../../components/Form/FormRow'
-// import useCreate from '../../../../hooks/useCreate'
-// import getEnvVar from '../../../../utils/getEnvVar'
-// import getApiPrefix from '../../../../utils/getApiPrefix'
+import useCreate from '../../../../hooks/useCreate'
+import getEnvVar from '../../../../utils/getEnvVar'
+import getApiPrefix from '../../../../utils/getApiPrefix'
 
 const FORM = {
-  START: 'start',
-  END: 'end'
+  START: 'start_date',
+  END: 'end_date'
 }
 
 const today = new Date()
 
-// const uploadExcelHost = getEnvVar('VITE_AWS_CREATE_UPLOAD_QUOTATION_PURCHASE_HOST')
-// const subPrefix = getEnvVar('VITE_AWS_PURCHASE_HOST_PREFIX')
-// const awsHostPrefix = getApiPrefix(subPrefix)
-// const uploadExcelEndPoint = `${awsHostPrefix}/uploadquotation`
+const purchaseHost = getEnvVar('VITE_AWS_CREATE_UPLOAD_QUOTATION_PURCHASE_HOST')
+const subPrefix = getEnvVar('VITE_AWS_PURCHASE_HOST_PREFIX')
+const awsHostPrefix = getApiPrefix(subPrefix)
+const demandreportEndPoint = `${awsHostPrefix}/demandreport`
 
 const DemandOrder = () => {
   const { t } = useTranslation()
   const resetBtn = useRef()
-  // const {
-  //   trigger,
-  //   isMutating
-  // } = useCreate(uploadExcelHost)
+  const {
+    trigger,
+    isMutating
+  } = useCreate(purchaseHost)
 
   const clearForm = () => {
     resetBtn.current.click()
@@ -37,19 +36,16 @@ const DemandOrder = () => {
 
   const onSubmit = async (formValues, { setSubmitting }) => {
     console.log(formValues)
-    // const postParams = {
-    //   url: uploadExcelEndPoint,
-    //   body: {
-    //     delivery_date: get(formValues, FORM.DATE),
-    //     file_name: get(convertedFormValues, `${FORM.EXCEL}.0`)
-    //   }
-    // }
+    const postParams = {
+      url: demandreportEndPoint,
+      body: formValues
+    }
     const toastId = toast.loading('Uploading...')
-    // const [createError] = await safeAwait(trigger(postParams))
-    // if (createError) {
-    //   toast.error(`Error! ${createError.message}`, { id: toastId })
-    //   setSubmitting(false)
-    // }
+    const [createError] = await safeAwait(trigger(postParams))
+    if (createError) {
+      toast.error(`Error! ${createError.message}`, { id: toastId })
+      setSubmitting(false)
+    }
 
     toast.success('Finish!', { id: toastId })
     setSubmitting(false)
@@ -76,7 +72,7 @@ const DemandOrder = () => {
                 name={FORM.START}
                 className='input input-bordered w-full lg:max-w-xs'
                 autoComplete='off'
-                // disabled={isMutating}
+                disabled={isMutating}
               />
             </FormRow>
             <FormRow
@@ -88,7 +84,7 @@ const DemandOrder = () => {
                 name={FORM.END}
                 className='input input-bordered w-full lg:max-w-xs'
                 autoComplete='off'
-                // disabled={isMutating}
+                disabled={isMutating}
               />
             </FormRow>
             <div className='text-right'>
@@ -102,7 +98,7 @@ const DemandOrder = () => {
               <button
                 type='submit'
                 className='btn btn-outline'
-                // disabled={isMutating}
+                disabled={isMutating}
               >
                 <MdAdd size='1.5em' />
                 {`${t('newItem')}`}

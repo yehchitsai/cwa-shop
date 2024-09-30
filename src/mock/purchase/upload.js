@@ -27,5 +27,15 @@ export default [
         }
       }
     }
+  },
+  {
+    url: `${awsHostPrefix}/demandreport`,
+    method: 'post',
+    timeout: 100,
+    response: () => {
+      return {
+        message: 'success'
+      }
+    }
   }
 ]
