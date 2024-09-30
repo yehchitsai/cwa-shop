@@ -47,11 +47,6 @@ const validationSchema = Yup.object().shape({
   [FORM.EXCEL]: Yup.array().required('Miss excel!')
 })
 
-const ASSETS_ACCEPT = {
-  ...ACCEPT.IMAGE,
-  ...ACCEPT.VIDEO
-}
-
 const Quotation = () => {
   const { t } = useTranslation()
   const resetBtn = useRef()
@@ -153,16 +148,16 @@ const Quotation = () => {
           <div className='m-auto flex w-full flex-col max-lg:m-auto max-lg:max-w-2xl max-sm:min-w-full max-sm:p-4 sm:p-12 lg:max-w-5xl'>
             <div role='alert' className='alert flex text-left'>
               <MdError size='1.5em' />
-              <span>先把影片與圖片上傳完成後再上傳 Excel</span>
+              <span>先把圖片與影片上傳完成後再上傳 Excel</span>
             </div>
             <FormRow
-              label='上傳圖片與影片'
+              label='上傳壓縮檔 (圖片與影片)'
               error={touched[FORM.ASSETS] && errors[FORM.ASSETS]}
             >
               <Dropzone
                 dropzoneRef={dropzoneRef}
                 name={FORM.ASSETS}
-                accept={ASSETS_ACCEPT}
+                accept={ACCEPT.COMPRESSED}
                 onStart={() => setIsAssetsUploaded(false)}
                 onFinish={onDropAssets}
                 maxSize={Infinity}
