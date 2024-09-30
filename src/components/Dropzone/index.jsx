@@ -257,9 +257,12 @@ const Dropzone = (props) => {
       </div>
       {!isEmpty(rejections) && (
         <div className='alert alert-error my-4 flex flex-wrap'>
-          <div className='flex'>
-            <MdError size='1.5em' className='mr-2' />
-            <span className='flex'>{' Some files get rejected'}</span>
+          <div className='flex w-full justify-between'>
+            <div className='flex'>
+              <MdError size='1.5em' className='mr-2' />
+              <span>{' Some files get rejected'}</span>
+            </div>
+            <div className='justify-end'>aaa</div>
           </div>
           <br />
           <div className='flex w-full'>
@@ -272,13 +275,13 @@ const Dropzone = (props) => {
                 return (
                   <div
                     key={file.path}
-                    className='collapse'
+                    className='collapse text-left'
                   >
                     <input type='checkbox' name={file.path} checked readOnly />
                     <div className='collapse-title min-h-0 text-xl font-medium'>
                       {isExceedLimit ? `${file.path} - ${rejectFileSize}` : file.path}
                     </div>
-                    <div className='collapse-content'>
+                    <div className='collapse-content break-all'>
                       <ul>
                         {errors.map((e, index) => (
                           <li key={index}>{e.message}</li>
