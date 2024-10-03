@@ -41,6 +41,7 @@ const useUploadS3 = (queue, controller, s3Env) => {
   const { trigger: s3Finalize } = useCreate(getS3FinalizeHost)
 
   const uploadS3 = async (input) => {
+    console.log(input)
     const chunkFiles = getChunkFilesByMB(input.file, CHUNK_MB_SIZE)
     const chunkFileSize = size(chunkFiles)
     const preSignedUrlsRequest = () => {
@@ -49,7 +50,10 @@ const useUploadS3 = (queue, controller, s3Env) => {
       }
 
       return getPreSignedUrls({
-        url: `${getPreSignedUrlsEndPoint}?${qs.stringify({ parts: chunkFileSize })}`
+        url: `${getPreSignedUrlsEndPoint}?${qs.stringify({
+          parts: chunkFileSize,
+          file_name: input.name
+        })}`
       })
     }
     const [preSignedUrlError, preSignedUrlResult] = await safeAwait(
