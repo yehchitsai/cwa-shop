@@ -49,7 +49,10 @@ const useUploadS3 = (queue, controller, s3Env) => {
       }
 
       return getPreSignedUrls({
-        url: `${getPreSignedUrlsEndPoint}?${qs.stringify({ parts: chunkFileSize })}`
+        url: `${getPreSignedUrlsEndPoint}?${qs.stringify({
+          parts: chunkFileSize,
+          file_name: input.name
+        })}`
       })
     }
     const [preSignedUrlError, preSignedUrlResult] = await safeAwait(

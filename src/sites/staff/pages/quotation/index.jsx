@@ -37,8 +37,8 @@ const awsHostPrefix = getApiPrefix(subPrefix)
 const uploadExcelEndPoint = `${awsHostPrefix}/uploadquotation`
 
 const s3Env = {
-  getPreSignedUrlsHost: getEnvVar('VITE_AWS_GET_PRE_SIGNED_URLS_SHOP_HOST'),
-  getS3FinalizeHost: getEnvVar('VITE_AWS_S3_FINALIZE_SHOP_HOST'),
+  getPreSignedUrlsHost: getEnvVar('VITE_AWS_GET_PRE_SIGNED_URLS_PURCHASE_HOST'),
+  getS3FinalizeHost: getEnvVar('VITE_AWS_S3_FINALIZE_PURCHASE_HOST'),
   getPreSignedUrlsEndPoint: `${awsHostPrefix}/presignedurls`,
   s3FinalizeEndPoint: `${awsHostPrefix}/uploadfinalize`
 }
