@@ -11,10 +11,10 @@ const useCreateExportConfirmOrder = () => {
   const { trigger: originTrigger, ...rest } = useCreate(createExportConfirmOrderHost)
 
   const trigger = (body) => {
-    return {
+    return originTrigger({
       url: createExportConfirmOrderEndPoint,
       body
-    }
+    })
   }
 
   return {

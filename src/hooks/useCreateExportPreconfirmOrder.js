@@ -11,10 +11,10 @@ const useCreateExportPreconfirmOrder = () => {
   const { trigger: originTrigger, ...rest } = useCreate(createExportPreconfirmOrderHost)
 
   const trigger = (body) => {
-    return {
+    return originTrigger({
       url: createExportPreconfirmOrderEndPoint,
       body
-    }
+    })
   }
 
   return {

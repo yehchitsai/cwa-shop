@@ -30,7 +30,7 @@ export default [
       return {
         message: 'success',
         results: {
-          items: order_items.map(({ fish_code, quantity, request }) => {
+          items: order_items.map(({ fish_code, quantity, request = '' }) => {
             return {
               fish_code,
               quantity,
