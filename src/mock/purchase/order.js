@@ -59,6 +59,8 @@ export default [
       return {
         message: 'success',
         results: {
+          total_quantity: random(5, 10),
+          total_price: `${random(10, 20)}.${random(1000, 2000)}`,
           discounts: [
             {
               type: '優惠方案',
