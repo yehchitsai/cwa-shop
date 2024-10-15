@@ -95,7 +95,6 @@ const PurchaseDomestic = () => {
       return
     }
 
-    console.log(result)
     const newCart = get(result, 'results', initCart)
     setCart(newCart)
     toast.success('更新購物車成功!', { id: toastId })
