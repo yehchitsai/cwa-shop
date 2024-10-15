@@ -6,7 +6,7 @@ import {
 import { TiShoppingCart } from 'react-icons/ti'
 import {
   get,
-  keyBy, map, pick, size
+  keyBy, map, pick
 } from 'lodash-es'
 import { Form, Formik } from 'formik'
 import toast from 'react-hot-toast'
@@ -22,14 +22,30 @@ import PurchaseTable from './PurchaseTable'
 import PurchaseModalTable from './PurchaseModalTable'
 import Modal from '../../../components/Modal'
 import useCreatePrepurchaseOrder from '../../../hooks/useCreatePrepurchaseOrder'
+import usePrepurchaseOrder from '../../../hooks/usePrepurchaseOrder'
+
+const initCart = {
+  discounts: [],
+  items: [],
+  total_price: '0',
+  total_quantity: '0'
+}
 
 const PurchaseDomestic = () => {
   const purchaseModalRef = useRef()
   const modifyPurchaseModalRef = useRef()
   const [clickRowData, setClickRowData] = useState({})
   const [selectProducts, setSelectProducts] = useState([])
+  const [cart, setCart] = useState(initCart)
   const searchMenuAction = useSearchMenuAction()
   const { trigger } = useCreatePrepurchaseOrder()
+  usePrepurchaseOrder({
+    onSuccess: (result) => {
+      setCart(get(result, 'results', initCart))
+      console.log(result.results.items)
+      setSelectProducts(get(result, 'results.items', []))
+    }
+  })
   const selectProductMap = keyBy(selectProducts, 'fish_code')
   const { phase, phaseType } = searchMenuAction
   const isAddToCart = !(clickRowData.fish_code in selectProductMap)
@@ -80,6 +96,8 @@ const PurchaseDomestic = () => {
     }
 
     console.log(result)
+    const newCart = get(result, 'results', initCart)
+    setCart(newCart)
     toast.success('更新購物車成功!', { id: toastId })
   }
 
@@ -100,16 +118,19 @@ const PurchaseDomestic = () => {
     <Drawer
       id='rootSidebar'
       items={(
-        <CustomCartItems items={selectProducts} />
+        <CustomCartItems
+          cart={cart}
+          selectProductMap={selectProductMap}
+        />
       )}
       bottomItems={(
-        <CustomCartBottomItems items={selectProducts} />
+        <CustomCartBottomItems cart={cart} />
       )}
       openIcon={MdShoppingCart}
       drawerContentClassName={clx(
         'm-0 p-0 w-full overflow-y-hidden'
       )}
-      indicator={size(selectProducts)}
+      indicator={get(cart, 'total_quantity', '0')}
       overlay
     >
       <div className='space-y-4 p-4'>
