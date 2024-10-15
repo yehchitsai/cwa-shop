@@ -9,7 +9,13 @@ import wait from '../../utils/wait'
 const ESC_KEY_CODE = 27
 
 const ModalActions = (props) => {
-  const { onModalClose, onModalOk, className } = props
+  const {
+    onModalClose,
+    onModalOk,
+    className,
+    closeText,
+    okText
+  } = props
   return (
     <div
       className={clx(
@@ -17,9 +23,11 @@ const ModalActions = (props) => {
         { [className]: className }
       )}
     >
-      <button type='button' className='btn' onClick={onModalClose}>Close</button>
+      <button type='button' className='btn' onClick={onModalClose}>
+        {closeText}
+      </button>
       <button type='submit' className='btn' onClick={() => onModalOk && onModalOk()}>
-        Ok
+        {okText}
       </button>
     </div>
   )
@@ -39,7 +47,9 @@ const Modal = (props) => {
     onOpen,
     onOk,
     onVisibleChange,
-    modalRef
+    modalRef,
+    okText = 'Ok',
+    closeText = 'Close'
   } = props
   const [visible, setVisible] = useState(false)
 
@@ -152,6 +162,8 @@ const Modal = (props) => {
                       <ModalActions
                         className='absolute bottom-0 right-0 z-10 w-full bg-base-100 pt-6'
                         onModalClose={onModalClose}
+                        okText={okText}
+                        closeText={closeText}
                       />
                       <div className='max-sm:h-[10vh] sm:h-[15vh]' />
                     </>
@@ -166,6 +178,8 @@ const Modal = (props) => {
             <ModalActions
               onModalClose={onModalClose}
               onModalOk={onModalOk}
+              okText={okText}
+              closeText={closeText}
             />
           )
         }
