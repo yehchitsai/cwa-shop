@@ -6,9 +6,11 @@ import {
 import { TiShoppingCart } from 'react-icons/ti'
 import {
   get,
-  keyBy, size
+  keyBy, map, pick, size
 } from 'lodash-es'
 import { Form, Formik } from 'formik'
+import toast from 'react-hot-toast'
+import safeAwait from 'safe-await'
 import Drawer from '../../../components/Drawer'
 import PurchaseModal from '../../../components/Modal/Purchase'
 import SearchMenu from '../../../components/SearchMenu'
@@ -19,6 +21,7 @@ import ItemSelectSection from './ItemSelectSection'
 import PurchaseTable from './PurchaseTable'
 import PurchaseModalTable from './PurchaseModalTable'
 import Modal from '../../../components/Modal'
+import useCreatePrepurchaseOrder from '../../../hooks/useCreatePrepurchaseOrder'
 
 const PurchaseDomestic = () => {
   const purchaseModalRef = useRef()
@@ -26,6 +29,7 @@ const PurchaseDomestic = () => {
   const [clickRowData, setClickRowData] = useState({})
   const [selectProducts, setSelectProducts] = useState([])
   const searchMenuAction = useSearchMenuAction()
+  const { trigger } = useCreatePrepurchaseOrder()
   const selectProductMap = keyBy(selectProducts, 'fish_code')
   const { phase, phaseType } = searchMenuAction
   const isAddToCart = !(clickRowData.fish_code in selectProductMap)
@@ -40,7 +44,9 @@ const PurchaseDomestic = () => {
   }
 
   const onSelectRow = (rowData) => {
-    setSelectProducts([...selectProducts, rowData])
+    const newSelectProducts = [...selectProducts, rowData]
+    setSelectProducts(newSelectProducts)
+    return newSelectProducts
   }
 
   const onClickRow = (originData) => {
@@ -61,7 +67,20 @@ const PurchaseDomestic = () => {
 
   const onPurchaseModalOk = async (formValues) => {
     purchaseModalRef.current.close()
-    onSelectRow(formValues)
+    const newSelectProducts = onSelectRow(formValues)
+    const orderItems = map(newSelectProducts, (newSelectProduct) => {
+      return pick(newSelectProduct, ['fish_code', 'quantity', 'request'])
+    })
+    const body = { order_items: orderItems }
+    const toastId = toast.loading('更新購物車...')
+    const [error, result] = await safeAwait(trigger(body))
+    if (error) {
+      toast.error(`更新購物車失敗! ${error.message}`, { id: toastId })
+      return
+    }
+
+    console.log(result)
+    toast.success('更新購物車成功!', { id: toastId })
   }
 
   const onPurchaseModalClose = () => {
