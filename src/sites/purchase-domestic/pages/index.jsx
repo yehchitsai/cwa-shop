@@ -5,9 +5,12 @@ import {
 } from 'react-icons/md'
 import { TiShoppingCart } from 'react-icons/ti'
 import {
-  keyBy, size
+  get,
+  keyBy, map, pick
 } from 'lodash-es'
 import { Form, Formik } from 'formik'
+import toast from 'react-hot-toast'
+import safeAwait from 'safe-await'
 import Drawer from '../../../components/Drawer'
 import PurchaseModal from '../../../components/Modal/Purchase'
 import SearchMenu from '../../../components/SearchMenu'
@@ -17,13 +20,32 @@ import CustomCartBottomItems from './CustomCartBottomItems'
 import ItemSelectSection from './ItemSelectSection'
 import PurchaseTable from './PurchaseTable'
 import PurchaseModalTable from './PurchaseModalTable'
+import Modal from '../../../components/Modal'
+import useCreatePrepurchaseOrder from '../../../hooks/useCreatePrepurchaseOrder'
+import usePrepurchaseOrder from '../../../hooks/usePrepurchaseOrder'
+
+const initCart = {
+  discounts: [],
+  items: [],
+  total_price: '0',
+  total_quantity: '0'
+}
 
 const PurchaseDomestic = () => {
-  const modalRef = useRef()
-  const modalOkCallback = useRef()
+  const purchaseModalRef = useRef()
+  const modifyPurchaseModalRef = useRef()
   const [clickRowData, setClickRowData] = useState({})
   const [selectProducts, setSelectProducts] = useState([])
+  const [cart, setCart] = useState(initCart)
   const searchMenuAction = useSearchMenuAction()
+  const { trigger } = useCreatePrepurchaseOrder()
+  usePrepurchaseOrder({
+    onSuccess: (result) => {
+      setCart(get(result, 'results', initCart))
+      console.log(result.results.items)
+      setSelectProducts(get(result, 'results.items', []))
+    }
+  })
   const selectProductMap = keyBy(selectProducts, 'fish_code')
   const { phase, phaseType } = searchMenuAction
   const isAddToCart = !(clickRowData.fish_code in selectProductMap)
@@ -38,50 +60,76 @@ const PurchaseDomestic = () => {
   }
 
   const onSelectRow = (rowData) => {
-    setSelectProducts([...selectProducts, rowData])
+    const newSelectProducts = [...selectProducts, rowData]
+    setSelectProducts(newSelectProducts)
+    return newSelectProducts
   }
 
-  const onClickRow = (rowData) => {
+  const onClickRow = (originData) => {
+    const rowData = {
+      quantity: get(originData, 'min_purchase_quantity', 0),
+      request: get(originData, 'request', ''),
+      ...originData
+    }
     const { fish_code } = rowData
     setClickRowData(rowData)
-    modalRef.current.open()
     const isSelected = fish_code in selectProductMap
     if (isSelected) {
-      modalOkCallback.current = () => onRemoveRow(rowData)
+      modifyPurchaseModalRef.current.open()
       return
     }
-    modalOkCallback.current = () => onSelectRow(rowData)
+    purchaseModalRef.current.open()
   }
 
-  // const onPurchaseModalOk = () => modalOkCallback.current()
-
-  const onPurchaseModalOk = (formValues) => {
-    modalRef.current.close()
-    if (isAddToCart) {
-      onSelectRow(formValues)
+  const onPurchaseModalOk = async (formValues) => {
+    purchaseModalRef.current.close()
+    const newSelectProducts = onSelectRow(formValues)
+    const orderItems = map(newSelectProducts, (newSelectProduct) => {
+      return pick(newSelectProduct, ['fish_code', 'quantity', 'request'])
+    })
+    const body = { order_items: orderItems }
+    const toastId = toast.loading('更新購物車...')
+    const [error, result] = await safeAwait(trigger(body))
+    if (error) {
+      toast.error(`更新購物車失敗! ${error.message}`, { id: toastId })
       return
     }
-    onRemoveRow(formValues)
+
+    const newCart = get(result, 'results', initCart)
+    setCart(newCart)
+    toast.success('更新購物車成功!', { id: toastId })
   }
 
   const onPurchaseModalClose = () => {
-    modalOkCallback.current = null
+    setClickRowData({})
+  }
+
+  const onModifyPurchaseModalClose = () => {
+    onRemoveRow(clickRowData)
+    modifyPurchaseModalRef.current.close()
+  }
+
+  const onModifyPurchaseModalOk = () => {
+    purchaseModalRef.current.open()
   }
 
   return (
     <Drawer
       id='rootSidebar'
       items={(
-        <CustomCartItems items={selectProducts} />
+        <CustomCartItems
+          cart={cart}
+          selectProductMap={selectProductMap}
+        />
       )}
       bottomItems={(
-        <CustomCartBottomItems items={selectProducts} />
+        <CustomCartBottomItems cart={cart} />
       )}
       openIcon={MdShoppingCart}
       drawerContentClassName={clx(
         'm-0 p-0 w-full overflow-y-hidden'
       )}
-      indicator={size(selectProducts)}
+      indicator={get(cart, 'total_quantity', '0')}
       overlay
     >
       <div className='space-y-4 p-4'>
@@ -118,16 +166,16 @@ const PurchaseDomestic = () => {
         onSubmit={onPurchaseModalOk}
       >
         <PurchaseModal
-          modalRef={modalRef}
-          onClose={onPurchaseModalClose}
+          modalRef={purchaseModalRef}
           isAddToCart={isAddToCart}
+          onClose={onPurchaseModalClose}
         >
           {(footer) => {
             return (
               <Form>
                 <PurchaseModalTable
-                  isAddToCart={isAddToCart}
                   rowData={clickRowData}
+                  isAddToCart
                 />
                 {footer}
               </Form>
@@ -135,6 +183,15 @@ const PurchaseDomestic = () => {
           }}
         </PurchaseModal>
       </Formik>
+      <Modal
+        id='MODIFY_PURCHASE_MODAL'
+        title='修改或從購物車刪除'
+        modalRef={modifyPurchaseModalRef}
+        onClose={onModifyPurchaseModalClose}
+        onOk={onModifyPurchaseModalOk}
+        closeText='刪除'
+        okText='修改'
+      />
     </Drawer>
   )
 }

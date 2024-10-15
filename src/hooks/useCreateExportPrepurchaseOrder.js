@@ -11,11 +11,10 @@ const useCreateExportPrepurchaseOrder = () => {
   const { trigger: originTrigger, ...rest } = useCreate(createExportPrepurchaseOrderHost)
 
   const trigger = (body) => {
-    return {
+    return originTrigger({
       url: createExportPrepurchaseOrderEndPoint,
-      body,
-      isJsonResponse: false
-    }
+      body
+    })
   }
 
   return {

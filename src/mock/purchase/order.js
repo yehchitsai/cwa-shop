@@ -7,7 +7,7 @@ import getEnvVar from '../../utils/getEnvVar'
 const subPrefix = getEnvVar('VITE_AWS_PURCHASE_HOST_PREFIX')
 const awsHostPrefix = getApiPrefix(subPrefix)
 
-// const counts = times(10, (index) => index + 0.5)
+const FISH_SIZES = ['M', 'L', 'XL']
 
 const statusList = [
   { status: 'fail', message: '購買數量大於庫存' },
@@ -17,6 +17,16 @@ const statusList = [
   { status: 'success', message: '正常' },
   { status: 'success', message: '正常' }
 ]
+
+const videos = [
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+  'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+  'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
+]
+
+const getFakeImage = (width, height, text) => {
+  return `https://fakeimg.pl/${width}x${height}/?text=${text}&font=lobster&font_size=50`
+}
 
 export default [
   {
@@ -30,7 +40,7 @@ export default [
       return {
         message: 'success',
         results: {
-          items: order_items.map(({ fish_code, quantity, request }) => {
+          items: order_items.map(({ fish_code, quantity, request = '' }) => {
             return {
               fish_code,
               quantity,
@@ -59,21 +69,33 @@ export default [
       return {
         message: 'success',
         results: {
+          total_quantity: random(5, 10),
+          total_price: `${random(10, 20)}.${random(1000, 2000)}`,
           discounts: [
             {
               type: '優惠方案',
               discount_amt: `${random(100, 500)}`
             }
           ],
-          items: times(random(10, 20)).map((index) => {
+          items: times(random(1, 15)).map((index) => {
             const fish_code = `FF120L${index}`
             const quantity = random(100, 500)
-            const request = ['smaller', 'bigger'][random(0, 1)]
+            const request = ['smaller', 'bigger', ''][random(0, 2)]
+            const fishName = `fish_name_${index}`
             return {
               fish_code,
+              science_name: `science_name_${index}`,
               quantity,
               request,
-              unit_price: random(1000, 2000),
+              fish_name: fishName,
+              fish_size: FISH_SIZES[random(0, 2)],
+              unit_price: random(10, 100),
+              retail_price: random(10, 100),
+              inventory: random(10, 100),
+              min_purchase_quantity: quantity,
+              note: ['', `note_${index}`][random(0, 1)],
+              image_link: getFakeImage(100, 100, fishName),
+              video_link: videos[random(0, 2)],
               ...(statusList[random(0, size(statusList - 1))])
             }
           })

@@ -11,11 +11,10 @@ const useCreatePrepurchaseOrder = () => {
   const { trigger: originTrigger, ...rest } = useCreate(createPrepurchaseOrderHost)
 
   const trigger = (body) => {
-    return {
+    return originTrigger({
       url: createPrepurchaseOrderEndPoint,
-      body,
-      isJsonResponse: false
-    }
+      body
+    })
   }
 
   return {

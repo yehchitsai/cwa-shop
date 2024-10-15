@@ -68,7 +68,10 @@ const TableRow = (props) => {
     selectProductMap
   } = props
   const visibleRef = useRef(null)
-  const rowData = get(selectProductMap, data.fish_code, data)
+  const rowData = {
+    ...data,
+    ...get(selectProductMap, data.fish_code, data)
+  }
   const isSelected = rowData.fish_code in selectProductMap
   const tableLinkCols = getTableLinkCols(rowData, isSelected, onViewFileModalClick)
   const {

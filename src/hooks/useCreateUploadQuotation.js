@@ -11,11 +11,10 @@ const useCreateUploadQuotation = () => {
   const { trigger: originTrigger, ...rest } = useCreate(createUploadQuotationHost)
 
   const trigger = (body) => {
-    return {
+    return originTrigger({
       url: createUploadQuotationEndPoint,
-      body,
-      isJsonResponse: false
-    }
+      body
+    })
   }
 
   return {

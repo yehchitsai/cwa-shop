@@ -11,11 +11,10 @@ const useCreateConfirmOrder = () => {
   const { trigger: originTrigger, ...rest } = useCreate(createConfirmOrderHost)
 
   const trigger = (body) => {
-    return {
+    return originTrigger({
       url: createConfirmOrderEndPoint,
-      body,
-      isJsonResponse: false
-    }
+      body
+    })
   }
 
   return {

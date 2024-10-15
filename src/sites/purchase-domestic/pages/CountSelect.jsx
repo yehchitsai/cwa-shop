@@ -1,16 +1,19 @@
 import clx from 'classnames'
+import { Field } from 'formik'
 import { times } from 'lodash-es'
 
 const CountSelect = (props) => {
-  const { max = 1, className } = props
+  const {
+    max = 1, className, name
+  } = props
   return (
-    <select
+    <Field
+      as='select'
+      name={name}
       className={clx(
         'select select-sm select-bordered w-full',
         { [className]: className }
       )}
-      // onChange={onSelectType}
-      defaultValue={1}
     >
       <option value={-1} disabled>選擇數量</option>
       {times(max, (index) => {
@@ -21,7 +24,7 @@ const CountSelect = (props) => {
           </option>
         )
       })}
-    </select>
+    </Field>
   )
 }
 
