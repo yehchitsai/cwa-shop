@@ -2,15 +2,18 @@ import clx from 'classnames'
 import { times } from 'lodash-es'
 
 const CountSelect = (props) => {
-  const { max = 1, className } = props
+  const {
+    max = 1, className, defaultValue, name
+  } = props
   return (
     <select
+      // as='select'
+      name={name}
       className={clx(
         'select select-sm select-bordered w-full',
         { [className]: className }
       )}
-      // onChange={onSelectType}
-      defaultValue={1}
+      defaultValue={defaultValue}
     >
       <option value={-1} disabled>選擇數量</option>
       {times(max, (index) => {
