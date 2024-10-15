@@ -1,16 +1,27 @@
 import { useTranslation } from 'react-i18next'
-import {
-  size
-} from 'lodash-es'
+import { map } from 'lodash-es'
 import CartBottomItems from '../../../components/CartBottomItems'
 
 const CustomCartBottomItems = (props) => {
   const { t } = useTranslation()
-  const { items = [] } = props
-  const selectedSize = size(items)
+  const {
+    cart: {
+      total_price,
+      total_quantity,
+      total_discount_amt = 0,
+      discounts = []
+    } = {}
+  } = props
   const customItems = [
-    `${t('totalCount')}: ${selectedSize}`,
-    `${t('totalPrice')}: ${0} ${'xx'}`
+    `總折扣: ${total_discount_amt}`,
+    ...map(discounts, (discount) => {
+      const { type, discount_amt } = discount
+      return (
+        <p>{`${type} ${discount_amt}`}</p>
+      )
+    }),
+    `${t('totalCount')}: ${total_quantity}`,
+    `${t('totalPrice')}: ${total_price}`
   ]
   return (
     <CartBottomItems
