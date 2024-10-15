@@ -5,6 +5,7 @@ import {
 } from 'react-icons/md'
 import { TiShoppingCart } from 'react-icons/ti'
 import {
+  get,
   keyBy, size
 } from 'lodash-es'
 import { Form, Formik } from 'formik'
@@ -22,7 +23,6 @@ import Modal from '../../../components/Modal'
 const PurchaseDomestic = () => {
   const purchaseModalRef = useRef()
   const modifyPurchaseModalRef = useRef()
-  const modalOkCallback = useRef()
   const [clickRowData, setClickRowData] = useState({})
   const [selectProducts, setSelectProducts] = useState([])
   const searchMenuAction = useSearchMenuAction()
@@ -43,7 +43,12 @@ const PurchaseDomestic = () => {
     setSelectProducts([...selectProducts, rowData])
   }
 
-  const onClickRow = (rowData) => {
+  const onClickRow = (originData) => {
+    const rowData = {
+      quantity: get(originData, 'min_purchase_quantity', 0),
+      request: get(originData, 'request', ''),
+      ...originData
+    }
     const { fish_code } = rowData
     setClickRowData(rowData)
     const isSelected = fish_code in selectProductMap
@@ -52,18 +57,15 @@ const PurchaseDomestic = () => {
       return
     }
     purchaseModalRef.current.open()
-    modalOkCallback.current = () => onSelectRow(rowData)
   }
 
-  // const onPurchaseModalOk = () => modalOkCallback.current()
-
-  const onPurchaseModalOk = (formValues) => {
+  const onPurchaseModalOk = async (formValues) => {
     purchaseModalRef.current.close()
     onSelectRow(formValues)
   }
 
   const onPurchaseModalClose = () => {
-    modalOkCallback.current = null
+    setClickRowData({})
   }
 
   const onModifyPurchaseModalClose = () => {
