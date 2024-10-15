@@ -17,9 +17,11 @@ import CustomCartBottomItems from './CustomCartBottomItems'
 import ItemSelectSection from './ItemSelectSection'
 import PurchaseTable from './PurchaseTable'
 import PurchaseModalTable from './PurchaseModalTable'
+import Modal from '../../../components/Modal'
 
 const PurchaseDomestic = () => {
-  const modalRef = useRef()
+  const purchaseModalRef = useRef()
+  const modifyPurchaseModalRef = useRef()
   const modalOkCallback = useRef()
   const [clickRowData, setClickRowData] = useState({})
   const [selectProducts, setSelectProducts] = useState([])
@@ -44,28 +46,33 @@ const PurchaseDomestic = () => {
   const onClickRow = (rowData) => {
     const { fish_code } = rowData
     setClickRowData(rowData)
-    modalRef.current.open()
     const isSelected = fish_code in selectProductMap
     if (isSelected) {
-      modalOkCallback.current = () => onRemoveRow(rowData)
+      modifyPurchaseModalRef.current.open()
       return
     }
+    purchaseModalRef.current.open()
     modalOkCallback.current = () => onSelectRow(rowData)
   }
 
   // const onPurchaseModalOk = () => modalOkCallback.current()
 
   const onPurchaseModalOk = (formValues) => {
-    modalRef.current.close()
-    if (isAddToCart) {
-      onSelectRow(formValues)
-      return
-    }
-    onRemoveRow(formValues)
+    purchaseModalRef.current.close()
+    onSelectRow(formValues)
   }
 
   const onPurchaseModalClose = () => {
     modalOkCallback.current = null
+  }
+
+  const onModifyPurchaseModalClose = () => {
+    onRemoveRow(clickRowData)
+    modifyPurchaseModalRef.current.close()
+  }
+
+  const onModifyPurchaseModalOk = () => {
+    purchaseModalRef.current.open()
   }
 
   return (
@@ -118,16 +125,16 @@ const PurchaseDomestic = () => {
         onSubmit={onPurchaseModalOk}
       >
         <PurchaseModal
-          modalRef={modalRef}
-          onClose={onPurchaseModalClose}
+          modalRef={purchaseModalRef}
           isAddToCart={isAddToCart}
+          onClose={onPurchaseModalClose}
         >
           {(footer) => {
             return (
               <Form>
                 <PurchaseModalTable
-                  isAddToCart={isAddToCart}
                   rowData={clickRowData}
+                  isAddToCart
                 />
                 {footer}
               </Form>
@@ -135,6 +142,15 @@ const PurchaseDomestic = () => {
           }}
         </PurchaseModal>
       </Formik>
+      <Modal
+        id='MODIFY_PURCHASE_MODAL'
+        title='修改或從購物車刪除'
+        modalRef={modifyPurchaseModalRef}
+        onClose={onModifyPurchaseModalClose}
+        onOk={onModifyPurchaseModalOk}
+        closeText='刪除'
+        okText='修改'
+      />
     </Drawer>
   )
 }
