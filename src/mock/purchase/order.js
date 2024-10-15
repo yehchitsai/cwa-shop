@@ -67,7 +67,7 @@ export default [
               discount_amt: `${random(100, 500)}`
             }
           ],
-          items: times(random(10, 20)).map((index) => {
+          items: times(random(1, 3)).map((index) => {
             const fish_code = `FF120L${index}`
             const quantity = random(100, 500)
             const request = ['smaller', 'bigger'][random(0, 1)]
