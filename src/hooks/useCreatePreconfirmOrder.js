@@ -13,8 +13,7 @@ const useCreatePreconfirmOrder = () => {
   const trigger = (body) => {
     return {
       url: createPreconfirmOrderEndPoint,
-      body,
-      isJsonResponse: false
+      body
     }
   }
 

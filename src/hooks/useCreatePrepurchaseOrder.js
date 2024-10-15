@@ -13,8 +13,7 @@ const useCreatePrepurchaseOrder = () => {
   const trigger = (body) => {
     return {
       url: createPrepurchaseOrderEndPoint,
-      body,
-      isJsonResponse: false
+      body
     }
   }
 

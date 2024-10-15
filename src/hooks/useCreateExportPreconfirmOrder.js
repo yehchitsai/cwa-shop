@@ -13,8 +13,7 @@ const useCreateExportPreconfirmOrder = () => {
   const trigger = (body) => {
     return {
       url: createExportPreconfirmOrderEndPoint,
-      body,
-      isJsonResponse: false
+      body
     }
   }
 

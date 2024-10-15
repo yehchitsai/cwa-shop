@@ -13,8 +13,7 @@ const useCreateConfirmOrder = () => {
   const trigger = (body) => {
     return {
       url: createConfirmOrderEndPoint,
-      body,
-      isJsonResponse: false
+      body
     }
   }
 

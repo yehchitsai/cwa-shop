@@ -13,8 +13,7 @@ const useCreateUploadQuotation = () => {
   const trigger = (body) => {
     return {
       url: createUploadQuotationEndPoint,
-      body,
-      isJsonResponse: false
+      body
     }
   }
 

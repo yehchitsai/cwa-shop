@@ -13,8 +13,7 @@ const useCreateExportConfirmOrder = () => {
   const trigger = (body) => {
     return {
       url: createExportConfirmOrderEndPoint,
-      body,
-      isJsonResponse: false
+      body
     }
   }
 
