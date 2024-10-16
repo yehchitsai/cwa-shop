@@ -5,8 +5,9 @@ import { times } from 'lodash-es'
 import { FORM_ITEM } from './constants'
 
 const PurchaseModalTable = (props) => {
-  const { rowData = {}, isAddToCart } = props
+  const { rowData = {}, isAddToCart, disabled } = props
   const { setValues, values } = useFormikContext()
+  const editable = (!disabled && isAddToCart)
   const {
     fish_name,
     fish_size,
@@ -61,9 +62,9 @@ const PurchaseModalTable = (props) => {
                 name={FORM_ITEM.QUANTITY}
                 className={clx(
                   'select select-bordered w-full lg:max-w-xs',
-                  { '!text-black': !isAddToCart }
+                  { '!text-black': !editable }
                 )}
-                disabled={!isAddToCart}
+                disabled={!editable}
               >
                 <option value={-1} disabled>Select fish type</option>
                 {times(inventory - min_purchase_quantity + 1).map((index) => {
@@ -84,7 +85,7 @@ const PurchaseModalTable = (props) => {
                 as='textarea'
                 name={FORM_ITEM.REQUEST}
                 className='textarea textarea-bordered w-full resize-none'
-                disabled={!isAddToCart}
+                disabled={!editable}
               />
             </td>
           </tr>

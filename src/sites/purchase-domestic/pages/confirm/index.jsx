@@ -29,12 +29,19 @@ const Confirm = () => {
       setItems(get(result, 'results.items', []))
     }
   })
-  const { trigger: createPrepurchaseOrder } = useCreatePrepurchaseOrder()
-  const { trigger: createConfirmOrder } = useCreateConfirmOrder()
+  const {
+    trigger: createPrepurchaseOrder,
+    isMutating: isPreorderMutating
+  } = useCreatePrepurchaseOrder()
+  const {
+    trigger: createConfirmOrder,
+    isMutating: isOrderMutating
+  } = useCreateConfirmOrder()
   const navigate = useNavigate()
   const {
     total_price
   } = data
+  const isLoading = (isPreorderMutating || isOrderMutating)
 
   const onRemove = (formHelper, index) => {
     const newItems = filter(formHelper.values, (item, itemIndex) => {
@@ -65,6 +72,20 @@ const Confirm = () => {
     }
 
     toast.success('送出訂單成功! 3 秒後返回首頁', { id: toastId })
+    setTimeout(() => navigate('../', { relative: 'path' }), 3000)
+  }
+
+  const onRemoveAll = async () => {
+    const toastId = toast.loading('刪除訂單...')
+    const body = { order_items: [] }
+    const [createPrepurchaseOrderError] = await safeAwait(createPrepurchaseOrder(body))
+    if (createPrepurchaseOrderError) {
+      toast.error(`刪除訂單失敗! ${createPrepurchaseOrderError.message}`, { id: toastId })
+      return
+    }
+
+    setItems([])
+    toast.success('刪除訂單成功! 3 秒後返回首頁', { id: toastId })
     setTimeout(() => navigate('../', { relative: 'path' }), 3000)
   }
 
@@ -121,12 +142,14 @@ const Confirm = () => {
                             <CountSelect
                               max={min_purchase_quantity}
                               name={`${index}.quantity`}
+                              disabled={isLoading}
                             />
                           </td>
                           <td>
                             <Field
                               className='input input-sm input-bordered w-40'
                               name={`${index}.request`}
+                              disabled={isLoading}
                             />
                           </td>
                           <td>{retail_price}</td>
@@ -135,6 +158,7 @@ const Confirm = () => {
                               type='button'
                               className='btn btn-square btn-outline btn-error'
                               onClick={() => onRemove(formHelper, index)}
+                              disabled={isLoading}
                             >
                               <MdOutlineDelete
                                 size='1.5em'
@@ -157,8 +181,7 @@ const Confirm = () => {
                   <button
                     type='submit'
                     className='btn btn-outline btn-success'
-                    // disabled={isUpdating}
-                    // onClick={onOrder}
+                    disabled={isLoading}
                   >
                     {`${t('submitCart')}`}
                   </button>
@@ -167,8 +190,8 @@ const Confirm = () => {
                   <button
                     type='button'
                     className='btn btn-outline btn-error'
-                    // onClick={onRemoveAll}
-                    // disabled={isUpdating}
+                    onClick={onRemoveAll}
+                    disabled={isLoading}
                   >
                     {`${t('removerAll')}`}
                   </button>

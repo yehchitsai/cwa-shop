@@ -4,7 +4,7 @@ import { times } from 'lodash-es'
 
 const CountSelect = (props) => {
   const {
-    max = 1, className, name
+    max = 1, className, name, disabled
   } = props
   return (
     <Field
@@ -14,6 +14,7 @@ const CountSelect = (props) => {
         'select select-sm select-bordered w-full',
         { [className]: className }
       )}
+      disabled={disabled}
     >
       <option value={-1} disabled>選擇數量</option>
       {times(max, (index) => {
