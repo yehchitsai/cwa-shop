@@ -92,16 +92,8 @@ const Drawer = (props) => {
           )
         }
         <div className='menu min-h-full w-full bg-base-200 p-0'>
-          <div className='h-full grow overflow-y-scroll'>
-            <ul
-              className={clx(
-                'menu w-full md:min-w-80 bg-base-200 p-4 text-base-content',
-                { 'h-[70%]': isBottomItemsExist },
-                { 'h-full': !isBottomItemsExist },
-                { [className]: className }
-              )}
-            >
-              {/* Sidebar content here */}
+          {overlay && (
+            <ul className='menu w-full'>
               <li
                 className={clx(
                   'max-lg:mb-14'
@@ -117,6 +109,18 @@ const Drawer = (props) => {
                   <CloseIcon size='2em' />
                 </label>
               </li>
+            </ul>
+          )}
+          <div className='h-full grow overflow-y-scroll'>
+            <ul
+              className={clx(
+                'menu w-full md:min-w-80 bg-base-200 p-4 text-base-content',
+                { 'h-[66%]': isBottomItemsExist },
+                { 'h-full': !isBottomItemsExist },
+                { [className]: className }
+              )}
+            >
+              {/* Sidebar content here */}
               {items}
             </ul>
           </div>
