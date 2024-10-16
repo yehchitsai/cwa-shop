@@ -74,12 +74,18 @@ const Modal = (props) => {
     })
   }, [id, onOpen, onModalVisibleChange])
 
-  const onModalClose = useCallback(() => {
+  const onModalActionClose = useCallback(() => {
     document.querySelector(`#${id}`).close()
     setVisible(false)
     onModalVisibleChange()
     onClose && onClose()
   }, [id, onClose, onModalVisibleChange])
+
+  const onModalClose = useCallback(() => {
+    document.querySelector(`#${id}`).close()
+    setVisible(false)
+    onModalVisibleChange()
+  }, [id, onModalVisibleChange])
 
   const onClickEsc = useCallback(async (e) => {
     if (e.keyCode !== ESC_KEY_CODE) {
@@ -161,7 +167,7 @@ const Modal = (props) => {
                     <>
                       <ModalActions
                         className='absolute bottom-0 right-0 z-10 w-full bg-base-100 pt-6'
-                        onModalClose={onModalClose}
+                        onModalClose={onModalActionClose}
                         okText={okText}
                         closeText={closeText}
                       />
@@ -176,7 +182,7 @@ const Modal = (props) => {
         {
           (!isFormModal && (isCloseBtnVisible || isOkBtnVisible)) && (
             <ModalActions
-              onModalClose={onModalClose}
+              onModalClose={onModalActionClose}
               onModalOk={onModalOk}
               okText={okText}
               closeText={closeText}

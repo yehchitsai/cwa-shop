@@ -109,8 +109,8 @@ const PurchaseDomestic = () => {
   }
 
   const onModifyPurchaseModalClose = () => {
-    onRemoveRow(clickRowData)
     modifyPurchaseModalRef.current.close()
+    onRemoveRow(clickRowData)
   }
 
   const onModifyPurchaseModalOk = () => {
