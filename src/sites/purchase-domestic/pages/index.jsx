@@ -38,11 +38,10 @@ const PurchaseDomestic = () => {
   const [selectProducts, setSelectProducts] = useState([])
   const [cart, setCart] = useState(initCart)
   const searchMenuAction = useSearchMenuAction()
-  const { trigger } = useCreatePrepurchaseOrder()
+  const { trigger, isMutating } = useCreatePrepurchaseOrder()
   usePrepurchaseOrder({
     onSuccess: (result) => {
       setCart(get(result, 'results', initCart))
-      console.log(result.results.items)
       setSelectProducts(get(result, 'results.items', []))
     }
   })
@@ -66,6 +65,10 @@ const PurchaseDomestic = () => {
   }
 
   const onClickRow = (originData) => {
+    if (isMutating) {
+      return
+    }
+
     const rowData = {
       quantity: get(originData, 'min_purchase_quantity', 0),
       request: get(originData, 'request', ''),
@@ -82,7 +85,6 @@ const PurchaseDomestic = () => {
   }
 
   const onPurchaseModalOk = async (formValues) => {
-    purchaseModalRef.current.close()
     const newSelectProducts = onSelectRow(formValues)
     const orderItems = map(newSelectProducts, (newSelectProduct) => {
       return pick(newSelectProduct, ['fish_code', 'quantity', 'request'])
@@ -91,6 +93,7 @@ const PurchaseDomestic = () => {
     const toastId = toast.loading('更新購物車...')
     const [error, result] = await safeAwait(trigger(body))
     if (error) {
+      purchaseModalRef.current.close()
       toast.error(`更新購物車失敗! ${error.message}`, { id: toastId })
       return
     }
@@ -98,6 +101,7 @@ const PurchaseDomestic = () => {
     const newCart = get(result, 'results', initCart)
     setCart(newCart)
     toast.success('更新購物車成功!', { id: toastId })
+    purchaseModalRef.current.close()
   }
 
   const onPurchaseModalClose = () => {
@@ -175,6 +179,7 @@ const PurchaseDomestic = () => {
               <Form>
                 <PurchaseModalTable
                   rowData={clickRowData}
+                  disabled={isMutating}
                   isAddToCart
                 />
                 {footer}
