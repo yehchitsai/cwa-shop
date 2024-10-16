@@ -211,7 +211,7 @@ const PurchaseTable = (props) => {
         className='table table-pin-rows table-pin-cols'
       >
         <thead>
-          <tr className='max-sm:-top-1'>
+          <tr className='z-[1] max-sm:-top-1'>
             <th>項次</th>
             <td>品名</td>
             <td>尺寸</td>

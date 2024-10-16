@@ -1,5 +1,7 @@
 import {
-  isString, isUndefined, random, size, times
+  get,
+  isEmpty,
+  isString, random, size, times
 } from 'lodash-es'
 import getApiPrefix from '../../utils/getApiPrefix'
 import getEnvVar from '../../utils/getEnvVar'
@@ -281,10 +283,8 @@ export default [
     method: 'post',
     timeout: 100,
     response: ({ body }) => {
-      const {
-        order_items
-      } = isString(body) ? JSON.parse(body) : body
-      if (isUndefined(order_items)) {
+      const order_items = get(isString(body) ? JSON.parse(body) : body, 'order_items', [])
+      if (isEmpty(order_items)) {
         return {
           message: 'fail',
           results: 'no order_items'
