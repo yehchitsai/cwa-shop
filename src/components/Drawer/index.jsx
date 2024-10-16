@@ -34,7 +34,8 @@ const Drawer = (props) => {
     indicator = false,
     defaultOpen = false,
     className,
-    drawerContentClassName
+    drawerContentClassName,
+    lastItem
   } = props
   const [isOpen, setIsOpen] = useState(defaultOpen)
   const isBottomItemsExist = !isUndefined(bottomItems)
@@ -111,11 +112,10 @@ const Drawer = (props) => {
               </li>
             </ul>
           )}
-          <div className='h-full max-h-[66dvh] grow overflow-y-scroll'>
+          <div className='h-full max-h-[50dvh] flex-1 overflow-y-scroll'>
             <ul
               className={clx(
                 'menu w-full md:min-w-80 bg-base-200 p-4 text-base-content',
-                { 'h-[64%]': isBottomItemsExist },
                 { 'h-full': !isBottomItemsExist },
                 { [className]: className }
               )}
@@ -126,7 +126,15 @@ const Drawer = (props) => {
           </div>
           {
             isBottomItemsExist && (
-              <div className='flex-none'>
+              <div
+                className={clx(
+                  'h-full flex-1 content-end overflow-y-scroll',
+                  {
+                    'max-h-[32dvh]': lastItem,
+                    'max-h-[46dvh]': !lastItem
+                  }
+                )}
+              >
                 <ul
                   className={clx(
                     'menu max-sm:w-full md:min-w-80 bg-base-200 p-4 text-base-content relative max-lg:top-[70%] max-sm:top-auto lg:top-auto',
@@ -134,6 +142,15 @@ const Drawer = (props) => {
                   )}
                 >
                   {bottomItems}
+                </ul>
+              </div>
+            )
+          }
+          {
+            lastItem && (
+              <div className='flex-none'>
+                <ul className='menu'>
+                  {lastItem}
                 </ul>
               </div>
             )
