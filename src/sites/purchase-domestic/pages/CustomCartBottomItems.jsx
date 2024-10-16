@@ -18,10 +18,10 @@ const CustomCartBottomItems = (props) => {
         {`總折扣: ${total_discount_amt}`}
       </summary>
       <ul>
-        {map(discounts, (discount) => {
+        {map(discounts, (discount, index) => {
           const { type, discount_amt } = discount
           return (
-            <li>
+            <li key={index}>
               <a href='void:(0)'>
                 {`${type} ${discount_amt}`}
               </a>
