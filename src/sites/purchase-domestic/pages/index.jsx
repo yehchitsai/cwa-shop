@@ -49,6 +49,24 @@ const PurchaseDomestic = () => {
   const { phase, phaseType } = searchMenuAction
   const isAddToCart = !(clickRowData.fish_code in selectProductMap)
 
+  const updateCart = async (newSelectProducts) => {
+    const orderItems = map(newSelectProducts, (newSelectProduct) => {
+      return pick(newSelectProduct, ['fish_code', 'quantity', 'request'])
+    })
+    const body = { order_items: orderItems }
+    const toastId = toast.loading('更新購物車...')
+    const [error, result] = await safeAwait(trigger(body))
+    if (error) {
+      purchaseModalRef.current.close()
+      toast.error(`更新購物車失敗! ${error.message}`, { id: toastId })
+      return
+    }
+
+    const newCart = get(result, 'results', initCart)
+    setCart(newCart)
+    toast.success('更新購物車成功!', { id: toastId })
+  }
+
   const onRemoveRow = (rowData) => {
     const { fish_code } = rowData
     const newSelectProducts = selectProducts.filter((selectProduct) => {
@@ -56,6 +74,7 @@ const PurchaseDomestic = () => {
     })
     setSelectProducts(newSelectProducts)
     setClickRowData({})
+    updateCart(newSelectProducts)
   }
 
   const onSelectRow = (rowData) => {
@@ -86,21 +105,7 @@ const PurchaseDomestic = () => {
 
   const onPurchaseModalOk = async (formValues) => {
     const newSelectProducts = onSelectRow(formValues)
-    const orderItems = map(newSelectProducts, (newSelectProduct) => {
-      return pick(newSelectProduct, ['fish_code', 'quantity', 'request'])
-    })
-    const body = { order_items: orderItems }
-    const toastId = toast.loading('更新購物車...')
-    const [error, result] = await safeAwait(trigger(body))
-    if (error) {
-      purchaseModalRef.current.close()
-      toast.error(`更新購物車失敗! ${error.message}`, { id: toastId })
-      return
-    }
-
-    const newCart = get(result, 'results', initCart)
-    setCart(newCart)
-    toast.success('更新購物車成功!', { id: toastId })
+    updateCart(newSelectProducts)
     purchaseModalRef.current.close()
   }
 

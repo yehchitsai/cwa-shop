@@ -26,8 +26,10 @@ const Confirm = () => {
   const [items, setItems] = useState([])
   const { data = initCart } = usePrepurchaseOrder({
     onSuccess: (result) => {
+      console.log(result)
       setItems(get(result, 'results.items', []))
-    }
+    },
+    onError: console.log
   })
   const {
     trigger: createPrepurchaseOrder,
