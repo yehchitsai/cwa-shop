@@ -36,9 +36,7 @@ export default [
     method: 'post',
     timeout: 100,
     response: ({ body }) => {
-      const {
-        order_items
-      } = isString(body) ? JSON.parse(body) : body
+      const order_items = get(isString(body) ? JSON.parse(body) : body, 'order_items', [])
       return {
         message: 'success',
         results: {
