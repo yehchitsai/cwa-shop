@@ -1,4 +1,6 @@
 import { useState, useRef } from 'react'
+import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import clx from 'classnames'
 import {
   MdShoppingCart, MdOutlineDelete
@@ -6,6 +8,7 @@ import {
 import { TiShoppingCart } from 'react-icons/ti'
 import {
   get,
+  isEmpty,
   keyBy, map, pick
 } from 'lodash-es'
 import { Form, Formik } from 'formik'
@@ -32,6 +35,7 @@ const initCart = {
 }
 
 const PurchaseDomestic = () => {
+  const { t } = useTranslation()
   const purchaseModalRef = useRef()
   const modifyPurchaseModalRef = useRef()
   const [clickRowData, setClickRowData] = useState({})
@@ -48,6 +52,7 @@ const PurchaseDomestic = () => {
   const selectProductMap = keyBy(selectProducts, 'fish_code')
   const { phase, phaseType } = searchMenuAction
   const isAddToCart = !(clickRowData.fish_code in selectProductMap)
+  const isNoProductSelected = isEmpty(selectProducts)
 
   const updateCart = async (newSelectProducts) => {
     const orderItems = map(newSelectProducts, (newSelectProduct) => {
@@ -133,6 +138,22 @@ const PurchaseDomestic = () => {
       )}
       bottomItems={(
         <CustomCartBottomItems cart={cart} />
+      )}
+      lastItem={(
+        <Link
+          to='./confirm'
+          className={clx({ 'pointer-events-none': isNoProductSelected })}
+        >
+          <button
+            type='button'
+            className={clx(
+              'btn btn-primary btn-outline btn-md w-full my-1 sticky bottom-2',
+              { 'btn-disabled': isNoProductSelected }
+            )}
+          >
+            {`${t('confirmOrder')}`}
+          </button>
+        </Link>
       )}
       openIcon={MdShoppingCart}
       drawerContentClassName={clx(

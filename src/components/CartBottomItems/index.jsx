@@ -3,7 +3,11 @@ import clx from 'classnames'
 
 const CartBottomItems = (props) => {
   const {
-    items = [], isNoProductSelected, confirmLinkTo, confirmLinkText
+    items = [],
+    isNoProductSelected,
+    confirmLinkTo,
+    confirmLinkText,
+    showConfirmBtn = true
   } = props
   return (
     <>
@@ -14,20 +18,22 @@ const CartBottomItems = (props) => {
           </li>
         )
       })}
-      <Link
-        to={confirmLinkTo}
-        className={clx({ 'pointer-events-none': isNoProductSelected })}
-      >
-        <button
-          type='button'
-          className={clx(
-            'btn btn-primary btn-outline btn-md w-full my-1',
-            { 'btn-disabled': isNoProductSelected }
-          )}
+      {showConfirmBtn && (
+        <Link
+          to={confirmLinkTo}
+          className={clx({ 'pointer-events-none': isNoProductSelected })}
         >
-          {confirmLinkText}
-        </button>
-      </Link>
+          <button
+            type='button'
+            className={clx(
+              'btn btn-primary btn-outline btn-md w-full my-1 sticky bottom-2',
+              { 'btn-disabled': isNoProductSelected }
+            )}
+          >
+            {confirmLinkText}
+          </button>
+        </Link>
+      )}
     </>
   )
 }

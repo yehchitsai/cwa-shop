@@ -71,12 +71,12 @@ export default [
         results: {
           total_quantity: random(5, 10),
           total_price: `${random(10, 20)}.${random(1000, 2000)}`,
-          discounts: [
-            {
-              type: '優惠方案',
+          discounts: times(random(3, 10)).map((index) => {
+            return {
+              type: `優惠方案${index}`,
               discount_amt: `${random(100, 500)}`
             }
-          ],
+          }),
           items: times(random(10, 35)).map((index) => {
             const fish_code = `FF120L${index}`
             const quantity = random(100, 500)

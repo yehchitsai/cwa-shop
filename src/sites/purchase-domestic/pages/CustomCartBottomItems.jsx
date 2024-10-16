@@ -38,6 +38,7 @@ const CustomCartBottomItems = (props) => {
       items={customItems}
       confirmLinkTo='./confirm'
       confirmLinkText={`${t('confirmOrder')}`}
+      showConfirmBtn={false}
     />
   )
 }
