@@ -115,7 +115,7 @@ const Drawer = (props) => {
             <ul
               className={clx(
                 'menu w-full md:min-w-80 bg-base-200 p-4 text-base-content',
-                { 'h-[66%]': isBottomItemsExist },
+                { 'h-[64%]': isBottomItemsExist },
                 { 'h-full': !isBottomItemsExist },
                 { [className]: className }
               )}
