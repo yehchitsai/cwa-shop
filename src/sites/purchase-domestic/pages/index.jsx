@@ -56,6 +56,7 @@ const PurchaseDomestic = () => {
     })
     setSelectProducts(newSelectProducts)
     setClickRowData({})
+    updateCart(newSelectProducts)
   }
 
   const onSelectRow = (rowData) => {
@@ -86,6 +87,11 @@ const PurchaseDomestic = () => {
 
   const onPurchaseModalOk = async (formValues) => {
     const newSelectProducts = onSelectRow(formValues)
+    updateCart(newSelectProducts)
+    purchaseModalRef.current.close()
+  }
+
+  const updateCart = async (newSelectProducts) => {
     const orderItems = map(newSelectProducts, (newSelectProduct) => {
       return pick(newSelectProduct, ['fish_code', 'quantity', 'request'])
     })
@@ -101,7 +107,6 @@ const PurchaseDomestic = () => {
     const newCart = get(result, 'results', initCart)
     setCart(newCart)
     toast.success('更新購物車成功!', { id: toastId })
-    purchaseModalRef.current.close()
   }
 
   const onPurchaseModalClose = () => {
