@@ -30,6 +30,7 @@ const mockFetcher = async (key, authorization = {}, options = {}) => {
   // prod build mock data 拿不到 Vite env variable
   // 所以額外在 mock 時判斷有 undefined 取代掉
   const mockData = getMockData()
+  forceDebug && console.log({ mockData })
   const [endpoint, queryString] = key.split('?')
   const { data: body, method = '' } = options
   const {
@@ -38,7 +39,7 @@ const mockFetcher = async (key, authorization = {}, options = {}) => {
   } = find(mockData, (item) => {
     return (
       item.url.replace(/:.*/, '').includes(endpoint) &&
-      (body ? (item.method === method) : true)
+      (!isEmpty(body) ? (item.method === method) : true)
     )
   }) || {}
   const resp = new Promise((resolve) => {
@@ -47,7 +48,7 @@ const mockFetcher = async (key, authorization = {}, options = {}) => {
         authorization: authorization.Authorization
       }
       const data = response({ query: qs.parse(queryString), headers, body })
-      forceDebug && console.log({ apiEndpoint: key, responseData: data })
+      forceDebug && console.log({ apiEndpoint: key, responseData: data, body })
       resolve(data)
     }, timeout)
   })
