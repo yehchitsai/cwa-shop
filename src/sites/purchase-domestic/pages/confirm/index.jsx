@@ -45,22 +45,35 @@ const Confirm = () => {
   } = data
   const isLoading = (isPreorderMutating || isOrderMutating)
 
-  const onRemove = (formHelper, index) => {
+  const updateCart = async (newItems) => {
+    const orderItems = map(newItems, (item) => {
+      return pick(item, ['fish_code', 'quantity', 'request'])
+    })
+    const body = { order_items: orderItems }
+    const result = await safeAwait(createPrepurchaseOrder(body))
+    return result
+  }
+
+  const onRemove = async (formHelper, index) => {
+    const toastId = toast.loading('更新訂單...')
     const newItems = filter(formHelper.values, (item, itemIndex) => {
       return index !== itemIndex
     })
+    const [createPrepurchaseOrderError] = await updateCart(newItems)
+    if (createPrepurchaseOrderError) {
+      toast.error(`更新訂單失敗! ${createPrepurchaseOrderError.message}`, { id: toastId })
+      return
+    }
+
     setItems(newItems)
+    toast.success('更新訂單成功!', { id: toastId })
   }
 
   const onSubmit = async (formValues) => {
     const isFormChanged = !isEqual(formValues, items)
     const toastId = toast.loading('送出訂單...')
     if (isFormChanged) {
-      const orderItems = map(formValues, (item) => {
-        return pick(item, ['fish_code', 'quantity', 'request'])
-      })
-      const body = { order_items: orderItems }
-      const [createPrepurchaseOrderError] = await safeAwait(createPrepurchaseOrder(body))
+      const [createPrepurchaseOrderError] = await updateCart(formValues)
       if (createPrepurchaseOrderError) {
         toast.error(`更新訂單失敗! ${createPrepurchaseOrderError.message}`, { id: toastId })
         return
@@ -79,8 +92,7 @@ const Confirm = () => {
 
   const onRemoveAll = async () => {
     const toastId = toast.loading('刪除訂單...')
-    const body = { order_items: [] }
-    const [createPrepurchaseOrderError] = await safeAwait(createPrepurchaseOrder(body))
+    const [createPrepurchaseOrderError] = await updateCart([])
     if (createPrepurchaseOrderError) {
       toast.error(`刪除訂單失敗! ${createPrepurchaseOrderError.message}`, { id: toastId })
       return
