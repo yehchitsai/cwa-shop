@@ -10,7 +10,7 @@ const CartBottomItems = (props) => {
       {items.map((item, index) => {
         return (
           <li key={index}>
-            <span>{item}</span>
+            <span className='block'>{item}</span>
           </li>
         )
       })}

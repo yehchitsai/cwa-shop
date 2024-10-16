@@ -13,13 +13,23 @@ const CustomCartBottomItems = (props) => {
     } = {}
   } = props
   const customItems = [
-    `總折扣: ${total_discount_amt}`,
-    ...map(discounts, (discount) => {
-      const { type, discount_amt } = discount
-      return (
-        <p>{`${type} ${discount_amt}`}</p>
-      )
-    }),
+    <details open>
+      <summary>
+        {`總折扣: ${total_discount_amt}`}
+      </summary>
+      <ul>
+        {map(discounts, (discount) => {
+          const { type, discount_amt } = discount
+          return (
+            <li>
+              <a href='void:(0)'>
+                {`${type} ${discount_amt}`}
+              </a>
+            </li>
+          )
+        })}
+      </ul>
+    </details>,
     `${t('totalCount')}: ${total_quantity}`,
     `${t('totalPrice')}: ${total_price}`
   ]
