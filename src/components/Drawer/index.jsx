@@ -111,7 +111,7 @@ const Drawer = (props) => {
               </li>
             </ul>
           )}
-          <div className='h-full grow overflow-y-scroll'>
+          <div className='h-full max-h-[66dvh] grow overflow-y-scroll'>
             <ul
               className={clx(
                 'menu w-full md:min-w-80 bg-base-200 p-4 text-base-content',
