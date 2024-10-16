@@ -95,7 +95,7 @@ const Drawer = (props) => {
           <div className='h-full grow overflow-y-scroll'>
             <ul
               className={clx(
-                'menu w-full bg-base-200 p-4 text-base-content',
+                'menu w-full md:min-w-80 bg-base-200 p-4 text-base-content',
                 { 'h-[70%]': isBottomItemsExist },
                 { 'h-full': !isBottomItemsExist },
                 { [className]: className }
@@ -125,7 +125,7 @@ const Drawer = (props) => {
               <div className='flex-none'>
                 <ul
                   className={clx(
-                    'menu max-sm:w-full bg-base-200 p-4 text-base-content relative max-lg:top-[70%] max-sm:top-auto lg:top-auto',
+                    'menu max-sm:w-full md:min-w-80 bg-base-200 p-4 text-base-content relative max-lg:top-[70%] max-sm:top-auto lg:top-auto',
                     { [className]: className }
                   )}
                 >
