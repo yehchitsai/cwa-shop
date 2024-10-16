@@ -76,7 +76,7 @@ const Drawer = (props) => {
       </div>
       <div
         className={clx(
-          'drawer-side md:z-[1] max-md:z-10 md:h-[calc(100dvh-4rem)]'
+          'drawer-side md:z-[1] max-md:z-10 md:h-[calc(100dvh-4rem)] md:top-[4rem]'
         )}
       >
         {
