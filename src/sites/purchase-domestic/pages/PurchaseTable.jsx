@@ -29,6 +29,7 @@ const getTableLinkCols = (rowData, isSelected, onClick) => {
   } = rowData
   const isImageEmpty = isEmpty(image_link)
   const isVideoEmpty = isEmpty(video_link)
+  const isAssetExist = !(isVideoEmpty && isImageEmpty)
 
   const handleViewFileBtnClick = (e) => {
     e.stopPropagation()
@@ -42,7 +43,7 @@ const getTableLinkCols = (rowData, isSelected, onClick) => {
         className={clx(
           'btn btn-sm !w-20',
           {
-            'btn-disabled pointer-events-none': isVideoEmpty || isImageEmpty,
+            'btn-disabled pointer-events-none': !isAssetExist,
             'btn-outline btn-primary': isSelected
           }
         )}
@@ -50,7 +51,7 @@ const getTableLinkCols = (rowData, isSelected, onClick) => {
       >
         <FaEye
           className={clx({
-            '!fill-indigo-500': !isImageEmpty
+            '!fill-indigo-500': isAssetExist
           })}
         />
         檢視
