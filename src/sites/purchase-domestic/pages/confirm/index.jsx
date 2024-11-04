@@ -110,6 +110,7 @@ const Confirm = () => {
       enableReinitialize
     >
       {(formHelper) => {
+        const formItems = get(formHelper, 'values', [])
         return (
           <Form>
             <div
@@ -136,9 +137,9 @@ const Confirm = () => {
                         fish_name,
                         fish_size,
                         unit_price,
-                        retail_price,
                         min_purchase_quantity
                       } = item
+                      const itemTotal = get(formItems, `${index}.quantity`, 0)
                       return (
                         <tr
                           key={index}
@@ -166,7 +167,7 @@ const Confirm = () => {
                               disabled={isLoading}
                             />
                           </td>
-                          <td>{retail_price}</td>
+                          <td>{itemTotal * unit_price}</td>
                           <th className='text-right'>
                             <button
                               type='button'
