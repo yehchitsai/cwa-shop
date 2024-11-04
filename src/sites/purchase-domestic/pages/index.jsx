@@ -64,12 +64,13 @@ const PurchaseDomestic = () => {
     if (error) {
       purchaseModalRef.current.close()
       toast.error(`更新購物車失敗! ${error.message}`, { id: toastId })
-      return
+      return false
     }
 
     const newCart = get(result, 'results', initCart)
     setCart(newCart)
     toast.success('更新購物車成功!', { id: toastId })
+    return true
   }
 
   const onRemoveRow = (rowData) => {
@@ -77,9 +78,12 @@ const PurchaseDomestic = () => {
     const newSelectProducts = selectProducts.filter((selectProduct) => {
       return selectProduct.fish_code !== fish_code
     })
+    const isUpdateSuccess = updateCart(newSelectProducts)
+    if (!isUpdateSuccess) {
+      return
+    }
     setSelectProducts(newSelectProducts)
     setClickRowData({})
-    updateCart(newSelectProducts)
   }
 
   const onSelectRow = (rowData) => {
@@ -110,6 +114,10 @@ const PurchaseDomestic = () => {
 
   const onPurchaseModalOk = async (formValues) => {
     const newSelectProducts = onSelectRow(formValues)
+    const isUpdateSuccess = updateCart(newSelectProducts)
+    if (!isUpdateSuccess) {
+      return
+    }
     updateCart(newSelectProducts)
     purchaseModalRef.current.close()
   }
