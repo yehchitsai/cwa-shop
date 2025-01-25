@@ -4,12 +4,13 @@ import { Formik, Form } from 'formik'
 import safeAwait from 'safe-await'
 import * as Yup from 'yup'
 import { GrMultiple } from 'react-icons/gr'
+import { GiTransform } from 'react-icons/gi'
 import {
   MdAdd, MdWarning, MdChecklist, MdOutlineRefresh
 } from 'react-icons/md'
 import toast from 'react-hot-toast'
 import {
-  filter, flow, get, groupBy, isEmpty, isUndefined, keyBy, map, size
+  filter, flow, get, groupBy, isEmpty, isUndefined, keyBy, map, omit, size
 } from 'lodash-es'
 import getEnvVar from '../../../../utils/getEnvVar'
 import wait from '../../../../utils/wait'
@@ -29,6 +30,7 @@ const putImageHost = getEnvVar('VITE_AWS_PUT_IMAGE_SHOP_HOST')
 const subPrefix = getEnvVar('VITE_AWS_SHOP_HOST_PREFIX')
 const awsHostPrefix = getApiPrefix(subPrefix)
 const putImageEndPoint = `${awsHostPrefix}/putimage`
+const zipVideoEndPoint = `${awsHostPrefix}/zipvideo`
 
 const ACTION = {
   NEW: 'new',
@@ -93,8 +95,10 @@ const Batch = () => {
   const dropzoneRef = useRef()
   const modalRef = useRef()
   const { t } = useTranslation()
-  const { trigger: putImage, isMutating } = useCreate(putImageHost)
+  const { trigger: putImage, isMutating: isPutImageMutating } = useCreate(putImageHost)
+  const { trigger: zipVideo, isMutating: isZipVideoMutating } = useCreate(putImageHost)
   const { queue } = useQueue({ concurrency: 1 })
+  const isMutating = (isPutImageMutating || isZipVideoMutating)
 
   const onSubmit = async (formValues, formProps) => {
     const toastId = toast.loading('Creating...')
@@ -139,6 +143,29 @@ const Batch = () => {
     formProps.resetForm({
       values: { [FORM.ROWS]: newRows }
     })
+  }
+
+  const onZipVideo = (formProps) => async () => {
+    const toastId = toast.loading('Creating...')
+    const formValues = get(formProps, 'values', {})
+    const rows = get(formValues, FORM.ROWS, [])
+    const zipVideoBody = map(rows, (row) => {
+      const { paramsList } = getParamsListFromRecognitionData(row)
+      const params = get(paramsList, '0', {})
+      const zipVideoParams = omit(params, ['action'])
+      return zipVideoParams
+    })
+    const [error] = await safeAwait(
+      zipVideo({ url: zipVideoEndPoint, body: { items: zipVideoBody } })
+    )
+
+    if (isUndefined(error)) {
+      toast.success('Finish!', { id: toastId })
+      formProps.resetForm()
+      return
+    }
+
+    toast('Some records not success.', { id: toastId })
   }
 
   const onSelectFilesFinish = (formProps) => (newFiles) => {
@@ -272,7 +299,20 @@ const Batch = () => {
                   />
                 </FormRow>
               )}
-              <div className='text-right'>
+              <div className='space-x-2 text-right'>
+                <button
+                  type='button'
+                  className='btn btn-outline'
+                  disabled={(
+                    isMutating ||
+                    isEmpty(formProps.values[FORM.ROWS]) ||
+                    !isEmpty(formProps.errors)
+                  )}
+                  onClick={onZipVideo(formProps)}
+                >
+                  <GiTransform size='1.5em' />
+                  僅轉檔
+                </button>
                 <button
                   type='submit'
                   className='btn btn-outline'
