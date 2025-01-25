@@ -3,11 +3,10 @@ import getEnvVar from '../../utils/getEnvVar'
 
 const subPrefix = getEnvVar('VITE_AWS_SHOP_HOST_PREFIX')
 const awsHostPrefix = getApiPrefix(subPrefix)
-const url = `${awsHostPrefix}/putimage`
 
 export default [
   {
-    url,
+    url: `${awsHostPrefix}/putimage`,
     method: 'post',
     timeout: 100,
     response: () => ({
@@ -24,6 +23,15 @@ export default [
         onSite: '2023/10/29, 12:48:29',
         booked: ''
       }
+    })
+  },
+  {
+    url: `${awsHostPrefix}/zipvideo`,
+    method: 'post',
+    timeout: 100,
+    response: () => ({
+      status: 'success',
+      reason: '已傳送'
     })
   }
 ]
