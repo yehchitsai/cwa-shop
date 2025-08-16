@@ -6,9 +6,7 @@ import * as Yup from 'yup'
 import {
   get,
   isEmpty,
-  isObject,
-  isUndefined,
-  toString
+  isUndefined
 } from 'lodash-es'
 import toast from 'react-hot-toast'
 import safeAwait from 'safe-await'
@@ -19,6 +17,7 @@ import useCreate from '../../../../hooks/useCreate'
 import getEnvVar from '../../../../utils/getEnvVar'
 import getApiPrefix from '../../../../utils/getApiPrefix'
 import getFormValues from '../../../../utils/getFormValues'
+import safeJSON from '../../../../utils/safeJSON'
 
 const REPORT_TYPE = {
   UPLOAD_DEMAND_REPORT: 'uploaddemandreport',
@@ -57,19 +56,6 @@ const validationSchema = Yup.object().shape({
   [FORM.REPORT_TYPE]: Yup.string().required('Miss report type!'),
   [FORM.EXCEL]: Yup.array().min(1, 'Miss excel!')
 })
-
-const safeJSON = (input) => {
-  if (isObject(input)) {
-    return JSON.stringify(input, null, 2)
-  }
-
-  try {
-    return JSON.stringify(input, null, 2)
-  } catch (e) {
-    console.log('safeJSON error', e, input)
-    return toString(input)
-  }
-}
 
 const Page = () => {
   const { t } = useTranslation()
