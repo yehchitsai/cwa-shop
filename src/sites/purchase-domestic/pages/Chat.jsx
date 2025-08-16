@@ -272,7 +272,7 @@ const Chat = () => {
                       {response}
                     </div>
                   )}
-                  {(!isEmpty(results) && !isLastChatLoading && !isError) && (
+                  {!isEmpty(results) && (
                     <div className='chat-footer my-2 flex w-full flex-row gap-2 overflow-y-auto whitespace-nowrap rounded-md bg-gray-200 p-2'>
                       {results.map((result) => {
                         const {
