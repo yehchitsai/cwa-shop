@@ -1,5 +1,6 @@
 import {
-  times, random
+  times, random,
+  isEmpty
 } from 'lodash-es'
 import getApiPrefix from '../../utils/getApiPrefix'
 import getEnvVar from '../../utils/getEnvVar'
@@ -59,19 +60,22 @@ export default [
     timeout: 1000,
     response: ({ query: stringObject }) => {
       const {
-        category
+        category,
+        fish_code = ''
       } = JSON.parse(JSON.stringify(stringObject))
-      const items = times(random(500, 1000), (index) => {
+      const isFishCodeEmpty = isEmpty(fish_code)
+      const fishCodes = isFishCodeEmpty ? times(random(50, 100)) : fish_code.split(',')
+      const items = fishCodes.map((fishCode, index) => {
         const cat = category || CATEGORIES[random(0, 2)]
         const fishName = `fish_name_${cat}_${index}`
         return {
-          fish_code: `FF120L${index}`,
+          fish_code: isFishCodeEmpty ? `FF120L${index}` : fishCode,
           science_name: `science_name_${index}`,
           fish_name: fishName,
           fish_size: FISH_SIZES[random(0, 2)],
           unit_price: random(10, 100),
           retail_price: random(10, 100),
-          inventory: random(10, 100),
+          inventory: isFishCodeEmpty ? random(10, 100) : random(5, 20),
           min_purchase_quantity: random(10, 20),
           note: ['', `note_${index}`][random(0, 1)],
           image_link: getFakeImage(100, 100, `${cat}-${fishName}`),

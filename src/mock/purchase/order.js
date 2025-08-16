@@ -77,9 +77,9 @@ export default [
               discount_amt: `${random(100, 500)}`
             }
           }),
-          items: times(random(10, 35)).map((index) => {
+          items: times(random(2, 5)).map((index) => {
             const fish_code = `FF120L${index}`
-            const quantity = random(100, 500)
+            const quantity = random(5, 10)
             const request = ['smaller', 'bigger', ''][random(0, 2)]
             const fishName = `fish_name_${index}`
             return {
@@ -91,7 +91,7 @@ export default [
               fish_size: FISH_SIZES[random(0, 2)],
               unit_price: random(10, 100),
               retail_price: random(10, 100),
-              inventory: random(10, 100),
+              inventory: random(20, 100),
               min_purchase_quantity: quantity,
               note: ['', `note_${index}`][random(0, 1)],
               image_link: getFakeImage(100, 100, fishName),

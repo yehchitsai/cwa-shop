@@ -126,7 +126,7 @@ const TableRow = (props) => {
           <td>{fish_size}</td>
           <td>{unit_price}</td>
           <td>{retail_price}</td>
-          <td>{inventory}</td>
+          <td>{inventory === -1 ? '不限數量' : inventory}</td>
           <td>{min_purchase_quantity}</td>
           <td>{note}</td>
           <td>{request}</td>

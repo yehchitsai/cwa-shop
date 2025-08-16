@@ -6,6 +6,18 @@ const CountSelect = (props) => {
   const {
     max = 1, className, name, disabled
   } = props
+
+  // if (disabled) {
+  //   return (
+  //     <select
+  //       className={clx(
+  //         'select select-sm select-bordered w-full',
+  //         { [className]: className }
+  //       )}
+  //       disabled
+  //     />
+  //   )
+  // }
   return (
     <Field
       as='select'

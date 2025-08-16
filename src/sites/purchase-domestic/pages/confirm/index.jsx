@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Formik, Field, Form } from 'formik'
 import {
-  filter, get, isEqual, map, pick
+  filter, flow, get, isEmpty, isEqual, keyBy, map, pick
 } from 'lodash-es'
 import clx from 'classnames'
 import safeAwait from 'safe-await'
@@ -13,6 +13,7 @@ import CountSelect from '../CountSelect'
 import usePrepurchaseOrder from '../../../../hooks/usePrepurchaseOrder'
 import useCreateConfirmOrder from '../../../../hooks/useCreateConfirmOrder'
 import useCreatePrepurchaseOrder from '../../../../hooks/useCreatePrepurchaseOrder'
+import useCategoryInfo from '../../../../hooks/useCategoryInfo'
 
 const initCart = {
   discounts: [],
@@ -25,11 +26,30 @@ const Confirm = () => {
   const { t } = useTranslation()
   const [items, setItems] = useState([])
   const { data = initCart } = usePrepurchaseOrder({
-    onSuccess: (result) => {
-      console.log(result)
-      setItems(get(result, 'results.items', []))
-    },
     onError: console.log
+  })
+  const fishCodes = useMemo(() => {
+    return get(data, 'items', []).map((item) => item.fish_code).join(',')
+  }, [data])
+  const {
+    isLoading: isCategoryInfoLoading
+  } = useCategoryInfo(isEmpty(fishCodes) ? null : { fish_code: fishCodes }, {
+    onSuccess: (result) => {
+      const inventoryMap = flow(
+        () => get(result, 'results.items', []),
+        (categoryInfoItems) => keyBy(categoryInfoItems, 'fish_code')
+      )()
+      const newItems = get(data, 'items', []).map((item) => {
+        const { fish_code } = item
+        return {
+          ...item,
+          fish_code,
+          inventory: get(inventoryMap, `${fish_code}.inventory`, 0)
+        }
+      })
+      console.log({ newItems })
+      setItems(newItems)
+    }
   })
   const {
     trigger: createPrepurchaseOrder,
@@ -43,7 +63,7 @@ const Confirm = () => {
   const {
     total_price
   } = data
-  const isLoading = (isPreorderMutating || isOrderMutating)
+  const isLoading = (isPreorderMutating || isOrderMutating || isCategoryInfoLoading)
 
   const updateCart = async (newItems) => {
     const orderItems = map(newItems, (item) => {
@@ -136,9 +156,9 @@ const Confirm = () => {
                       const {
                         fish_name,
                         fish_size,
-                        unit_price,
-                        min_purchase_quantity
+                        unit_price
                       } = item
+                      const inventory = get(formItems, `${index}.inventory`, 0)
                       const itemTotal = get(formItems, `${index}.quantity`, 0)
                       return (
                         <tr
@@ -155,7 +175,7 @@ const Confirm = () => {
                           <td>{unit_price}</td>
                           <td>
                             <CountSelect
-                              max={min_purchase_quantity}
+                              max={inventory}
                               name={`${index}.quantity`}
                               disabled={isLoading}
                             />
