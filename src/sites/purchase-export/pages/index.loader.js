@@ -1,7 +1,5 @@
-import { defer } from 'react-router-dom'
-
 const loader = async () => {
-  return defer({})
+  return {}
 }
 
 export default loader

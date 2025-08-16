@@ -3,7 +3,6 @@ import {
 } from 'lodash-es'
 import safeAwait from 'safe-await'
 import { preload } from 'swr'
-import { defer } from 'react-router-dom'
 import getEnvVar from '../../../utils/getEnvVar'
 import fetcher from '../../../utils/fetcher'
 import getApiPrefix from '../../../utils/getApiPrefix'
@@ -55,9 +54,9 @@ const getSelectedFishData = async () => {
 }
 
 const loader = async () => {
-  return defer({
+  return {
     selectedFishData: getSelectedFishData()
-  })
+  }
 }
 
 export default loader
