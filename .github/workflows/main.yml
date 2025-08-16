@@ -90,9 +90,10 @@ jobs:
       - name: Build
         run: npm run build:gh
       - name: Upload artifact
+        id: deployment
         uses: upload-pages-artifact@v3
         with:
-          path: "./dist"
+          path: dist/
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
