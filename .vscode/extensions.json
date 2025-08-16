@@ -1,0 +1,7 @@
+{
+  "extensions.autoUpdate": true,
+  "extensions.ignoreRecommendations": false,
+  "extensions.autoCheckUpdates": true,
+  "extensions.autoInstallRecommended": true,
+  "recommendations": ["bradlc.vscode-tailwindcss"]
+}

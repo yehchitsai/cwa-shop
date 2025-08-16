@@ -47,11 +47,18 @@ export default [
   {
     url: `${awsHostPrefix}/recommendations`,
     method: 'post',
-    timeout: 100,
+    timeout: 3000,
     response: ({ query: stringObject }) => {
       const {
         query = 'recommendations 問題'
       } = JSON.parse(JSON.stringify(stringObject))
+      const error = random(0, 1)
+      if (error === 1) {
+        return {
+          success: false
+        }
+      }
+
       return {
         success: true,
         ...getRecommendations(query)

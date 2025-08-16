@@ -21,6 +21,7 @@ import { useIntersectionObserver } from '@react-hooks-library/core'
 import useCategoryInfo from '../../../hooks/useCategoryInfo'
 import ViewFileModal from './ViewFileModal'
 import wait from '../../../utils/wait'
+import { usePhase, usePhaseType } from '../../../components/SearchMenu/store'
 
 const getTableLinkCols = (rowData, isSelected, onClick) => {
   const {
@@ -125,7 +126,7 @@ const TableRow = (props) => {
           <td>{fish_size}</td>
           <td>{unit_price}</td>
           <td>{retail_price}</td>
-          <td>{inventory}</td>
+          <td>{inventory === -1 ? '不限數量' : inventory}</td>
           <td>{min_purchase_quantity}</td>
           <td>{note}</td>
           <td>{request}</td>
@@ -141,8 +142,10 @@ const PAGE_SIZE = 20
 
 const PurchaseTable = (props) => {
   const {
-    selectProductMap, onClickRow, phase, phaseType
+    selectProductMap, onClickRow
   } = props
+  const [phase] = usePhase()
+  const [phaseType] = usePhaseType()
   const modalRef = useRef()
   const tableRef = useRef()
   const loadmoreRef = useRef()
@@ -151,8 +154,8 @@ const PurchaseTable = (props) => {
   const [page, setPage] = useState(1)
   const [searchParams] = useSearchParams()
   const category = searchParams.get('type') || 'all'
-  const { data, isLoading } = useCategoryInfo(category === 'all' ? '' : category)
-  console.log({ phase, phaseType })
+  const uuid = searchParams.get('uuid')
+  const { data, isLoading } = useCategoryInfo(category === 'all' ? { uuid } : { category, uuid })
   const totalTableData = useMemo(() => {
     if (isLoading) {
       return times(PAGE_SIZE)
