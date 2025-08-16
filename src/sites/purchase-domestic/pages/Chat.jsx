@@ -37,7 +37,7 @@ const Chat = () => {
             transition={{ duration: 0.1, ease: 'easeOut' }}
             style={{ transformOrigin: 'bottom left' }}
             className={`
-              fixed bottom-0 left-0 z-40 flex size-full flex-col overflow-hidden rounded-md border border-base-300 bg-base-100 shadow-xl
+              fixed bottom-0 left-0 z-50 flex size-full flex-col overflow-hidden rounded-md border border-base-300 bg-base-100 shadow-xl
               sm:h-[500px] sm:w-96 md:bottom-2 md:left-2
             `}
           >
@@ -68,7 +68,7 @@ const Chat = () => {
               <input
                 type='text'
                 placeholder='Type a message…'
-                className='input input-bordered flex-1'
+                className='input input-bordered flex-1 leading-4'
               />
               <button
                 className='btn btn-square btn-ghost btn-sm'
