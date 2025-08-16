@@ -55,6 +55,7 @@ const PurchaseDomestic = () => {
   const isNoProductSelected = isEmpty(selectProducts)
 
   const updateCart = async (newSelectProducts) => {
+    console.log(newSelectProducts)
     const orderItems = map(newSelectProducts, (newSelectProduct) => {
       return pick(newSelectProduct, ['fish_code', 'quantity', 'request'])
     })
@@ -86,8 +87,19 @@ const PurchaseDomestic = () => {
     setClickRowData({})
   }
 
-  const onSelectRow = (rowData) => {
-    const newSelectProducts = [...selectProducts, rowData]
+  const onSelectRow = (rowData = {}) => {
+    const { fish_code } = rowData
+    const isExist = fish_code in keyBy(selectProducts, 'fish_code')
+    console.log({ rowData, selectProducts })
+    const newSelectProducts = isExist
+      ? selectProducts.map((product) => {
+        if (product.fish_code === fish_code) {
+          return { ...product, ...rowData }
+        }
+
+        return product
+      })
+      : [...selectProducts, rowData]
     setSelectProducts(newSelectProducts)
     return newSelectProducts
   }
@@ -118,7 +130,6 @@ const PurchaseDomestic = () => {
     if (!isUpdateSuccess) {
       return
     }
-    updateCart(newSelectProducts)
     purchaseModalRef.current.close()
   }
 
