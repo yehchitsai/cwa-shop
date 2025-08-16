@@ -5,9 +5,12 @@ import {
 import { IoSparklesSharp } from 'react-icons/io5'
 import { isEmpty } from 'lodash-es'
 import { useSetAtom } from 'jotai'
+import { formatISO } from 'date-fns'
 import wait from '../../utils/wait'
 import { PHASE_TYPE } from './constants'
 import chatAtom from '../../state/chat'
+import useChatHistory from '../../hooks/useChatHistory'
+import useCreateRecommendations from '../../hooks/useCreateRecommendations'
 
 const SearchMenu = (props) => {
   const { name, searchMenuAction } = props
@@ -22,6 +25,8 @@ const SearchMenu = (props) => {
     isPhaseEmpty
   } = searchMenuAction
   const openChat = useSetAtom(chatAtom)
+  const { addHistory } = useChatHistory()
+  const { trigger } = useCreateRecommendations()
 
   const onPhaseChange = (e) => {
     const newPhase = e.target.value
@@ -47,6 +52,12 @@ const SearchMenu = (props) => {
       return
     }
 
+    trigger({ query: currentPhase })
+    addHistory({
+      question: currentPhase,
+      reply: undefined,
+      lastUpdatedAt: formatISO(new Date())
+    })
     setCurrentPhase('')
     setPhaseType(PHASE_TYPE.AI)
     openChat(true)

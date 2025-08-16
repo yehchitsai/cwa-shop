@@ -8,7 +8,7 @@ import '../../index.css'
 const Root = (props) => {
   const { children } = props
   return (
-    <>
+    <Provider>
       <SWRConfig
         value={{
           // https://swr.vercel.app/docs/api
@@ -19,12 +19,10 @@ const Root = (props) => {
           fetcher
         }}
       >
-        <Provider>
-          {children}
-        </Provider>
+        {children}
       </SWRConfig>
       <Toaster />
-    </>
+    </Provider>
   )
 }
 
