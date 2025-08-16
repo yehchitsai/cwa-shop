@@ -36,7 +36,7 @@ const SearchMenu = (props) => {
     await wait(300)
     setIsFilterMenuOpen(false)
     if (phaseType === PHASE_TYPE.AI) {
-      setPhase('')
+      setCurrentPhase('')
       return
     }
     setPhase(currentPhase)
@@ -76,7 +76,7 @@ const SearchMenu = (props) => {
           autoComplete='off'
           value={currentPhase}
           onFocus={() => setIsFilterMenuOpen(true)}
-          onBlur={phaseType === PHASE_TYPE.AI ? null : onPhaseTypeChange}
+          onBlur={onPhaseTypeChange}
           onChange={onPhaseChange}
         />
         {phaseType === PHASE_TYPE.AI && (
