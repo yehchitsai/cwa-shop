@@ -55,7 +55,6 @@ const PurchaseDomestic = () => {
   const isNoProductSelected = isEmpty(selectProducts)
 
   const updateCart = async (newSelectProducts) => {
-    console.log(newSelectProducts)
     const orderItems = map(newSelectProducts, (newSelectProduct) => {
       return pick(newSelectProduct, ['fish_code', 'quantity', 'request'])
     })
