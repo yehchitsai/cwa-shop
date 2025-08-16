@@ -1,13 +1,17 @@
-import { useState } from 'react'
-import { useEventListener } from '@react-hooks-library/core'
+import { useState, useEffect } from 'react'
 
-const useIsMobile = (breakpoint = 768) => {
+const useIsMobile = () => {
   const [isMobile, setIsMobile] = useState(false)
-  const checkIsMobile = () => {
-    setIsMobile(window.innerWidth < breakpoint)
-  }
 
-  useEventListener('resize', checkIsMobile)
+  useEffect(() => {
+    const userAgent =
+      typeof navigator === 'undefined' ? '' : navigator.userAgent
+
+    const mobileRegex =
+      /Android|iPhone|iPod|Opera Mini|IEMobile|WPDesktop|BlackBerry/i
+
+    setIsMobile(mobileRegex.test(userAgent))
+  }, [])
 
   return isMobile
 }
