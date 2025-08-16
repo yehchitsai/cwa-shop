@@ -4,8 +4,10 @@ import {
 } from 'react-icons/md'
 import { IoSparklesSharp } from 'react-icons/io5'
 import { isEmpty } from 'lodash-es'
+import { useSetAtom } from 'jotai'
 import wait from '../../utils/wait'
 import { PHASE_TYPE } from './constants'
+import chatAtom from '../../state/chat'
 
 const SearchMenu = (props) => {
   const { name, searchMenuAction } = props
@@ -19,6 +21,7 @@ const SearchMenu = (props) => {
     setIsFilterMenuOpen,
     isPhaseEmpty
   } = searchMenuAction
+  const openChat = useSetAtom(chatAtom)
 
   const onPhaseChange = (e) => {
     const newPhase = e.target.value
@@ -32,7 +35,29 @@ const SearchMenu = (props) => {
   const onPhaseTypeChange = async () => {
     await wait(300)
     setIsFilterMenuOpen(false)
+    if (phaseType === PHASE_TYPE.AI) {
+      setPhase('')
+      return
+    }
     setPhase(currentPhase)
+  }
+
+  const onAiSearchClick = () => {
+    if (isPhaseEmpty) {
+      return
+    }
+
+    setCurrentPhase('')
+    setPhaseType(PHASE_TYPE.AI)
+    openChat(true)
+  }
+
+  const onSearchClick = () => {
+    if (isPhaseEmpty) {
+      return
+    }
+
+    setPhaseType(PHASE_TYPE.NORMAL)
   }
 
   return (
@@ -49,9 +74,9 @@ const SearchMenu = (props) => {
           className='grow'
           placeholder='Search'
           autoComplete='off'
-          defaultValue={currentPhase}
+          value={currentPhase}
           onFocus={() => setIsFilterMenuOpen(true)}
-          onBlur={onPhaseTypeChange}
+          onBlur={phaseType === PHASE_TYPE.AI ? null : onPhaseTypeChange}
           onChange={onPhaseChange}
         />
         {phaseType === PHASE_TYPE.AI && (
@@ -81,10 +106,9 @@ const SearchMenu = (props) => {
           <ul className='menu-dropdown'>
             <li
               className={clx(
-                'disabled pointer-events-none',
-                { disabled: isPhaseEmpty }
+                { 'disabled pointer-events-none': isPhaseEmpty }
               )}
-              onClick={() => !isPhaseEmpty && setPhaseType(PHASE_TYPE.AI)}
+              onClick={onAiSearchClick}
             >
               <span
                 className={clx(
@@ -102,7 +126,7 @@ const SearchMenu = (props) => {
             </li>
             <li
               className={clx({ disabled: isPhaseEmpty })}
-              onClick={() => !isPhaseEmpty && setPhaseType(PHASE_TYPE.NORMAL)}
+              onClick={onSearchClick}
             >
               <span
                 className={clx(

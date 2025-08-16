@@ -26,6 +26,7 @@ import PurchaseModalTable from './PurchaseModalTable'
 import Modal from '../../../components/Modal'
 import useCreatePrepurchaseOrder from '../../../hooks/useCreatePrepurchaseOrder'
 import usePrepurchaseOrder from '../../../hooks/usePrepurchaseOrder'
+import Chat from './Chat'
 
 const initCart = {
   discounts: [],
@@ -231,6 +232,7 @@ const PurchaseDomestic = () => {
         closeText='刪除'
         okText='修改'
       />
+      <Chat />
     </Drawer>
   )
 }

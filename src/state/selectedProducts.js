@@ -1,10 +1,7 @@
-import { atom } from 'recoil'
+import { atom } from 'jotai'
 
 export const key = 'selectedProductsState'
 
 const defaultValue = []
 
-export const selectedProductsState = atom({
-  key,
-  default: defaultValue
-})
+export const selectedProductsState = atom(defaultValue)

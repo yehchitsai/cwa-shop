@@ -14,7 +14,7 @@ const videos = [
 ]
 
 const getFakeImage = (size, text) => {
-  return `https://fakeimg.pl/${size}x${size * 3}/?text=${text}&font=lobster&font_size=50`
+  return `https://fakeimg.ryd.tools/${size}x${size * 3}/?text=${text}&font=lobster&font_size=50`
 }
 
 const TYPE_KEY = [

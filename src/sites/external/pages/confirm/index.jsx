@@ -1,5 +1,5 @@
 import { Suspense, useState, useRef } from 'react'
-import { useRecoilState, useSetRecoilState } from 'recoil'
+import { useAtom, useSetAtom } from 'jotai'
 import { useTranslation } from 'react-i18next'
 import { MdDelete } from 'react-icons/md'
 import {
@@ -36,8 +36,8 @@ const Page = () => {
   const { i18n } = useTranslation()
   const { t } = useTranslation()
   const { fishTypeMap, isLoading } = useFishTypes(i18n.language)
-  const [selectedProducts, setSelectedProducts] = useRecoilState(selectedProductsState)
-  const setOrderData = useSetRecoilState(orderDataState)
+  const [selectedProducts, setSelectedProducts] = useAtom(selectedProductsState)
+  const setOrderData = useSetAtom(orderDataState)
   const [targetProduct, setTargetProduct] = useState({})
   const defaultSelectedProducts = useAsyncValue()
   const { trigger: reserveByItemSerial, isMutating: isReserving } = useCreate(preOrderHost)

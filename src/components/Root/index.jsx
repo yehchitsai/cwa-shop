@@ -1,5 +1,5 @@
 import { SWRConfig } from 'swr'
-import { RecoilRoot } from 'recoil'
+import { Provider } from 'jotai'
 import { Toaster } from 'react-hot-toast'
 import fetcher from '../../utils/fetcher'
 import '../../i18n'
@@ -19,9 +19,9 @@ const Root = (props) => {
           fetcher
         }}
       >
-        <RecoilRoot>
+        <Provider>
           {children}
-        </RecoilRoot>
+        </Provider>
       </SWRConfig>
       <Toaster />
     </>

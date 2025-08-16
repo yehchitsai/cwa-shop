@@ -7,7 +7,7 @@ import {
 import {
   Await, useLoaderData, useAsyncValue, useSearchParams
 } from 'react-router-dom'
-import { useRecoilState } from 'recoil'
+import { useAtom } from 'jotai'
 import { useTranslation } from 'react-i18next'
 import { MdShoppingCart } from 'react-icons/md'
 import toast from 'react-hot-toast'
@@ -93,7 +93,7 @@ const CardsSection = (props) => {
     isLoading
   } = useFishData(fishType)
   const [reservedMap, setReservedMap] = useState({})
-  const [selectedProducts, setSelectedProducts] = useRecoilState(selectedProductsState)
+  const [selectedProducts, setSelectedProducts] = useAtom(selectedProductsState)
   const selectedFishData = useAsyncValue()
 
   const openProductModal = (newTargetProduct) => async () => {
@@ -196,7 +196,7 @@ const CardsSection = (props) => {
 const Home = () => {
   const modalRef = useRef()
   const [targetProduct, setTargetProduct] = useState({})
-  const [selectProducts] = useRecoilState(selectedProductsState)
+  const [selectProducts] = useAtom(selectedProductsState)
   const { i18n } = useTranslation()
   const { fishTypes } = useFishTypes(i18n.language)
   const [searchParams] = useSearchParams()
