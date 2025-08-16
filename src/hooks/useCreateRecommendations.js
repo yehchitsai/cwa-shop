@@ -1,21 +1,20 @@
 import { get } from 'lodash-es'
 import getEnvVar from '../utils/getEnvVar'
 import getApiPrefix from '../utils/getApiPrefix'
-import useCreate from './useCreate'
+import useNewCreate from './useNewCreate'
 
 const host = getEnvVar('VITE_AWS_GET_CATEGORY_INFO_PURCHASE_HOST')
 const subPrefix = getEnvVar('VITE_AWS_PURCHASE_HOST_PREFIX')
 const awsHostPrefix = getApiPrefix(subPrefix)
-const createRecommendationsEndPoint = `${awsHostPrefix}/recommendations`
+const url = `${awsHostPrefix}/recommendations`
 
 const useCreateRecommendations = () => {
   const {
     trigger: originTrigger, isError, data, ...rest
-  } = useCreate(host)
+  } = useNewCreate(host, url)
 
   const trigger = (body) => {
     return originTrigger({
-      url: createRecommendationsEndPoint,
       body
     })
   }
