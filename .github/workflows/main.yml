@@ -90,7 +90,7 @@ jobs:
       - name: Build
         run: npm run build:gh
       - name: Upload artifact
-        uses: upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v3
         with:
           path: dist/
       - name: Deploy to GitHub Pages
