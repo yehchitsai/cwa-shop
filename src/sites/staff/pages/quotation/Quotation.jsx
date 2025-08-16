@@ -44,7 +44,7 @@ const s3Env = {
 }
 
 const validationSchema = Yup.object().shape({
-  [FORM.EXCEL]: Yup.array().required('Miss excel!')
+  [FORM.EXCEL]: Yup.array().min(1, 'Miss excel!')
 })
 
 const Quotation = () => {

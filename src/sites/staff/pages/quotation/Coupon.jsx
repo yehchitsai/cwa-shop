@@ -25,10 +25,10 @@ const FORM = {
 const uploadExcelHost = getEnvVar('VITE_AWS_CREATE_UPLOAD_QUOTATION_PURCHASE_HOST')
 const subPrefix = getEnvVar('VITE_AWS_PURCHASE_HOST_PREFIX')
 const awsHostPrefix = getApiPrefix(subPrefix)
-const uploadExcelEndPoint = `${awsHostPrefix}/uploadquotation`
+const uploadExcelEndPoint = `${awsHostPrefix}/uploaddiscountplan`
 
 const validationSchema = Yup.object().shape({
-  [FORM.EXCEL]: Yup.array().required('Miss excel!')
+  [FORM.EXCEL]: Yup.array().min(1, 'Miss excel!')
 })
 
 const Coupon = () => {
@@ -47,6 +47,7 @@ const Coupon = () => {
 
   const clearForm = () => {
     resetBtn.current.click()
+    setIsExcelUploaded(false)
   }
 
   const onSubmit = async (formValues, { setSubmitting }) => {
@@ -55,7 +56,6 @@ const Coupon = () => {
     const postParams = {
       url: uploadExcelEndPoint,
       body: {
-        delivery_date: get(formValues, FORM.DATE),
         file_name: get(convertedFormValues, `${FORM.EXCEL}.0`)
       }
     }
@@ -74,7 +74,7 @@ const Coupon = () => {
   return (
     <Formik
       initialValues={{
-        [FORM.EXCEL]: undefined
+        [FORM.EXCEL]: []
       }}
       validationSchema={validationSchema}
       onSubmit={onSubmit}
