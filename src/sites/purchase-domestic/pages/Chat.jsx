@@ -1,4 +1,6 @@
-import { useMemo, useRef, useState } from 'react'
+import {
+  useMemo, useRef, useState, useEffect, useCallback
+} from 'react'
 import { Link } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { MdChat, MdClose, MdSend } from 'react-icons/md'
@@ -22,6 +24,7 @@ import LazyImage from '../../../components/LazyImage'
 import useIsMobile from '../../../hooks/useIsMobile'
 import chatAtom from '../../../state/chat'
 import useCreateRecommendations from '../../../hooks/useCreateRecommendations'
+import { usePhase, usePhaseType } from '../../../components/SearchMenu/store'
 
 const formatChatTime = (dateString) => {
   const date = new Date(dateString)
@@ -78,6 +81,7 @@ const validationSchema = Yup.object().shape({
 
 const Chat = () => {
   const [tmpFormValues, setTmpFormValues] = useState(null)
+  const tmpPhaseRef = useRef(null)
   const messagesRef = useRef(null)
   const resetBtn = useRef()
   const [isOpen, setIsOpen] = useAtom(chatAtom)
@@ -86,7 +90,7 @@ const Chat = () => {
     isMutating, isError, trigger
   } = useCreateRecommendations()
   const {
-    data, isLoading, addHistory
+    data, isLoading, addHistory, updateHistoryById
   } = useChatHistory({
     onSuccess: () => {
       if (!isOpen) {
@@ -96,6 +100,8 @@ const Chat = () => {
       scrollToBottom(messagesRef)
     }
   })
+  const [phase, setPhase] = usePhase()
+  const [phaseType] = usePhaseType()
   const lastChatIndex = useMemo(() => size(data) - 1, [data])
 
   const onOpen = () => {
@@ -107,7 +113,8 @@ const Chat = () => {
     resetBtn.current.click()
   }
 
-  const onSubmit = async (formValues, { setSubmitting, skipFormUpdate }) => {
+  const onSubmit = useCallback(async (formValues, options = {}) => {
+    const { skipFormUpdate } = options
     console.log(formValues)
     if (!skipFormUpdate) {
       clearForm()
@@ -124,18 +131,17 @@ const Chat = () => {
     const [createError, result = {}] = await safeAwait(trigger(postParams))
     const isSuccess = get(result, 'success', false)
     if (createError || !isSuccess) {
-      setSubmitting(false)
+      await updateHistoryById({ response: '發生錯誤，請稍候再嘗試' })
       return false
     }
 
-    setSubmitting(false)
+    await updateHistoryById(result)
     setTmpFormValues(null)
     return isSuccess
-  }
+  }, [addHistory, trigger, updateHistoryById])
 
   const retry = async () => {
     const isSuccess = await onSubmit(tmpFormValues, {
-      setSubmitting: () => {},
       skipFormUpdate: true
     })
     if (!isSuccess) {
@@ -153,6 +159,16 @@ const Chat = () => {
 
     setIsOpen(false)
   }, [isOpen])
+
+  useEffect(() => {
+    if (!isOpen || isEmpty(phase) || (phaseType !== 'ai') || (tmpPhaseRef.current === phase)) {
+      return
+    }
+
+    tmpPhaseRef.current = phase
+    onSubmit({ [FORM.QUERY]: phase })
+    setPhase('')
+  }, [isOpen, phase, phaseType, onSubmit, setPhase])
 
   return (
     <>

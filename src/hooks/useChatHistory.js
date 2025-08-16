@@ -16,41 +16,13 @@ const awsHostPrefix = getApiPrefix(subPrefix)
 const url = `${awsHostPrefix}/chathistory`
 
 const useChatHistory = (options = {}) => {
-  const { onSuccess, ...restOptions } = options
   const [, setChatId] = useAtom(chatIdsAtom)
   const [newHistory, setNewHistory] = useAtom(newHistoryAtom)
-  const updateHistoryById = async (newItem) => {
-    setChatId((currentChatId) => {
-      setNewHistory((items) => {
-        const newItems = items.map((item) => {
-          if (item.id === currentChatId) {
-            return { ...item, reply: newItem }
-          }
-
-          return item
-        })
-        return newItems
-      })
-      return currentChatId
-    })
-    return wait(100)
-  }
   const {
     data = {}, error, isValidating, isLoading
   } = useSWR(() => ({ url, host }), {
     suspense: false,
-    onSuccess: async (result) => {
-      const isSuccess = get(result, 'success', false)
-      if (!isSuccess) {
-        await updateHistoryById({ response: '發生錯誤，請稍候再嘗試' })
-        onSuccess && onSuccess(result)
-        return
-      }
-
-      await updateHistoryById(result)
-      onSuccess && onSuccess(result)
-    },
-    ...restOptions
+    ...options
   })
   const apiRecords = get(data, 'records', [])
   const history = useMemo(() => {
@@ -68,6 +40,23 @@ const useChatHistory = (options = {}) => {
       { ...newItem, id: newChatId, lastUpdatedAt: formatISO(Date.now()) }
     ]
     setNewHistory(nextNewHistory)
+  }
+
+  const updateHistoryById = async (newItem) => {
+    setChatId((currentChatId) => {
+      setNewHistory((items) => {
+        const newItems = items.map((item) => {
+          if (item.id === currentChatId) {
+            return { ...item, reply: newItem }
+          }
+
+          return item
+        })
+        return newItems
+      })
+      return currentChatId
+    })
+    return wait(100)
   }
 
   return {
