@@ -16,6 +16,7 @@ import { isEmpty } from 'lodash-es'
 import wait from '../../../utils/wait'
 import useChatHistory from '../../../hooks/useChatHistory'
 import LazyImage from '../../../components/LazyImage'
+import useIsMobile from '../../../hooks/useIsMobile'
 
 const formatChatTime = (dateString) => {
   const date = new Date(dateString)
@@ -62,6 +63,7 @@ const openAtom = atom(null)
 const Chat = () => {
   const messagesRef = useRef(null)
   const [isOpen, setIsOpen] = useAtom(openAtom)
+  const isMobile = useIsMobile()
   const { data, isLoading } = useChatHistory({
     onSuccess: () => {
       if (!isOpen) {
@@ -168,6 +170,7 @@ const Chat = () => {
                             key={uuid}
                             className='flex flex-col gap-2 rounded-sm bg-white p-2'
                             to={`?uuid=${uuid}`}
+                            onClick={() => (isMobile ? setIsOpen(false) : null)}
                             viewTransition
                           >
                             <div className='flex w-60 items-center justify-center gap-2'>
