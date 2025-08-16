@@ -4,7 +4,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { MdChat, MdClose, MdSend } from 'react-icons/md'
 import clx from 'classnames'
 import { motion } from 'motion/react'
-import { atom, useAtom } from 'jotai'
+import { useAtom } from 'jotai'
 import {
   differenceInMinutes,
   differenceInHours,
@@ -17,6 +17,7 @@ import wait from '../../../utils/wait'
 import useChatHistory from '../../../hooks/useChatHistory'
 import LazyImage from '../../../components/LazyImage'
 import useIsMobile from '../../../hooks/useIsMobile'
+import chatAtom from '../../../state/chat'
 
 const formatChatTime = (dateString) => {
   const date = new Date(dateString)
@@ -59,10 +60,9 @@ const scrollToBottom = async (ref) => {
   el.scrollTop = el.scrollHeight
 }
 
-const openAtom = atom(null)
 const Chat = () => {
   const messagesRef = useRef(null)
-  const [isOpen, setIsOpen] = useAtom(openAtom)
+  const [isOpen, setIsOpen] = useAtom(chatAtom)
   const isMobile = useIsMobile()
   const { data, isLoading } = useChatHistory({
     onSuccess: () => {

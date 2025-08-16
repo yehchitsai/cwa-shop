@@ -141,7 +141,7 @@ const PAGE_SIZE = 20
 
 const PurchaseTable = (props) => {
   const {
-    selectProductMap, onClickRow, phase
+    selectProductMap, onClickRow, phase, phaseType
   } = props
   const modalRef = useRef()
   const tableRef = useRef()
@@ -152,6 +152,7 @@ const PurchaseTable = (props) => {
   const [searchParams] = useSearchParams()
   const category = searchParams.get('type') || 'all'
   const { data, isLoading } = useCategoryInfo(category === 'all' ? '' : category)
+  console.log({ phase, phaseType })
   const totalTableData = useMemo(() => {
     if (isLoading) {
       return times(PAGE_SIZE)
@@ -160,12 +161,16 @@ const PurchaseTable = (props) => {
     const tableData = filter(
       get(data, 'items', []),
       (rowData) => {
+        if (phaseType === 'ai') {
+          return rowData
+        }
+
         const { fish_name, science_name, note } = rowData
         return [fish_name, science_name, note].some((item = '') => item.includes(phase))
       }
     )
     return tableData
-  }, [isLoading, phase, data])
+  }, [isLoading, phase, phaseType, data])
   const [isAllDataVisible, tableData] = useMemo(() => {
     const totalTableDataSize = size(totalTableData)
     const nextTableData = totalTableData.slice(0, page * PAGE_SIZE)
