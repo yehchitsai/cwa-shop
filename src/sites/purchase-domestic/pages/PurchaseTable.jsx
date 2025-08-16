@@ -152,7 +152,6 @@ const PurchaseTable = (props) => {
   const [searchParams] = useSearchParams()
   const category = searchParams.get('type') || 'all'
   const { data, isLoading } = useCategoryInfo(category === 'all' ? '' : category)
-  console.log({ phase, phaseType })
   const totalTableData = useMemo(() => {
     if (isLoading) {
       return times(PAGE_SIZE)
