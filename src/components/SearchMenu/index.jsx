@@ -10,23 +10,22 @@ import wait from '../../utils/wait'
 import { PHASE_TYPE } from './constants'
 import chatAtom from '../../state/chat'
 import useChatHistory from '../../hooks/useChatHistory'
-import useCreateRecommendations from '../../hooks/useCreateRecommendations'
+import {
+  useCurrentPhase, useIsFilterMenuOpen, usePhase, usePhaseType
+} from './store'
 
 const SearchMenu = (props) => {
-  const { name, searchMenuAction } = props
+  const { name } = props
+  const [, setPhase] = usePhase()
   const {
-    setPhase,
     currentPhase,
-    setCurrentPhase,
-    phaseType,
-    setPhaseType,
-    isFilterMenuOpen,
-    setIsFilterMenuOpen,
-    isPhaseEmpty
-  } = searchMenuAction
+    isPhaseEmpty,
+    setCurrentPhase
+  } = useCurrentPhase()
+  const [phaseType, setPhaseType] = usePhaseType()
+  const [isFilterMenuOpen, setIsFilterMenuOpen] = useIsFilterMenuOpen()
   const openChat = useSetAtom(chatAtom)
   const { addHistory } = useChatHistory()
-  const { trigger } = useCreateRecommendations()
 
   const onPhaseChange = (e) => {
     const newPhase = e.target.value
@@ -52,7 +51,6 @@ const SearchMenu = (props) => {
       return
     }
 
-    trigger({ query: currentPhase })
     addHistory({
       question: currentPhase,
       reply: undefined,

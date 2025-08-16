@@ -10,7 +10,6 @@ import {
 import Drawer from '../../../components/Drawer'
 import PurchaseModal from '../../../components/Modal/Purchase'
 import SearchMenu from '../../../components/SearchMenu'
-import useSearchMenuAction from '../../../components/SearchMenu/useSearchMenuAction'
 import CustomCartItems from './CustomCartItems'
 import CustomCartBottomItems from './CustomCartBottomItems'
 import ItemSelectSection from './ItemSelectSection'
@@ -22,9 +21,7 @@ const PurchaseExport = () => {
   const modalOkCallback = useRef()
   const [clickRowData, setClickRowData] = useState({})
   const [selectProducts, setSelectProducts] = useState([])
-  const searchMenuAction = useSearchMenuAction()
   const selectProductMap = keyBy(selectProducts, 'fish_code')
-  const { phase, phaseType } = searchMenuAction
 
   const onRemoveRow = (rowData) => {
     const { fish_code } = rowData
@@ -79,10 +76,7 @@ const PurchaseExport = () => {
             <ItemSelectSection />
           </div>
           <div className='flex-1'>
-            <SearchMenu
-              name='search'
-              searchMenuAction={searchMenuAction}
-            />
+            <SearchMenu name='search' />
           </div>
         </div>
         <p className='flex gap-2 text-sm'>
@@ -96,8 +90,6 @@ const PurchaseExport = () => {
           <PurchaseTable
             selectProductMap={selectProductMap}
             onClickRow={onClickRow}
-            phase={phase}
-            phaseType={phaseType}
           />
         </div>
       </div>

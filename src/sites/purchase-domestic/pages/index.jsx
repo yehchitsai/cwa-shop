@@ -17,7 +17,6 @@ import safeAwait from 'safe-await'
 import Drawer from '../../../components/Drawer'
 import PurchaseModal from '../../../components/Modal/Purchase'
 import SearchMenu from '../../../components/SearchMenu'
-import useSearchMenuAction from '../../../components/SearchMenu/useSearchMenuAction'
 import CustomCartItems from './CustomCartItems'
 import CustomCartBottomItems from './CustomCartBottomItems'
 import ItemSelectSection from './ItemSelectSection'
@@ -42,7 +41,8 @@ const PurchaseDomestic = () => {
   const [clickRowData, setClickRowData] = useState({})
   const [selectProducts, setSelectProducts] = useState([])
   const [cart, setCart] = useState(initCart)
-  const searchMenuAction = useSearchMenuAction()
+  // const [phase] = usePhase()
+  // const [p]
   const { trigger, isMutating } = useCreatePrepurchaseOrder()
   usePrepurchaseOrder({
     onSuccess: (result) => {
@@ -51,7 +51,6 @@ const PurchaseDomestic = () => {
     }
   })
   const selectProductMap = keyBy(selectProducts, 'fish_code')
-  const { phase, phaseType } = searchMenuAction
   const isAddToCart = !(clickRowData.fish_code in selectProductMap)
   const isNoProductSelected = isEmpty(selectProducts)
 
@@ -177,10 +176,7 @@ const PurchaseDomestic = () => {
             <ItemSelectSection />
           </div>
           <div className='flex-1'>
-            <SearchMenu
-              name='search'
-              searchMenuAction={searchMenuAction}
-            />
+            <SearchMenu name='search' />
           </div>
         </div>
         <p className='flex gap-2 text-sm'>
@@ -194,8 +190,6 @@ const PurchaseDomestic = () => {
           <PurchaseTable
             selectProductMap={selectProductMap}
             onClickRow={onClickRow}
-            phase={phase}
-            phaseType={phaseType}
           />
         </div>
       </div>

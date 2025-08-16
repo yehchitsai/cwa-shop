@@ -21,6 +21,7 @@ import { useIntersectionObserver } from '@react-hooks-library/core'
 import useCategoryInfo from '../../../hooks/useCategoryInfo'
 import ViewFileModal from './ViewFileModal'
 import wait from '../../../utils/wait'
+import { usePhase, usePhaseType } from '../../../components/SearchMenu/store'
 
 const getTableLinkCols = (rowData, isSelected, onClick) => {
   const {
@@ -141,8 +142,10 @@ const PAGE_SIZE = 20
 
 const PurchaseTable = (props) => {
   const {
-    selectProductMap, onClickRow, phase, phaseType
+    selectProductMap, onClickRow
   } = props
+  const [phase] = usePhase()
+  const [phaseType] = usePhaseType()
   const modalRef = useRef()
   const tableRef = useRef()
   const loadmoreRef = useRef()
