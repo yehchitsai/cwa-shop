@@ -14,7 +14,8 @@ const withErrorElement = (routes) => routes.map((item) => {
   return {
     ...route,
     element: <Comp />,
-    errorElement: <ErrorElement />
+    errorElement: <ErrorElement />,
+    HydrateFallback: () => null
   }
 })
 
@@ -30,6 +31,7 @@ const Router = (props) => {
     {
       element: <SiteLayout appBaseName={appBaseName} />,
       loader: siteLoader,
+      HydrateFallback: () => null,
       children: withErrorElement([
         ...routes,
         {
