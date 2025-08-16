@@ -154,7 +154,8 @@ const PurchaseTable = (props) => {
   const [page, setPage] = useState(1)
   const [searchParams] = useSearchParams()
   const category = searchParams.get('type') || 'all'
-  const { data, isLoading } = useCategoryInfo(category === 'all' ? '' : category)
+  const uuid = searchParams.get('uuid')
+  const { data, isLoading } = useCategoryInfo(category === 'all' ? { uuid } : { category, uuid })
   const totalTableData = useMemo(() => {
     if (isLoading) {
       return times(PAGE_SIZE)

@@ -5,6 +5,7 @@ import {
 import { IoSparklesSharp } from 'react-icons/io5'
 import { isEmpty } from 'lodash-es'
 import { useSetAtom } from 'jotai'
+import { Link, useSearchParams } from 'react-router-dom'
 import wait from '../../utils/wait'
 import { PHASE_TYPE } from './constants'
 import chatAtom from '../../state/chat'
@@ -23,6 +24,8 @@ const SearchMenu = (props) => {
   const [phaseType, setPhaseType] = usePhaseType()
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useIsFilterMenuOpen()
   const openChat = useSetAtom(chatAtom)
+  const [searchParams] = useSearchParams()
+  const uuid = searchParams.get('uuid')
 
   const onPhaseChange = (e) => {
     const newPhase = e.target.value
@@ -65,10 +68,16 @@ const SearchMenu = (props) => {
           { 'rounded-b-none !border-b-transparent': isFilterMenuOpen }
         )}
       >
+        <Link
+          className={clx('text-left w-full block', { hidden: !uuid })}
+          to='.'
+        >
+          清除 AI 查詢
+        </Link>
         <input
           name={name}
           type='text'
-          className='grow'
+          className={clx('grow', { hidden: uuid })}
           placeholder='Search'
           autoComplete='off'
           value={currentPhase}

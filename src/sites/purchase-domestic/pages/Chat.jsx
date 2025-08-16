@@ -140,6 +140,14 @@ const Chat = () => {
     return isSuccess
   }, [addHistory, trigger, updateHistoryById])
 
+  const onClickUUID = () => {
+    if (!isMobile) {
+      return
+    }
+
+    setIsOpen(false)
+  }
+
   const retry = async () => {
     const isSuccess = await onSubmit(tmpFormValues, {
       skipFormUpdate: true
@@ -275,7 +283,7 @@ const Chat = () => {
                             key={uuid}
                             className='flex flex-col gap-2 rounded-sm bg-white p-2'
                             to={`?uuid=${uuid}`}
-                            onClick={() => (isMobile ? setIsOpen(false) : null)}
+                            onClick={onClickUUID}
                             viewTransition
                           >
                             <div className='flex w-60 items-center justify-center gap-2'>
