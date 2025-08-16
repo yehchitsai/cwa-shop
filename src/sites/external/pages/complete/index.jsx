@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { MdCheckCircle } from 'react-icons/md'
-import { useRecoilValue } from 'recoil'
+import { useAtomValue } from 'jotai'
 import { orderDataState } from '../../../../state/orderData'
 
 const Complete = () => {
@@ -8,7 +8,7 @@ const Complete = () => {
     orderTotalQuantity = 0,
     orderTotalPrice = 0,
     currency = 'TWD'
-  } = useRecoilValue(orderDataState)
+  } = useAtomValue(orderDataState)
 
   return (
     <div className='hero fixed min-h-screen bg-base-200'>
