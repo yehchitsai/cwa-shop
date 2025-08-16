@@ -90,7 +90,6 @@ const PurchaseDomestic = () => {
   const onSelectRow = (rowData = {}) => {
     const { fish_code } = rowData
     const isExist = fish_code in keyBy(selectProducts, 'fish_code')
-    console.log({ rowData, selectProducts })
     const newSelectProducts = isExist
       ? selectProducts.map((product) => {
         if (product.fish_code === fish_code) {
