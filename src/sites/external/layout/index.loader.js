@@ -1,4 +1,3 @@
-import { defer } from 'react-router-dom'
 import getAuth from '../../../components/Router/getAuth'
 import subPrefix from './subPrefix'
 
@@ -8,7 +7,7 @@ const loader = async () => {
     throw response
   }
 
-  return defer({ message: auth })
+  return { message: auth }
 }
 
 export default loader

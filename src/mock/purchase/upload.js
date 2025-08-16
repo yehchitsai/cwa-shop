@@ -34,7 +34,68 @@ export default [
     timeout: 100,
     response: () => {
       return {
-        message: 'success'
+        message: 'success',
+        reason: '已寄發信件'
+      }
+    }
+  },
+  {
+    url: `${awsHostPrefix}/uploaddemandreport`,
+    method: 'post',
+    timeout: 100,
+    response: () => {
+      return {
+        message: 'success',
+        results: {
+          success_count: random(0, 1000),
+          fail_count: random(0, 100),
+          fail_description: ['欄位不符', null][random(0, 1)]
+        }
+      }
+    }
+  },
+  {
+    url: `${awsHostPrefix}/uploadpurchaseorder`,
+    method: 'post',
+    timeout: 100,
+    response: () => {
+      return {
+        message: 'success',
+        results: {
+          success_count: random(0, 1000),
+          fail_count: random(0, 100),
+          fail_description: ['欄位不符', null][random(0, 1)]
+        }
+      }
+    }
+  },
+  {
+    url: `${awsHostPrefix}/uploadshippingorder`,
+    method: 'post',
+    timeout: 100,
+    response: () => {
+      return {
+        message: 'success',
+        results: {
+          success_count: random(0, 1000),
+          fail_count: random(0, 100),
+          fail_description: ['欄位不符', null][random(0, 1)]
+        }
+      }
+    }
+  },
+  {
+    url: `${awsHostPrefix}/uploaddiscountplan`,
+    method: 'post',
+    timeout: 100,
+    response: () => {
+      return {
+        message: 'success',
+        results: {
+          success_count: random(0, 1000),
+          fail_count: random(0, 100),
+          fail_description: ['欄位不符', null][random(0, 1)]
+        }
       }
     }
   }
