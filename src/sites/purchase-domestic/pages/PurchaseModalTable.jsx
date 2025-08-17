@@ -3,6 +3,7 @@ import { Field, useFormikContext } from 'formik'
 import clx from 'classnames'
 import { times } from 'lodash-es'
 import { FORM_ITEM } from './constants'
+import FieldError from '../../../components/Form/FieldError'
 
 const PurchaseModalTable = (props) => {
   const { rowData = {}, isAddToCart, disabled } = props
@@ -58,19 +59,21 @@ const PurchaseModalTable = (props) => {
             <td>購買數量</td>
             <td>
               {inventory === -1 && (
-                <Field
-                  name={FORM_ITEM.QUANTITY}
-                  type='text'
-                  inputMode='numeric'
-                  pattern='\d*'
-                  className={clx(
-                    'input input-bordered w-full lg:max-w-xs',
-                    { '!text-black': !editable }
-                  )}
-                  min={min_purchase_quantity}
-                  placeholder='無上限'
-                  disabled={!editable}
-                />
+                <FieldError name={FORM_ITEM.QUANTITY}>
+                  <Field
+                    name={FORM_ITEM.QUANTITY}
+                    type='text'
+                    inputMode='numeric'
+                    className={clx(
+                      'input input-bordered w-full lg:max-w-xs',
+                      { '!text-black': !editable }
+                    )}
+                    min={min_purchase_quantity}
+                    placeholder='無上限'
+                    disabled={!editable}
+                    autoComplete='off'
+                  />
+                </FieldError>
               )}
               {inventory !== -1 && (
                 <Field
