@@ -64,13 +64,13 @@ const scrollToBottom = async (ref, smooth = false) => {
 
   await wait(100)
   const el = ref.current
-  const chatEnds = el.querySelectorAll('.chat-end')
-  const lastChatEnd = chatEnds[chatEnds.length - 1] || null
-  if (!lastChatEnd) {
+  const chats = el.querySelectorAll(smooth ? '.chat-end' : '.chat-start')
+  const lastChat = chats[chats.length - 1] || null
+  if (!lastChat) {
     return
   }
 
-  lastChatEnd.scrollIntoView({ behavior: smooth ? 'smooth' : 'instant', block: 'start' })
+  lastChat.scrollIntoView({ behavior: smooth ? 'smooth' : 'instant', block: smooth ? 'start' : 'end' })
 }
 
 const FORM = {
