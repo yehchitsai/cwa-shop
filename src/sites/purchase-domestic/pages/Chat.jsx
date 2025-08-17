@@ -121,7 +121,7 @@ const Chat = () => {
 
   const onSubmit = useCallback(async (formValues, options = {}) => {
     if (isMutating) {
-      return
+      return false
     }
 
     const { skipFormUpdate } = options
