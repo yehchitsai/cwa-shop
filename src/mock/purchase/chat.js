@@ -14,7 +14,7 @@ const getFakeImage = (width, height, text) => {
 
 const getRecommendations = (query = 'history') => {
   return {
-    response: `下面是 ${query} 的鬥魚...`,
+    response: `下面是 ${query} 的鬥魚...`.repeat(random(1, 10)),
     results: times(random(5, 10)).map((index) => {
       return {
         name: `適合新手的鬥魚 ${index}`,
