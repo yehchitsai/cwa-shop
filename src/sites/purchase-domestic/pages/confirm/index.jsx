@@ -178,7 +178,9 @@ const Confirm = () => {
                               <Field
                                 name={`${index}.quantity`}
                                 className='input input-bordered input-sm w-full'
-                                type='number'
+                                type='text'
+                                inputMode='numeric'
+                                pattern='\d*'
                                 placeholder='無上限'
                                 min={1}
                                 disabled={isLoading}

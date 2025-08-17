@@ -60,7 +60,9 @@ const PurchaseModalTable = (props) => {
               {inventory === -1 && (
                 <Field
                   name={FORM_ITEM.QUANTITY}
-                  type='number'
+                  type='text'
+                  inputMode='numeric'
+                  pattern='\d*'
                   className={clx(
                     'input input-bordered w-full lg:max-w-xs',
                     { '!text-black': !editable }
