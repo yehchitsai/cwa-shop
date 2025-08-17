@@ -61,13 +61,15 @@ export default [
     response: ({ query: stringObject }) => {
       const {
         category,
-        fish_code = ''
+        fish_code = '',
+        uuid
       } = JSON.parse(JSON.stringify(stringObject))
       const isFishCodeEmpty = isEmpty(fish_code)
+      const isUUIDEmpty = isEmpty(uuid)
       const fishCodes = isFishCodeEmpty ? times(random(50, 100)) : fish_code.split(',')
       const items = fishCodes.map((fishCode, index) => {
         const cat = category || CATEGORIES[random(0, 2)]
-        const fishName = `fish_name_${cat}_${index}`
+        const fishName = isUUIDEmpty ? `fish_name_${cat}_${index}` : `fish_name_$${uuid}_${index}`
         return {
           fish_code: isFishCodeEmpty ? `FF120L${index}` : fishCode,
           science_name: `science_name_${index}`,
