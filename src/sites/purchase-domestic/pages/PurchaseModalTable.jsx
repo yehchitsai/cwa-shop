@@ -58,8 +58,8 @@ const PurchaseModalTable = (props) => {
           <tr>
             <td>購買數量</td>
             <td>
-              {inventory === -1 && (
-                <FieldError name={FORM_ITEM.QUANTITY}>
+              <FieldError name={FORM_ITEM.QUANTITY}>
+                {inventory === -1 && (
                   <Field
                     name={FORM_ITEM.QUANTITY}
                     type='text'
@@ -73,29 +73,29 @@ const PurchaseModalTable = (props) => {
                     disabled={!editable}
                     autoComplete='off'
                   />
-                </FieldError>
-              )}
-              {inventory !== -1 && (
-                <Field
-                  as='select'
-                  name={FORM_ITEM.QUANTITY}
-                  className={clx(
-                    'select select-bordered w-full lg:max-w-xs',
-                    { '!text-black': !editable }
-                  )}
-                  disabled={!editable}
-                >
-                  <option value={-1} disabled>Select fish type</option>
-                  {times(inventory - min_purchase_quantity + 1).map((index) => {
-                    const value = index + min_purchase_quantity
-                    return (
-                      <option value={value} key={value}>
-                        {`${value} 隻`}
-                      </option>
-                    )
-                  })}
-                </Field>
-              )}
+                )}
+                {inventory !== -1 && (
+                  <Field
+                    as='select'
+                    name={FORM_ITEM.QUANTITY}
+                    className={clx(
+                      'select select-bordered w-full lg:max-w-xs',
+                      { '!text-black': !editable }
+                    )}
+                    disabled={!editable}
+                  >
+                    <option value={-1} disabled>Select fish type</option>
+                    {times(inventory - min_purchase_quantity + 1).map((index) => {
+                      const value = index + min_purchase_quantity
+                      return (
+                        <option value={value} key={value}>
+                          {`${value} 隻`}
+                        </option>
+                      )
+                    })}
+                  </Field>
+                )}
+              </FieldError>
             </td>
           </tr>
           <tr>
