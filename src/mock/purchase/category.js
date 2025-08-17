@@ -78,7 +78,7 @@ export default [
           unit_price: random(10, 100),
           retail_price: random(10, 100),
           // test unlimited
-          inventory: [isFishCodeEmpty ? random(10, 100) : random(5, 20), -1][random(0, 1)],
+          inventory: [random(50, 100), -1][random(0, 1)],
           min_purchase_quantity: random(10, 20),
           note: ['', `note_${index}`][random(0, 1)],
           image_link: getFakeImage(100, 100, `${cat}-${fishName}`),

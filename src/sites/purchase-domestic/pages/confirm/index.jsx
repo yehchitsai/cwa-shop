@@ -81,6 +81,7 @@ const Confirm = () => {
           inventory: get(categoryInfoMap, `${fish_code}.inventory`, 0)
         }
       })
+      console.log({ newItems })
       setItems(newItems)
     }
   })
