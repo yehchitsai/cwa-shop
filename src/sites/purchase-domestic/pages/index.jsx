@@ -12,6 +12,7 @@ import {
   keyBy, map, pick
 } from 'lodash-es'
 import { Form, Formik } from 'formik'
+import * as Yup from 'yup'
 import toast from 'react-hot-toast'
 import safeAwait from 'safe-await'
 import Drawer from '../../../components/Drawer'
@@ -26,6 +27,7 @@ import Modal from '../../../components/Modal'
 import useCreatePrepurchaseOrder from '../../../hooks/useCreatePrepurchaseOrder'
 import usePrepurchaseOrder from '../../../hooks/usePrepurchaseOrder'
 import Chat from './Chat'
+import { FORM_ITEM } from './constants'
 
 const initCart = {
   discounts: [],
@@ -34,6 +36,28 @@ const initCart = {
   total_quantity: '0'
 }
 
+function testGrater(count) {
+  const { min_purchase_quantity: min } = this.parent
+  if (count == null || min == null) return true
+
+  return count > min
+    ? true
+    : this.createError({
+      message: `起購量為 ${min}`
+    })
+}
+
+const validationSchema = Yup.object().shape({
+  [FORM_ITEM.QUANTITY]: Yup.number().required('不可為空').when(FORM_ITEM.MIN_PURCHASE_QUANTITY, {
+    is: () => true,
+    then: (schema) => schema.test(
+      'greater-than-min',
+      testGrater
+    )
+  }),
+  [FORM_ITEM.REQUEST]: Yup.string()
+})
+
 const PurchaseDomestic = () => {
   const { t } = useTranslation()
   const purchaseModalRef = useRef()
@@ -41,8 +65,6 @@ const PurchaseDomestic = () => {
   const [clickRowData, setClickRowData] = useState({})
   const [selectProducts, setSelectProducts] = useState([])
   const [cart, setCart] = useState(initCart)
-  // const [phase] = usePhase()
-  // const [p]
   const { trigger, isMutating } = useCreatePrepurchaseOrder()
   usePrepurchaseOrder({
     onSuccess: (result) => {
@@ -204,7 +226,7 @@ const PurchaseDomestic = () => {
       </div>
       <Formik
         initialValues={clickRowData}
-        // validationSchema={validationSchema}
+        validationSchema={validationSchema}
         onSubmit={onPurchaseModalOk}
       >
         <PurchaseModal

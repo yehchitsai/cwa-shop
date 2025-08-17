@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react'
 import { Formik, Field, Form } from 'formik'
 import {
-  filter, flow, get, isEmpty, isEqual, keyBy, map, pick
+  filter, flow, get, isEmpty, isEqual, keyBy, map, pick,
+  sum,
+  times
 } from 'lodash-es'
 import clx from 'classnames'
 import safeAwait from 'safe-await'
@@ -9,11 +11,14 @@ import toast from 'react-hot-toast'
 import { MdOutlineDelete } from 'react-icons/md'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
+import * as Yup from 'yup'
 import CountSelect from '../CountSelect'
 import usePrepurchaseOrder from '../../../../hooks/usePrepurchaseOrder'
 import useCreateConfirmOrder from '../../../../hooks/useCreateConfirmOrder'
 import useCreatePrepurchaseOrder from '../../../../hooks/useCreatePrepurchaseOrder'
 import useCategoryInfo from '../../../../hooks/useCategoryInfo'
+import FieldError from '../../../../components/Form/FieldError'
+import { FORM_ITEM } from '../constants'
 
 const initCart = {
   discounts: [],
@@ -22,9 +27,37 @@ const initCart = {
   total_quantity: '0'
 }
 
+function testGrater(count) {
+  const { min_purchase_quantity: min } = this.parent
+  if (count == null || min == null) return true
+
+  return count > min
+    ? true
+    : this.createError({
+      message: `起購量為 ${min}`
+    })
+}
+
+const validationSchema = Yup.array().of(
+  Yup.object().shape({
+    [FORM_ITEM.MIN_PURCHASE_QUANTITY]: Yup.number().required('不可為空'),
+    [FORM_ITEM.QUANTITY]: Yup.number().required('不可為空').when(FORM_ITEM.MIN_PURCHASE_QUANTITY, {
+      is: () => true,
+      then: (schema) => schema.test(
+        'greater-than-min',
+        testGrater
+      )
+    }),
+    [FORM_ITEM.REQUEST]: Yup.string()
+  })
+)
+
+const mockItems = times(20).map(() => ({ quantity: 0, request: '' }))
+
 const Confirm = () => {
   const { t } = useTranslation()
-  const [items, setItems] = useState([])
+  const [isSubmitted, setIsSubmitted] = useState(false)
+  const [items, setItems] = useState(mockItems)
   const { data = initCart } = usePrepurchaseOrder({
     onError: console.log
   })
@@ -48,7 +81,6 @@ const Confirm = () => {
           inventory: get(categoryInfoMap, `${fish_code}.inventory`, 0)
         }
       })
-      console.log({ newItems })
       setItems(newItems)
     }
   })
@@ -61,10 +93,8 @@ const Confirm = () => {
     isMutating: isOrderMutating
   } = useCreateConfirmOrder()
   const navigate = useNavigate()
-  const {
-    total_price
-  } = data
   const isLoading = (isPreorderMutating || isOrderMutating || isCategoryInfoLoading)
+  const isDisabled = (isLoading || isSubmitted)
 
   const updateCart = async (newItems) => {
     const orderItems = map(newItems, (item) => {
@@ -108,6 +138,7 @@ const Confirm = () => {
     }
 
     toast.success('送出訂單成功! 3 秒後返回首頁', { id: toastId })
+    setIsSubmitted(true)
     setTimeout(() => navigate('../', { relative: 'path' }), 3000)
   }
 
@@ -128,10 +159,16 @@ const Confirm = () => {
     <Formik
       initialValues={items}
       onSubmit={onSubmit}
+      validationSchema={validationSchema}
       enableReinitialize
     >
       {(formHelper) => {
         const formItems = get(formHelper, 'values', [])
+        const totalPrice = sum(items.map((item, index) => {
+          const { unit_price = 0 } = item
+          const itemTotal = get(formItems, `${index}.quantity`, 0)
+          return itemTotal * unit_price
+        }))
         return (
           <Form>
             <div
@@ -152,12 +189,16 @@ const Confirm = () => {
                       <th />
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody
+                    className={clx({
+                      '[&_*]:skeleton [&_*]:bg-transparent [&_*]:text-transparent': isLoading
+                    })}
+                  >
                     {map(items, (item, index) => {
                       const {
-                        fish_name,
-                        fish_size,
-                        unit_price
+                        fish_name = '--',
+                        fish_size = '--',
+                        unit_price = 0
                       } = item
                       const inventory = get(formItems, `${index}.inventory`, 0)
                       const itemTotal = get(formItems, `${index}.quantity`, 0)
@@ -177,23 +218,25 @@ const Confirm = () => {
                           <td>{unit_price}</td>
                           <td>
                             {inventory === -1 && (
-                              <Field
-                                name={`${index}.quantity`}
-                                className='input input-bordered input-sm w-full'
-                                type='text'
-                                inputMode='numeric'
-                                pattern='\d*'
-                                placeholder='無上限'
-                                min={min}
-                                disabled={isLoading}
-                              />
+                              <FieldError name={`${index}.quantity`}>
+                                <Field
+                                  name={`${index}.quantity`}
+                                  className='input input-sm input-bordered w-full'
+                                  type='text'
+                                  inputMode='numeric'
+                                  placeholder='無上限'
+                                  min={min}
+                                  disabled={isDisabled}
+                                  autoComplete='off'
+                                />
+                              </FieldError>
                             )}
                             {inventory !== -1 && (
                               <CountSelect
                                 max={inventory}
                                 min={min}
                                 name={`${index}.quantity`}
-                                disabled={isLoading}
+                                disabled={isDisabled}
                               />
                             )}
                           </td>
@@ -201,7 +244,7 @@ const Confirm = () => {
                             <Field
                               className='input input-sm input-bordered w-40'
                               name={`${index}.request`}
-                              disabled={isLoading}
+                              disabled={isDisabled}
                             />
                           </td>
                           <td>{itemTotal * unit_price}</td>
@@ -210,7 +253,7 @@ const Confirm = () => {
                               type='button'
                               className='btn btn-square btn-outline btn-error'
                               onClick={() => onRemove(formHelper, index)}
-                              disabled={isLoading}
+                              disabled={isDisabled}
                             >
                               <MdOutlineDelete
                                 size='1.5em'
@@ -227,13 +270,13 @@ const Confirm = () => {
                 <div className='mr-4 flex items-center justify-center break-all'>
                   總金額：
                   <br />
-                  {`${total_price} NTD`}
+                  {`${new Intl.NumberFormat('en-US').format(totalPrice)} NTD`}
                 </div>
                 <div>
                   <button
                     type='submit'
                     className='btn btn-outline btn-success'
-                    disabled={isLoading}
+                    disabled={isDisabled}
                   >
                     {`${t('submitCart')}`}
                   </button>
@@ -243,7 +286,7 @@ const Confirm = () => {
                     type='button'
                     className='btn btn-outline btn-error'
                     onClick={onRemoveAll}
-                    disabled={isLoading}
+                    disabled={isDisabled}
                   >
                     {`${t('removerAll')}`}
                   </button>
