@@ -87,6 +87,7 @@ const validationSchema = Yup.object().shape({
 
 const Chat = () => {
   const [tmpFormValues, setTmpFormValues] = useState(null)
+  const chatInputRef = useRef(null)
   const tmpPhaseRef = useRef(null)
   const messagesRef = useRef(null)
   const resetBtn = useRef()
@@ -135,6 +136,10 @@ const Chat = () => {
     }
     wait(100).then(() => scrollToBottom(messagesRef))
     const [createError, result = {}] = await safeAwait(trigger(postParams))
+    if (chatInputRef.current) {
+      wait(10).then(() => chatInputRef.current.focus())
+    }
+
     const isSuccess = get(result, 'success', false)
     if (createError || !isSuccess) {
       await updateHistoryById({ response: '發生錯誤，請稍候再嘗試' })
@@ -331,6 +336,7 @@ const Chat = () => {
             <div className='flex items-center gap-2 border-t border-base-300 bg-base-200 p-2'>
               <Field
                 name={FORM.QUERY}
+                ref={chatInputRef}
                 placeholder='請輸入對話以查詢'
                 className='input input-bordered flex-1 leading-4'
                 disabled={isLoading || isMutating}
