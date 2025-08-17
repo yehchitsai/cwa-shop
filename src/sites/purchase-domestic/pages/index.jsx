@@ -40,7 +40,7 @@ function testGrater(count) {
   const { min_purchase_quantity: min } = this.parent
   if (count == null || min == null) return true
 
-  return count > min
+  return count >= min
     ? true
     : this.createError({
       message: `起購量為 ${min}`
