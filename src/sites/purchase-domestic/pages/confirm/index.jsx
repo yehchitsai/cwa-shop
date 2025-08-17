@@ -217,8 +217,8 @@ const Confirm = () => {
                           <td>{fish_size}</td>
                           <td>{unit_price}</td>
                           <td>
-                            {inventory === -1 && (
-                              <FieldError name={`${index}.quantity`}>
+                            <FieldError name={`${index}.quantity`}>
+                              {inventory === -1 && (
                                 <Field
                                   name={`${index}.quantity`}
                                   className='input input-sm input-bordered w-full'
@@ -229,16 +229,16 @@ const Confirm = () => {
                                   disabled={isDisabled}
                                   autoComplete='off'
                                 />
-                              </FieldError>
-                            )}
-                            {inventory !== -1 && (
-                              <CountSelect
-                                max={inventory}
-                                min={min}
-                                name={`${index}.quantity`}
-                                disabled={isDisabled}
-                              />
-                            )}
+                              )}
+                              {inventory !== -1 && (
+                                <CountSelect
+                                  max={inventory}
+                                  min={min}
+                                  name={`${index}.quantity`}
+                                  disabled={isDisabled}
+                                />
+                              )}
+                            </FieldError>
                           </td>
                           <td>
                             <Field
