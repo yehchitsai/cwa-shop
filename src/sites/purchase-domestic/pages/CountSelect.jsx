@@ -18,7 +18,7 @@ const CountSelect = (props) => {
       disabled={disabled}
     >
       <option value={-1} disabled>選擇數量</option>
-      {times(max - min, (index) => {
+      {times(max - min + 1, (index) => {
         const count = min + index
         return (
           <option value={count} key={count}>
