@@ -177,6 +177,7 @@ const Confirm = () => {
                             {inventory === -1 && (
                               <Field
                                 name={`${index}.quantity`}
+                                className='input input-bordered input-sm w-full'
                                 type='number'
                                 placeholder='無上限'
                                 min={1}
