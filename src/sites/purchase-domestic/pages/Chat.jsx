@@ -138,6 +138,7 @@ const Chat = () => {
     const isSuccess = get(result, 'success', false)
     if (createError || !isSuccess) {
       await updateHistoryById({ response: '發生錯誤，請稍候再嘗試' })
+      scrollToBottom(messagesRef, true)
       return false
     }
 
