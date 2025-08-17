@@ -120,10 +120,6 @@ const Chat = () => {
   }
 
   const onSubmit = useCallback(async (formValues, options = {}) => {
-    if (isMutating) {
-      return
-    }
-
     const { skipFormUpdate } = options
     console.log(formValues)
     if (!skipFormUpdate) {
@@ -150,7 +146,7 @@ const Chat = () => {
     setTmpFormValues(null)
     scrollToBottom(messagesRef, true)
     return isSuccess
-  }, [addHistory, trigger, updateHistoryById, isMutating])
+  }, [addHistory, trigger, updateHistoryById])
 
   const onClickUUID = () => {
     if (!isMobile) {
