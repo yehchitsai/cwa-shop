@@ -35,7 +35,7 @@ const Confirm = () => {
     isLoading: isCategoryInfoLoading
   } = useCategoryInfo(isEmpty(fishCodes) ? null : { fish_code: fishCodes }, {
     onSuccess: (result) => {
-      const inventoryMap = flow(
+      const categoryInfoMap = flow(
         () => get(result, 'results.items', []),
         (categoryInfoItems) => keyBy(categoryInfoItems, 'fish_code')
       )()
@@ -44,7 +44,8 @@ const Confirm = () => {
         return {
           ...item,
           fish_code,
-          inventory: get(inventoryMap, `${fish_code}.inventory`, 0)
+          min_purchase_quantity: get(categoryInfoMap, `${fish_code}.min_purchase_quantity`, 0),
+          inventory: get(categoryInfoMap, `${fish_code}.inventory`, 0)
         }
       })
       console.log({ newItems })
@@ -160,6 +161,7 @@ const Confirm = () => {
                       } = item
                       const inventory = get(formItems, `${index}.inventory`, 0)
                       const itemTotal = get(formItems, `${index}.quantity`, 0)
+                      const min = get(formItems, `${index}.min_purchase_quantity`, 0)
                       return (
                         <tr
                           key={index}
@@ -182,13 +184,14 @@ const Confirm = () => {
                                 inputMode='numeric'
                                 pattern='\d*'
                                 placeholder='無上限'
-                                min={1}
+                                min={min}
                                 disabled={isLoading}
                               />
                             )}
                             {inventory !== -1 && (
                               <CountSelect
                                 max={inventory}
+                                min={min}
                                 name={`${index}.quantity`}
                                 disabled={isLoading}
                               />
