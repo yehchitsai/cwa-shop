@@ -57,25 +57,40 @@ const PurchaseModalTable = (props) => {
           <tr>
             <td>購買數量</td>
             <td>
-              <Field
-                as='select'
-                name={FORM_ITEM.QUANTITY}
-                className={clx(
-                  'select select-bordered w-full lg:max-w-xs',
-                  { '!text-black': !editable }
-                )}
-                disabled={!editable}
-              >
-                <option value={-1} disabled>Select fish type</option>
-                {times(inventory).map((index) => {
-                  const value = index + min_purchase_quantity
-                  return (
-                    <option value={value} key={value}>
-                      {`${value} 隻`}
-                    </option>
-                  )
-                })}
-              </Field>
+              {inventory === -1 && (
+                <Field
+                  name={FORM_ITEM.QUANTITY}
+                  type='number'
+                  className={clx(
+                    'input input-bordered w-full lg:max-w-xs',
+                    { '!text-black': !editable }
+                  )}
+                  min={min_purchase_quantity}
+                  placeholder='無上限'
+                  disabled={!editable}
+                />
+              )}
+              {inventory !== -1 && (
+                <Field
+                  as='select'
+                  name={FORM_ITEM.QUANTITY}
+                  className={clx(
+                    'select select-bordered w-full lg:max-w-xs',
+                    { '!text-black': !editable }
+                  )}
+                  disabled={!editable}
+                >
+                  <option value={-1} disabled>Select fish type</option>
+                  {times(inventory).map((index) => {
+                    const value = index + min_purchase_quantity
+                    return (
+                      <option value={value} key={value}>
+                        {`${value} 隻`}
+                      </option>
+                    )
+                  })}
+                </Field>
+              )}
             </td>
           </tr>
           <tr>

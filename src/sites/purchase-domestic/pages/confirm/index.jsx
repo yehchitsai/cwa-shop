@@ -174,11 +174,22 @@ const Confirm = () => {
                           <td>{fish_size}</td>
                           <td>{unit_price}</td>
                           <td>
-                            <CountSelect
-                              max={inventory}
-                              name={`${index}.quantity`}
-                              disabled={isLoading}
-                            />
+                            {inventory === -1 && (
+                              <Field
+                                name={`${index}.quantity`}
+                                type='number'
+                                placeholder='無上限'
+                                min={1}
+                                disabled={isLoading}
+                              />
+                            )}
+                            {inventory !== -1 && (
+                              <CountSelect
+                                max={inventory}
+                                name={`${index}.quantity`}
+                                disabled={isLoading}
+                              />
+                            )}
                           </td>
                           <td>
                             <Field
