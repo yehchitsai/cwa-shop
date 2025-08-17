@@ -57,14 +57,20 @@ const formatChatTime = (dateString) => {
   return `${years} 年前`
 }
 
-const scrollToBottom = async (ref) => {
+const scrollToBottom = async (ref, smooth = false) => {
   if (!ref.current) {
     return
   }
 
   await wait(100)
   const el = ref.current
-  el.scrollTop = el.scrollHeight
+  const chatEnds = el.querySelectorAll('.chat-end')
+  const lastChatEnd = chatEnds[chatEnds.length - 1] || null
+  if (!lastChatEnd) {
+    return
+  }
+
+  lastChatEnd.scrollIntoView({ behavior: smooth ? 'smooth' : 'instant', block: 'start' })
 }
 
 const FORM = {
@@ -137,6 +143,7 @@ const Chat = () => {
 
     await updateHistoryById(result)
     setTmpFormValues(null)
+    scrollToBottom(messagesRef, true)
     return isSuccess
   }, [addHistory, trigger, updateHistoryById])
 
