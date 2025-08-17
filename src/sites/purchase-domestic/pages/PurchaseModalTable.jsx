@@ -83,7 +83,7 @@ const PurchaseModalTable = (props) => {
                   disabled={!editable}
                 >
                   <option value={-1} disabled>Select fish type</option>
-                  {times(inventory).map((index) => {
+                  {times(inventory - min_purchase_quantity).map((index) => {
                     const value = index + min_purchase_quantity
                     return (
                       <option value={value} key={value}>
