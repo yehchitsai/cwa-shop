@@ -40,8 +40,7 @@ function testGrater(count) {
 
 const validationSchema = Yup.array().of(
   Yup.object().shape({
-    [FORM_ITEM.MIN_PURCHASE_QUANTITY]: Yup.number().required('不可為空'),
-    [FORM_ITEM.QUANTITY]: Yup.number().required('不可為空').when(FORM_ITEM.MIN_PURCHASE_QUANTITY, {
+    [FORM_ITEM.QUANTITY]: Yup.number().typeError('僅限數字').required('不可為空').when(FORM_ITEM.MIN_PURCHASE_QUANTITY, {
       is: () => true,
       then: (schema) => schema.test(
         'greater-than-min',
