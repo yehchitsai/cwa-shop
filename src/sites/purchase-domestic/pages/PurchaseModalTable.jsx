@@ -68,7 +68,7 @@ const PurchaseModalTable = (props) => {
                   min={min_purchase_quantity}
                   placeholder='無上限'
                   disabled={!editable}
-                >
+                />
               )}
               {inventory !== -1 && (
                 <Field
