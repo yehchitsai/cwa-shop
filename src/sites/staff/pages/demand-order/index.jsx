@@ -67,6 +67,7 @@ const Page = () => {
     trigger,
     isMutating
   } = useCreate(uploadExcelHost)
+  const isLoading = isMutating
 
   const onDropExcels = (excelFiles) => {
     const isAcceptFile = isUndefined(get(excelFiles, '0.code')) && !isEmpty(excelFiles)
@@ -80,13 +81,14 @@ const Page = () => {
   }
 
   const onSubmitDemandReport = async () => {
+    setApiResult({})
     const postParams = {
       url: demandreportEndPoint,
       body: {}
     }
     const toastId = toast.loading('Generate report...')
     setIsGenerating(true)
-    const [createError] = await safeAwait(trigger(postParams))
+    const [createError, result] = await safeAwait(trigger(postParams))
     setIsGenerating(false)
     clearForm()
     if (createError) {
@@ -94,6 +96,7 @@ const Page = () => {
       return
     }
 
+    setApiResult(result)
     toast.success('Finish!', { id: toastId })
   }
 
@@ -139,19 +142,19 @@ const Page = () => {
       {({ errors, touched }) => (
         <Form>
           <div className='m-auto flex w-full flex-col gap-4 max-lg:m-auto max-lg:max-w-2xl max-sm:min-w-full max-sm:p-4 sm:p-12 lg:max-w-5xl'>
-            <div>
-              <button
-                type='button'
-                onClick={onSubmitDemandReport}
-                className='btn btn-outline'
-                disabled={isGenerating || isMutating}
-              >
-                生成彙整單
-              </button>
-            </div>
-            <div className='divider' />
             <div className='flex flex-col gap-4 md:flex-row'>
               <div className='md:flex-1'>
+                <div>
+                  <button
+                    type='button'
+                    onClick={onSubmitDemandReport}
+                    className='btn btn-outline'
+                    disabled={isGenerating || isLoading}
+                  >
+                    生成彙整單
+                  </button>
+                </div>
+                <div className='divider' />
                 <FormRow
                   label='類型'
                   required
@@ -161,7 +164,7 @@ const Page = () => {
                     name={FORM.REPORT_TYPE}
                     className='select select-bordered w-full lg:max-w-xs'
                     autoComplete='off'
-                    disabled={isMutating}
+                    disabled={isLoading}
                   >
                     {REPORT_TYPE_OPTIONS.map(({ value, label }) => {
                       return (
@@ -183,7 +186,7 @@ const Page = () => {
                   <Dropzone
                     name={FORM.EXCEL}
                     accept={ACCEPT.EXCEL}
-                    disabled={isMutating || isExcelUploaded}
+                    disabled={isLoading || isExcelUploaded}
                     onFinish={onDropExcels}
                     isShowPreview={false}
                   />
@@ -204,7 +207,7 @@ const Page = () => {
                   <button
                     type='submit'
                     className='btn btn-outline'
-                    disabled={isMutating}
+                    disabled={isLoading}
                   >
                     <MdAdd size='1.5em' />
                     {`${t('newItem')}`}
