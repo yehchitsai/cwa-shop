@@ -9,7 +9,7 @@ import clx from 'classnames'
 import safeAwait from 'safe-await'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { MdEdit } from 'react-icons/md'
+import { MdEdit, MdDiscount } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
 import usePrepurchaseOrder from '../../../../hooks/usePrepurchaseOrder'
 import useCreateConfirmOrder from '../../../../hooks/useCreateConfirmOrder'
@@ -225,126 +225,133 @@ const Confirm = () => {
                 <div
                   className='m-auto h-auto max-lg:max-w-2xl max-sm:min-w-full lg:max-w-5xl'
                 >
-                  <div className='h-[54dvh] overflow-x-auto'>
-                    <table className='table table-pin-rows table-pin-cols'>
-                      <thead>
-                        <tr className='max-sm:-top-1'>
-                          <th>項次</th>
-                          <td>品名</td>
-                          <td>尺寸</td>
-                          <td>單價</td>
-                          <td className='min-w-32'>購買數量</td>
-                          <td>特殊要求</td>
-                          <td>金額</td>
-                          <th />
-                        </tr>
-                      </thead>
-                      <tbody
-                        className={clx({
-                          '[&_p]:skeleton [&_p]:text-transparent': isLoading
-                        })}
-                      >
-                        {map(items, (item, index) => {
-                          const {
-                            [FORM_ITEM.FISH_NAME]: fish_name = '--',
-                            [FORM_ITEM.FISH_SIZE]: fish_size = '--',
-                            [FORM_ITEM.UNIT_PRICE]: unit_price = 0,
-                            [FORM_ITEM.REQUEST]: request = '--',
-                            [FORM_ITEM.QUANTITY]: quantity = 0
-                          } = item
-                          return (
-                            <tr
-                              key={index}
-                              className={clx(
-                                'whitespace-nowrap cursor-pointer'
-                              )}
-                              onClick={() => isObject(item) && onClickRow(item)}
-                            >
-                              <th className='text-sm'>
-                                <p>
-                                  {index + 1}
-                                </p>
-                              </th>
-                              <td>
-                                <p>{fish_name}</p>
-                              </td>
-                              <td>
-                                <p>{fish_size}</p>
-                              </td>
-                              <td>
-                                <p>{unit_price}</p>
-                              </td>
-                              <td>
-                                <p>{quantity}</p>
-                              </td>
-                              <td>
-                                <p>{request}</p>
-                              </td>
-                              <td>
-                                <p>{quantity * unit_price}</p>
-                              </td>
-                              <th>
-                                <MdEdit size='1.2em' />
-                              </th>
+                  <div className='flex h-[calc(100dvh-8.5rem)] flex-col justify-between'>
+                    <div className='max-h-[60dvh] overflow-x-auto'>
+                      <table className='table table-pin-rows table-pin-cols'>
+                        <thead>
+                          <tr className='max-sm:-top-1'>
+                            <th>項次</th>
+                            <td>品名</td>
+                            <td>尺寸</td>
+                            <td>單價</td>
+                            <td className='min-w-32'>購買數量</td>
+                            <td>特殊要求</td>
+                            <td>金額</td>
+                            <th />
+                          </tr>
+                        </thead>
+                        <tbody
+                          className={clx({
+                            '[&_p]:skeleton [&_p]:text-transparent': isLoading
+                          })}
+                        >
+                          {map(items, (item, index) => {
+                            const {
+                              [FORM_ITEM.FISH_NAME]: fish_name = '--',
+                              [FORM_ITEM.FISH_SIZE]: fish_size = '--',
+                              [FORM_ITEM.UNIT_PRICE]: unit_price = 0,
+                              [FORM_ITEM.REQUEST]: request = '--',
+                              [FORM_ITEM.QUANTITY]: quantity = 0
+                            } = item
+                            return (
+                              <tr
+                                key={index}
+                                className={clx(
+                                  'whitespace-nowrap cursor-pointer'
+                                )}
+                                onClick={() => isObject(item) && onClickRow(item)}
+                              >
+                                <th className='text-sm'>
+                                  <p>
+                                    {index + 1}
+                                  </p>
+                                </th>
+                                <td>
+                                  <p>{fish_name}</p>
+                                </td>
+                                <td>
+                                  <p>{fish_size}</p>
+                                </td>
+                                <td>
+                                  <p>{unit_price}</p>
+                                </td>
+                                <td>
+                                  <p>{quantity}</p>
+                                </td>
+                                <td>
+                                  <p>{request}</p>
+                                </td>
+                                <td>
+                                  <p>{quantity * unit_price}</p>
+                                </td>
+                                <th>
+                                  <MdEdit size='1.2em' />
+                                </th>
+                              </tr>
+                            )
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div className=''>
+                      <div className='divider my-1' />
+                      <div className='flex items-center gap-2 px-2 text-lg font-bold'>
+                        <MdDiscount />
+                        <span>折扣</span>
+                      </div>
+                      <div className='max-h-[calc(34dvh-8.5rem)] overflow-x-auto'>
+                        <table className='table table-pin-rows max-w-full'>
+                          <thead>
+                            <tr className='max-sm:-top-1'>
+                              <th>項次</th>
+                              <th>名稱</th>
+                              <td>金額</td>
                             </tr>
-                          )
-                        })}
-                      </tbody>
-                    </table>
+                          </thead>
+                          <tbody
+                            className={clx({
+                              '[&_p]:skeleton [&_p]:text-transparent': isLoading
+                            })}
+                          >
+                            {map(discounts, (discount, index) => {
+                              const {
+                                type = '--',
+                                discount_amt = 0
+                              } = discount
+                              return (
+                                <tr
+                                  key={index}
+                                  className='whitespace-nowrap'
+                                >
+                                  <th className='text-sm'>
+                                    <p>
+                                      {index + 1}
+                                    </p>
+                                  </th>
+                                  <td>
+                                    <p>{type}</p>
+                                  </td>
+                                  <td>
+                                    <p>{`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(discount_amt)} NTD`}</p>
+                                  </td>
+                                </tr>
+                              )
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
                   </div>
-                  <div className='divider' />
-                  <div className='px-2 text-lg font-bold'>折扣</div>
-                  <div className='max-h-[24dvh] overflow-x-auto'>
-                    <table className='table table-pin-rows max-w-full'>
-                      <thead>
-                        <tr className='max-sm:-top-1'>
-                          <th>項次</th>
-                          <th>名稱</th>
-                          <td>金額</td>
-                        </tr>
-                      </thead>
-                      <tbody
-                        className={clx({
-                          '[&_p]:skeleton [&_p]:text-transparent': isLoading
-                        })}
-                      >
-                        {map(discounts, (discount, index) => {
-                          const {
-                            type = '--',
-                            discount_amt = 0
-                          } = discount
-                          return (
-                            <tr
-                              key={index}
-                              className='whitespace-nowrap'
-                            >
-                              <th className='text-sm'>
-                                <p>
-                                  {index + 1}
-                                </p>
-                              </th>
-                              <td>
-                                <p>{type}</p>
-                              </td>
-                              <td>
-                                <p>{`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(discount_amt)} NTD`}</p>
-                              </td>
-                            </tr>
-                          )
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                  <div className='my-2 mr-4 flex justify-end space-x-2'>
-                    <div className='mr-4 flex flex-col gap-2'>
-                      <div className='flex items-center justify-center break-all text-sm'>
+                  <div className='m-2 flex justify-between'>
+                    <div className='flex flex-col gap-2'>
+                      <div className='flex break-all text-sm'>
                         總折扣：
                         <br />
                         <span className={clx({ 'skeleton text-transparent': isLoading })}>
                           {`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(totalDiscount)} NTD`}
                         </span>
                       </div>
-                      <div className='flex items-center justify-center break-all text-sm'>
+                      <div className='flex break-all text-sm'>
                         總金額：
                         <br />
                         <span className={clx({ 'skeleton text-transparent': isLoading })}>
@@ -352,24 +359,26 @@ const Confirm = () => {
                         </span>
                       </div>
                     </div>
-                    <div>
-                      <button
-                        type='submit'
-                        className='btn btn-outline btn-success'
-                        disabled={isDisabled}
-                      >
-                        {`${t('submitCart')}`}
-                      </button>
-                    </div>
-                    <div>
-                      <button
-                        type='button'
-                        className='btn btn-outline btn-error'
-                        onClick={onRemoveAll}
-                        disabled={isDisabled}
-                      >
-                        {`${t('removerAll')}`}
-                      </button>
+                    <div className='flex gap-2'>
+                      <div>
+                        <button
+                          type='submit'
+                          className='btn btn-outline btn-success'
+                          disabled={isDisabled}
+                        >
+                          {`${t('submitCart')}`}
+                        </button>
+                      </div>
+                      <div>
+                        <button
+                          type='button'
+                          className='btn btn-outline btn-error'
+                          onClick={onRemoveAll}
+                          disabled={isDisabled}
+                        >
+                          {`${t('removerAll')}`}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
