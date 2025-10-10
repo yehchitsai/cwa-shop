@@ -209,7 +209,7 @@ const PurchaseDomestic = () => {
           <MdOutlineDelete size='1.5em' className='!fill-red-500' />
           從購物車移除
         </p>
-        <div className='overflow-x-auto max-sm:h-[calc(100dvh-14.5rem)] sm:h-[calc(100dvh-11.5rem)]'>
+        <div className='overflow-x-auto overscroll-x-none max-sm:h-[calc(100dvh-14.5rem)] sm:h-[calc(100dvh-11.5rem)]'>
           <PurchaseTable
             selectProductMap={selectProductMap}
             onClickRow={onClickRow}
