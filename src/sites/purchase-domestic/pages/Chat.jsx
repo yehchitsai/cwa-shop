@@ -285,38 +285,46 @@ const Chat = () => {
                     </div>
                   )}
                   {!isEmpty(results) && (
-                    <div className='chat-footer my-2 flex w-full flex-row gap-2 overflow-y-auto whitespace-nowrap rounded-md bg-gray-200 p-2'>
-                      {results.map((result) => {
-                        const {
-                          name = '', description = '', uuid, image
-                        } = result
-                        return (
-                          <Link
-                            key={uuid}
-                            className='flex flex-col gap-2 rounded-sm bg-white p-2'
-                            to={`?uuid=${uuid}`}
-                            onClick={onClickUUID}
-                            viewTransition
-                          >
-                            <div className='flex w-60 items-center justify-center gap-2'>
-                              <LazyImage
-                                src={image}
-                                className='size-24 rounded-md object-contain'
-                                alt={`${name} 圖片`}
-                              />
-                              <div className='flex flex-1 flex-col'>
-                                <span className='text-gray-500 opacity-60'>Search</span>
-                                <span className='line-clamp-3 whitespace-break-spaces break-all'>
-                                  {name}
-                                </span>
+                    <div className='chat-footer my-2 flex w-full flex-col gap-2 overflow-y-auto rounded-md bg-gray-200 p-2'>
+                      <p className='sticky left-2'>
+                        點擊下面的區塊將查詢套用 AI 導購
+                      </p>
+                      <div className='flex gap-2 whitespace-nowrap'>
+                        {results.map((result) => {
+                          const {
+                            name = '', description = '', uuid, image
+                          } = result
+                          return (
+                            <Link
+                              key={uuid}
+                              className='flex flex-col gap-2 rounded-sm bg-white p-2'
+                              to={`?uuid=${uuid}`}
+                              onClick={onClickUUID}
+                              viewTransition
+                            >
+                              <div className='flex w-60 items-center justify-center gap-2'>
+                                <LazyImage
+                                  src={image}
+                                  className='size-24 rounded-md object-contain'
+                                  alt={`${name} 圖片`}
+                                />
+                                <div className='flex flex-1 flex-col'>
+                                  <span className='text-gray-500 opacity-60'>Search</span>
+                                  <span className='line-clamp-3 whitespace-break-spaces break-all'>
+                                    {name}
+                                  </span>
+                                </div>
                               </div>
-                            </div>
-                            <div className='line-clamp-5 whitespace-break-spaces break-all'>
-                              {description}
-                            </div>
-                          </Link>
-                        )
-                      })}
+                              <div className='line-clamp-5 whitespace-break-spaces break-all'>
+                                {description}
+                              </div>
+                            </Link>
+                          )
+                        })}
+                        <div className='text-transparent'>
+                          l
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
