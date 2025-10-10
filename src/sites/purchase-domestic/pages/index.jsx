@@ -9,6 +9,7 @@ import { TiShoppingCart } from 'react-icons/ti'
 import {
   get,
   isEmpty,
+  isNull,
   keyBy, map, pick
 } from 'lodash-es'
 import toast from 'react-hot-toast'
@@ -146,6 +147,16 @@ const PurchaseDomestic = () => {
     purchaseModalRef.current.open()
   }
 
+  const onCustomCartItemClick = (cartItemProps) => {
+    const index = get(cartItemProps, 'index', null)
+    if (isNull(index)) {
+      return
+    }
+
+    const item = get(cart, `items.${index}`, {})
+    onClickRow(item)
+  }
+
   return (
     <Drawer
       id='rootSidebar'
@@ -153,6 +164,7 @@ const PurchaseDomestic = () => {
         <CustomCartItems
           cart={cart}
           selectProductMap={selectProductMap}
+          onClick={onCustomCartItemClick}
         />
       )}
       bottomItems={(

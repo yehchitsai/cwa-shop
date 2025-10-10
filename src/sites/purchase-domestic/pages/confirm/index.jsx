@@ -9,6 +9,7 @@ import clx from 'classnames'
 import safeAwait from 'safe-await'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
+import { MdEdit } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
 import usePrepurchaseOrder from '../../../../hooks/usePrepurchaseOrder'
 import useCreateConfirmOrder from '../../../../hooks/useCreateConfirmOrder'
@@ -116,7 +117,7 @@ const Confirm = () => {
   }
 
   const onClickRow = (originData) => {
-    if (isLoading) {
+    if (isDisabled) {
       return
     }
 
@@ -235,6 +236,7 @@ const Confirm = () => {
                           <td className='min-w-32'>購買數量</td>
                           <td>特殊要求</td>
                           <td>金額</td>
+                          <th />
                         </tr>
                       </thead>
                       <tbody
@@ -281,6 +283,9 @@ const Confirm = () => {
                               <td>
                                 <p>{quantity * unit_price}</p>
                               </td>
+                              <th>
+                                <MdEdit size='1.2em' />
+                              </th>
                             </tr>
                           )
                         })}
