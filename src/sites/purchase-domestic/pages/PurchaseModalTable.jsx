@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
 import { Field, useFormikContext } from 'formik'
 import clx from 'classnames'
-import { times } from 'lodash-es'
 import { FORM_ITEM } from './constants'
 import FieldError from '../../../components/Form/FieldError'
 
@@ -59,42 +58,19 @@ const PurchaseModalTable = (props) => {
             <td>購買數量</td>
             <td>
               <FieldError name={FORM_ITEM.QUANTITY}>
-                {inventory === -1 && (
-                  <Field
-                    name={FORM_ITEM.QUANTITY}
-                    type='text'
-                    inputMode='numeric'
-                    className={clx(
-                      'input input-bordered w-full lg:max-w-xs',
-                      { '!text-black': !editable }
-                    )}
-                    min={min_purchase_quantity}
-                    placeholder='無上限'
-                    disabled={!editable}
-                    autoComplete='off'
-                  />
-                )}
-                {inventory !== -1 && (
-                  <Field
-                    as='select'
-                    name={FORM_ITEM.QUANTITY}
-                    className={clx(
-                      'select select-bordered w-full lg:max-w-xs',
-                      { '!text-black': !editable }
-                    )}
-                    disabled={!editable}
-                  >
-                    <option value={-1} disabled>Select fish type</option>
-                    {times(inventory - min_purchase_quantity + 1).map((index) => {
-                      const value = index + min_purchase_quantity
-                      return (
-                        <option value={value} key={value}>
-                          {`${value} 隻`}
-                        </option>
-                      )
-                    })}
-                  </Field>
-                )}
+                <Field
+                  name={FORM_ITEM.QUANTITY}
+                  type='text'
+                  inputMode='numeric'
+                  className={clx(
+                    'input input-bordered w-full lg:max-w-xs',
+                    { '!text-black': !editable }
+                  )}
+                  min={min_purchase_quantity}
+                  placeholder={inventory === -1 ? '無上限' : ''}
+                  disabled={!editable}
+                  autoComplete='off'
+                />
               </FieldError>
             </td>
           </tr>

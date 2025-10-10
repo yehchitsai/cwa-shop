@@ -12,7 +12,6 @@ import { MdOutlineDelete } from 'react-icons/md'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
-import CountSelect from '../CountSelect'
 import usePrepurchaseOrder from '../../../../hooks/usePrepurchaseOrder'
 import useCreateConfirmOrder from '../../../../hooks/useCreateConfirmOrder'
 import useCreatePrepurchaseOrder from '../../../../hooks/useCreatePrepurchaseOrder'
@@ -27,9 +26,17 @@ const initCart = {
   total_quantity: '0'
 }
 
-function testGrater(count) {
-  const { min_purchase_quantity: min } = this.parent
-  if (count == null || min == null) return true
+function quantityRange(count) {
+  const { min_purchase_quantity: min, inventory: max } = this.parent
+  if (count == null || min == null) {
+    return true
+  }
+
+  if (count > max && max !== -1) {
+    return this.createError({
+      message: `不可超過在庫量 ${max}`
+    })
+  }
 
   return count >= min
     ? true
@@ -44,7 +51,7 @@ const validationSchema = Yup.array().of(
       is: () => true,
       then: (schema) => schema.test(
         'greater-than-min',
-        testGrater
+        quantityRange
       )
     }),
     [FORM_ITEM.REQUEST]: Yup.string()
@@ -218,26 +225,16 @@ const Confirm = () => {
                           <td>{unit_price}</td>
                           <td>
                             <FieldError name={`${index}.quantity`}>
-                              {inventory === -1 && (
-                                <Field
-                                  name={`${index}.quantity`}
-                                  className='input input-sm input-bordered w-full'
-                                  type='text'
-                                  inputMode='numeric'
-                                  placeholder='無上限'
-                                  min={min}
-                                  disabled={isDisabled}
-                                  autoComplete='off'
-                                />
-                              )}
-                              {inventory !== -1 && (
-                                <CountSelect
-                                  max={inventory}
-                                  min={min}
-                                  name={`${index}.quantity`}
-                                  disabled={isDisabled}
-                                />
-                              )}
+                              <Field
+                                name={`${index}.quantity`}
+                                className='input input-sm input-bordered w-full'
+                                type='text'
+                                inputMode='numeric'
+                                placeholder={inventory === -1 ? '無上限' : ''}
+                                min={min}
+                                disabled={isDisabled}
+                                autoComplete='off'
+                              />
                             </FieldError>
                           </td>
                           <td>

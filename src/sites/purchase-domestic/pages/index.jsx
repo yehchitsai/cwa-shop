@@ -36,9 +36,17 @@ const initCart = {
   total_quantity: '0'
 }
 
-function testGrater(count) {
-  const { min_purchase_quantity: min } = this.parent
-  if (count == null || min == null) return true
+function quantityRange(count) {
+  const { min_purchase_quantity: min, inventory: max } = this.parent
+  if (count == null || min == null) {
+    return true
+  }
+
+  if (count > max && max !== -1) {
+    return this.createError({
+      message: `不可超過在庫量 ${max}`
+    })
+  }
 
   return count >= min
     ? true
@@ -52,7 +60,7 @@ const validationSchema = Yup.object().shape({
     is: () => true,
     then: (schema) => schema.test(
       'greater-than-min',
-      testGrater
+      quantityRange
     )
   }),
   [FORM_ITEM.REQUEST]: Yup.string()
