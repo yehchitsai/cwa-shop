@@ -2,6 +2,7 @@ import { useMemo, useState, useRef } from 'react'
 import { Formik, Form } from 'formik'
 import {
   filter, flow, get, isEmpty, isEqual, isObject, keyBy, map, pick,
+  sumBy,
   times
 } from 'lodash-es'
 import clx from 'classnames'
@@ -31,6 +32,11 @@ const getTotalPrice = (result) => {
   return totalPrice
 }
 
+const getDiscounts = (result) => {
+  const discounts = get(result, 'results.discounts', [])
+  return discounts
+}
+
 const defaultClickRowData = {
   [FORM_ITEM.QUANTITY]: 0,
   [FORM_ITEM.REQUEST]: ''
@@ -43,11 +49,14 @@ const Confirm = () => {
   const [clickRowData, setClickRowData] = useState(defaultClickRowData)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [totalPrice, setTotalPrice] = useState(0)
+  const [discounts, setDiscounts] = useState([])
   const [items, setItems] = useState(mockItems)
   const { data = initCart } = usePrepurchaseOrder({
     onSuccess: (result) => {
       const newTotalPrice = getTotalPrice(result)
+      const newDiscounts = getDiscounts(result)
       setTotalPrice(newTotalPrice)
+      setDiscounts(newDiscounts)
     },
     onError: console.log
   })
@@ -81,7 +90,9 @@ const Confirm = () => {
   } = useCreatePrepurchaseOrder({
     onSuccess: (result) => {
       const newTotalPrice = getTotalPrice(result)
+      const newDiscounts = getDiscounts(result)
       setTotalPrice(newTotalPrice)
+      setDiscounts(newDiscounts)
     }
   })
   const {
@@ -89,6 +100,9 @@ const Confirm = () => {
     isMutating: isOrderMutating
   } = useCreateConfirmOrder()
   const navigate = useNavigate()
+  const totalDiscount = useMemo(() => {
+    return sumBy(discounts, (discount) => +get(discount, 'discount_amt', 0))
+  }, [discounts])
   const isLoading = (isPreorderMutating || isOrderMutating || isCategoryInfoLoading)
   const isDisabled = (isLoading || isSubmitted)
 
@@ -210,8 +224,7 @@ const Confirm = () => {
                 <div
                   className='m-auto h-auto max-lg:max-w-2xl max-sm:min-w-full lg:max-w-5xl'
                 >
-                  {/* <div className='h-[calc(100dvh-5.5rem)] overflow-x-auto'> */}
-                  <div className='h-[calc(100dvh-8.5rem)] overflow-x-auto'>
+                  <div className='h-[54dvh] overflow-x-auto'>
                     <table className='table table-pin-rows table-pin-cols'>
                       <thead>
                         <tr className='max-sm:-top-1'>
@@ -274,13 +287,65 @@ const Confirm = () => {
                       </tbody>
                     </table>
                   </div>
+                  <div className='divider' />
+                  <div className='px-2 text-lg font-bold'>折扣</div>
+                  <div className='max-h-[24dvh] overflow-x-auto'>
+                    <table className='table table-pin-rows max-w-full'>
+                      <thead>
+                        <tr className='max-sm:-top-1'>
+                          <th>項次</th>
+                          <th>名稱</th>
+                          <td>金額</td>
+                        </tr>
+                      </thead>
+                      <tbody
+                        className={clx({
+                          '[&_p]:skeleton [&_p]:text-transparent': isLoading
+                        })}
+                      >
+                        {map(discounts, (discount, index) => {
+                          const {
+                            type = '--',
+                            discount_amt = 0
+                          } = discount
+                          return (
+                            <tr
+                              key={index}
+                              className='whitespace-nowrap'
+                            >
+                              <th className='text-sm'>
+                                <p>
+                                  {index + 1}
+                                </p>
+                              </th>
+                              <td>
+                                <p>{type}</p>
+                              </td>
+                              <td>
+                                <p>{`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(discount_amt)} NTD`}</p>
+                              </td>
+                            </tr>
+                          )
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
                   <div className='my-2 mr-4 flex justify-end space-x-2'>
-                    <div className='mr-4 flex items-center justify-center break-all'>
-                      總金額：
-                      <br />
-                      <span className={clx({ 'skeleton text-transparent': isLoading })}>
-                        {`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(totalPrice)} NTD`}
-                      </span>
+                    <div className='mr-4 flex flex-col gap-2'>
+                      <div className='flex items-center justify-center break-all text-sm'>
+                        總折扣：
+                        <br />
+                        <span className={clx({ 'skeleton text-transparent': isLoading })}>
+                          {`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(totalDiscount)} NTD`}
+                        </span>
+                      </div>
+                      <div className='flex items-center justify-center break-all text-sm'>
+                        總金額：
+                        <br />
+                        <span className={clx({ 'skeleton text-transparent': isLoading })}>
+                          {`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(totalPrice)} NTD`}
+                        </span>
+                      </div>
                     </div>
                     <div>
                       <button
