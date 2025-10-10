@@ -101,8 +101,13 @@ const Confirm = () => {
     isMutating: isOrderMutating
   } = useCreateConfirmOrder()
   const navigate = useNavigate()
-  const totalDiscount = useMemo(() => {
-    return sumBy(discounts, (discount) => +get(discount, 'discount_amt', 0))
+  const { totalDiscount, isDiscountEmpty } = useMemo(() => {
+    const newIsDiscountEmpty = isEmpty(discounts)
+    const newTotalDiscount = sumBy(discounts, (discount) => +get(discount, 'discount_amt', 0))
+    return {
+      totalDiscount: newTotalDiscount,
+      isDiscountEmpty: newIsDiscountEmpty
+    }
   }, [discounts])
   const isLoading = (isPreorderMutating || isOrderMutating || isCategoryInfoLoading)
   const isDisabled = (isLoading || isSubmitted)
@@ -198,6 +203,7 @@ const Confirm = () => {
     }
 
     setItems([])
+    setDiscounts([])
     toast.success('刪除訂單成功! 3 秒後返回首頁', { id: toastId })
     setTimeout(() => navigate('../', { relative: 'path' }), 3000)
   }
@@ -226,7 +232,11 @@ const Confirm = () => {
                   className='m-auto h-auto max-lg:max-w-2xl max-sm:min-w-full lg:max-w-5xl'
                 >
                   <div className='flex h-[calc(100dvh-8.5rem)] flex-col justify-between'>
-                    <div className='max-h-[50dvh] overflow-x-auto overscroll-x-none'>
+                    <div
+                      className={clx('max-h-[50dvh] overflow-x-auto overscroll-x-none', {
+                        'h-[calc(100dvh-8.5rem)]': isDiscountEmpty
+                      })}
+                    >
                       <table className='table table-pin-rows table-pin-cols'>
                         <thead>
                           <tr className='max-sm:-top-1'>
@@ -293,7 +303,7 @@ const Confirm = () => {
                         </tbody>
                       </table>
                     </div>
-                    <div>
+                    <div className={clx({ hidden: isDiscountEmpty })}>
                       <div className='divider my-1' />
                       <div className='flex items-center gap-2 px-2 text-lg font-bold'>
                         <MdDiscount />
