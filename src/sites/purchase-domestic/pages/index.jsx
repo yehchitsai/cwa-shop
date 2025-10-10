@@ -11,22 +11,19 @@ import {
   isEmpty,
   keyBy, map, pick
 } from 'lodash-es'
-import { Form, Formik } from 'formik'
-import * as Yup from 'yup'
 import toast from 'react-hot-toast'
 import safeAwait from 'safe-await'
 import Drawer from '../../../components/Drawer'
-import PurchaseModal from '../../../components/Modal/Purchase'
 import SearchMenu from '../../../components/SearchMenu'
 import CustomCartItems from './CustomCartItems'
 import CustomCartBottomItems from './CustomCartBottomItems'
 import ItemSelectSection from './ItemSelectSection'
 import PurchaseTable from './PurchaseTable'
-import PurchaseModalTable from './PurchaseModalTable'
 import Modal from '../../../components/Modal'
 import useCreatePrepurchaseOrder from '../../../hooks/useCreatePrepurchaseOrder'
 import usePrepurchaseOrder from '../../../hooks/usePrepurchaseOrder'
 import Chat from './Chat'
+import EditRowModal from './EditRowModal'
 import { FORM_ITEM } from './constants'
 
 const initCart = {
@@ -36,41 +33,16 @@ const initCart = {
   total_quantity: '0'
 }
 
-function quantityRange(count) {
-  const { min_purchase_quantity: min, inventory: max } = this.parent
-  if (count == null || min == null) {
-    return true
-  }
-
-  if (count > max && max !== -1) {
-    return this.createError({
-      message: `不可超過在庫量 ${max}`
-    })
-  }
-
-  return count >= min
-    ? true
-    : this.createError({
-      message: `起購量為 ${min}`
-    })
+const defaultClickRowData = {
+  [FORM_ITEM.QUANTITY]: 0,
+  [FORM_ITEM.REQUEST]: ''
 }
-
-const validationSchema = Yup.object().shape({
-  [FORM_ITEM.QUANTITY]: Yup.number().typeError('僅限數字').required('不可為空').when(FORM_ITEM.MIN_PURCHASE_QUANTITY, {
-    is: () => true,
-    then: (schema) => schema.test(
-      'greater-than-min',
-      quantityRange
-    )
-  }),
-  [FORM_ITEM.REQUEST]: Yup.string()
-})
 
 const PurchaseDomestic = () => {
   const { t } = useTranslation()
   const purchaseModalRef = useRef()
   const modifyPurchaseModalRef = useRef()
-  const [clickRowData, setClickRowData] = useState({})
+  const [clickRowData, setClickRowData] = useState(defaultClickRowData)
   const [selectProducts, setSelectProducts] = useState([])
   const [cart, setCart] = useState(initCart)
   const { trigger, isMutating } = useCreatePrepurchaseOrder()
@@ -113,7 +85,7 @@ const PurchaseDomestic = () => {
       return
     }
     setSelectProducts(newSelectProducts)
-    setClickRowData({})
+    setClickRowData(defaultClickRowData)
   }
 
   const onSelectRow = (rowData = {}) => {
@@ -138,8 +110,8 @@ const PurchaseDomestic = () => {
     }
 
     const rowData = {
-      quantity: get(originData, 'min_purchase_quantity', 0),
-      request: get(originData, 'request', ''),
+      [FORM_ITEM.MIN_PURCHASE_QUANTITY]: get(originData, FORM_ITEM.MIN_PURCHASE_QUANTITY, 0),
+      [FORM_ITEM.REQUEST]: get(originData, FORM_ITEM.REQUEST, ''),
       ...originData
     }
     const { fish_code } = rowData
@@ -162,7 +134,7 @@ const PurchaseDomestic = () => {
   }
 
   const onPurchaseModalClose = () => {
-    setClickRowData({})
+    setClickRowData(defaultClickRowData)
   }
 
   const onModifyPurchaseModalClose = () => {
@@ -232,30 +204,14 @@ const PurchaseDomestic = () => {
           />
         </div>
       </div>
-      <Formik
-        initialValues={clickRowData}
-        validationSchema={validationSchema}
+      <EditRowModal
+        modalRef={purchaseModalRef}
+        isAddToCart={isAddToCart}
+        isLoading={isMutating}
         onSubmit={onPurchaseModalOk}
-      >
-        <PurchaseModal
-          modalRef={purchaseModalRef}
-          isAddToCart={isAddToCart}
-          onClose={onPurchaseModalClose}
-        >
-          {(footer) => {
-            return (
-              <Form>
-                <PurchaseModalTable
-                  rowData={clickRowData}
-                  disabled={isMutating}
-                  isAddToCart
-                />
-                {footer}
-              </Form>
-            )
-          }}
-        </PurchaseModal>
-      </Formik>
+        onClose={onPurchaseModalClose}
+        initialValues={clickRowData}
+      />
       <Modal
         id='MODIFY_PURCHASE_MODAL'
         title='修改或從購物車刪除'

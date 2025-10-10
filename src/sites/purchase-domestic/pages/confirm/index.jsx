@@ -1,23 +1,21 @@
-import { useMemo, useState } from 'react'
-import { Formik, Field, Form } from 'formik'
+import { useMemo, useState, useRef } from 'react'
+import { Formik, Form } from 'formik'
 import {
-  filter, flow, get, isEmpty, isEqual, keyBy, map, pick,
-  sum,
+  filter, flow, get, isEmpty, isEqual, isObject, keyBy, map, pick,
   times
 } from 'lodash-es'
 import clx from 'classnames'
 import safeAwait from 'safe-await'
 import toast from 'react-hot-toast'
-import { MdOutlineDelete } from 'react-icons/md'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import * as Yup from 'yup'
 import usePrepurchaseOrder from '../../../../hooks/usePrepurchaseOrder'
 import useCreateConfirmOrder from '../../../../hooks/useCreateConfirmOrder'
 import useCreatePrepurchaseOrder from '../../../../hooks/useCreatePrepurchaseOrder'
 import useCategoryInfo from '../../../../hooks/useCategoryInfo'
-import FieldError from '../../../../components/Form/FieldError'
+import Modal from '../../../../components/Modal'
 import { FORM_ITEM } from '../constants'
+import EditRowModal from '../EditRowModal'
 
 const initCart = {
   discounts: [],
@@ -26,45 +24,31 @@ const initCart = {
   total_quantity: '0'
 }
 
-function quantityRange(count) {
-  const { min_purchase_quantity: min, inventory: max } = this.parent
-  if (count == null || min == null) {
-    return true
-  }
+const mockItems = times(20).map(() => ({ quantity: 0, request: '' }))
 
-  if (count > max && max !== -1) {
-    return this.createError({
-      message: `不可超過在庫量 ${max}`
-    })
-  }
-
-  return count >= min
-    ? true
-    : this.createError({
-      message: `起購量為 ${min}`
-    })
+const getTotalPrice = (result) => {
+  const totalPrice = get(result, 'results.total_price', 0)
+  return totalPrice
 }
 
-const validationSchema = Yup.array().of(
-  Yup.object().shape({
-    [FORM_ITEM.QUANTITY]: Yup.number().typeError('僅限數字').required('不可為空').when(FORM_ITEM.MIN_PURCHASE_QUANTITY, {
-      is: () => true,
-      then: (schema) => schema.test(
-        'greater-than-min',
-        quantityRange
-      )
-    }),
-    [FORM_ITEM.REQUEST]: Yup.string()
-  })
-)
-
-const mockItems = times(20).map(() => ({ quantity: 0, request: '' }))
+const defaultClickRowData = {
+  [FORM_ITEM.QUANTITY]: 0,
+  [FORM_ITEM.REQUEST]: ''
+}
 
 const Confirm = () => {
   const { t } = useTranslation()
+  const purchaseModalRef = useRef()
+  const modifyPurchaseModalRef = useRef()
+  const [clickRowData, setClickRowData] = useState(defaultClickRowData)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [totalPrice, setTotalPrice] = useState(0)
   const [items, setItems] = useState(mockItems)
   const { data = initCart } = usePrepurchaseOrder({
+    onSuccess: (result) => {
+      const newTotalPrice = getTotalPrice(result)
+      setTotalPrice(newTotalPrice)
+    },
     onError: console.log
   })
   const fishCodes = useMemo(() => {
@@ -78,23 +62,28 @@ const Confirm = () => {
         () => get(result, 'results.items', []),
         (categoryInfoItems) => keyBy(categoryInfoItems, 'fish_code')
       )()
-      const newItems = get(data, 'items', []).map((item) => {
+      const newItems = get(data, 'items', []).map((item, index) => {
         const { fish_code } = item
         return {
+          index,
           ...item,
           fish_code,
           min_purchase_quantity: get(categoryInfoMap, `${fish_code}.min_purchase_quantity`, 0),
           inventory: get(categoryInfoMap, `${fish_code}.inventory`, 0)
         }
       })
-      console.log({ newItems })
       setItems(newItems)
     }
   })
   const {
     trigger: createPrepurchaseOrder,
     isMutating: isPreorderMutating
-  } = useCreatePrepurchaseOrder()
+  } = useCreatePrepurchaseOrder({
+    onSuccess: (result) => {
+      const newTotalPrice = getTotalPrice(result)
+      setTotalPrice(newTotalPrice)
+    }
+  })
   const {
     trigger: createConfirmOrder,
     isMutating: isOrderMutating
@@ -110,6 +99,42 @@ const Confirm = () => {
     const body = { order_items: orderItems }
     const result = await safeAwait(createPrepurchaseOrder(body))
     return result
+  }
+
+  const onClickRow = (originData) => {
+    if (isLoading) {
+      return
+    }
+
+    const rowData = {
+      [FORM_ITEM.MIN_PURCHASE_QUANTITY]: get(originData, FORM_ITEM.MIN_PURCHASE_QUANTITY, 0),
+      [FORM_ITEM.REQUEST]: get(originData, FORM_ITEM.REQUEST, ''),
+      ...originData
+    }
+    setClickRowData(rowData)
+    modifyPurchaseModalRef.current.open()
+  }
+
+  const onEditModalClose = () => {
+    purchaseModalRef.current.close()
+    setClickRowData(defaultClickRowData)
+  }
+
+  const onEditModalOk = (newRowData) => {
+    const newItems = items.map((item) => {
+      if (newRowData.fish_code === item.fish_code) {
+        return { ...item, ...newRowData }
+      }
+
+      return item
+    })
+    const isUpdateSuccess = updateCart(newItems)
+    if (!isUpdateSuccess) {
+      return
+    }
+
+    setItems(newItems)
+    onEditModalClose()
   }
 
   const onRemove = async (formHelper, index) => {
@@ -162,138 +187,145 @@ const Confirm = () => {
     setTimeout(() => navigate('../', { relative: 'path' }), 3000)
   }
 
+  const onModifyPurchaseModalClose = (formHelper) => () => {
+    modifyPurchaseModalRef.current.close()
+    onRemove(formHelper, clickRowData.index)
+  }
+
+  const onModifyPurchaseModalOk = () => {
+    purchaseModalRef.current.open()
+  }
+
   return (
-    <Formik
-      initialValues={items}
-      onSubmit={onSubmit}
-      validationSchema={validationSchema}
-      enableReinitialize
-    >
-      {(formHelper) => {
-        const formItems = get(formHelper, 'values', [])
-        const totalPrice = sum(items.map((item, index) => {
-          const { unit_price = 0 } = item
-          const itemTotal = get(formItems, `${index}.quantity`, 0)
-          return itemTotal * unit_price
-        }))
-        return (
-          <Form>
-            <div
-              className='m-auto h-auto max-lg:max-w-2xl max-sm:min-w-full lg:max-w-5xl'
-            >
-              {/* <div className='h-[calc(100dvh-5.5rem)] overflow-x-auto'> */}
-              <div className='h-[calc(100dvh-8.5rem)] overflow-x-auto'>
-                <table className='table table-pin-rows table-pin-cols'>
-                  <thead>
-                    <tr className='max-sm:-top-1'>
-                      <th>項次</th>
-                      <td>品名</td>
-                      <td>尺寸</td>
-                      <td>單價</td>
-                      <td className='min-w-32'>購買數量</td>
-                      <td>特殊要求</td>
-                      <td>金額</td>
-                      <th />
-                    </tr>
-                  </thead>
-                  <tbody
-                    className={clx({
-                      '[&_*]:skeleton [&_*]:bg-transparent [&_*]:text-transparent': isLoading
-                    })}
-                  >
-                    {map(items, (item, index) => {
-                      const {
-                        fish_name = '--',
-                        fish_size = '--',
-                        unit_price = 0
-                      } = item
-                      const inventory = get(formItems, `${index}.inventory`, 0)
-                      const itemTotal = get(formItems, `${index}.quantity`, 0)
-                      const min = get(formItems, `${index}.min_purchase_quantity`, 0)
-                      return (
-                        <tr
-                          key={index}
-                          className={clx(
-                            'whitespace-nowrap cursor-pointer'
-                          )}
-                        >
-                          <th className='text-sm'>
-                            {index + 1}
-                          </th>
-                          <td>{fish_name}</td>
-                          <td>{fish_size}</td>
-                          <td>{unit_price}</td>
-                          <td>
-                            <FieldError name={`${index}.quantity`}>
-                              <Field
-                                name={`${index}.quantity`}
-                                className='input input-sm input-bordered w-full'
-                                type='text'
-                                inputMode='numeric'
-                                placeholder={inventory === -1 ? '無上限' : ''}
-                                min={min}
-                                disabled={isDisabled}
-                                autoComplete='off'
-                              />
-                            </FieldError>
-                          </td>
-                          <td>
-                            <Field
-                              className='input input-sm input-bordered w-40'
-                              name={`${index}.request`}
-                              disabled={isDisabled}
-                            />
-                          </td>
-                          <td>{itemTotal * unit_price}</td>
-                          <th className='text-right'>
-                            <button
-                              type='button'
-                              className='btn btn-square btn-outline btn-error'
-                              onClick={() => onRemove(formHelper, index)}
-                              disabled={isDisabled}
-                            >
-                              <MdOutlineDelete
-                                size='1.5em'
-                              />
-                            </button>
-                          </th>
+    <>
+      <Formik
+        initialValues={items}
+        onSubmit={onSubmit}
+        enableReinitialize
+      >
+        {(formHelper) => {
+          return (
+            <>
+              <Form>
+                <div
+                  className='m-auto h-auto max-lg:max-w-2xl max-sm:min-w-full lg:max-w-5xl'
+                >
+                  {/* <div className='h-[calc(100dvh-5.5rem)] overflow-x-auto'> */}
+                  <div className='h-[calc(100dvh-8.5rem)] overflow-x-auto'>
+                    <table className='table table-pin-rows table-pin-cols'>
+                      <thead>
+                        <tr className='max-sm:-top-1'>
+                          <th>項次</th>
+                          <td>品名</td>
+                          <td>尺寸</td>
+                          <td>單價</td>
+                          <td className='min-w-32'>購買數量</td>
+                          <td>特殊要求</td>
+                          <td>金額</td>
                         </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
-              <div className='my-2 mr-4 flex justify-end space-x-2'>
-                <div className='mr-4 flex items-center justify-center break-all'>
-                  總金額：
-                  <br />
-                  {`${new Intl.NumberFormat('en-US').format(totalPrice)} NTD`}
+                      </thead>
+                      <tbody
+                        className={clx({
+                          '[&_p]:skeleton [&_p]:text-transparent': isLoading
+                        })}
+                      >
+                        {map(items, (item, index) => {
+                          const {
+                            [FORM_ITEM.FISH_NAME]: fish_name = '--',
+                            [FORM_ITEM.FISH_SIZE]: fish_size = '--',
+                            [FORM_ITEM.UNIT_PRICE]: unit_price = 0,
+                            [FORM_ITEM.REQUEST]: request = '--',
+                            [FORM_ITEM.QUANTITY]: quantity = 0
+                          } = item
+                          return (
+                            <tr
+                              key={index}
+                              className={clx(
+                                'whitespace-nowrap cursor-pointer'
+                              )}
+                              onClick={() => isObject(item) && onClickRow(item)}
+                            >
+                              <th className='text-sm'>
+                                <p>
+                                  {index + 1}
+                                </p>
+                              </th>
+                              <td>
+                                <p>{fish_name}</p>
+                              </td>
+                              <td>
+                                <p>{fish_size}</p>
+                              </td>
+                              <td>
+                                <p>{unit_price}</p>
+                              </td>
+                              <td>
+                                <p>{quantity}</p>
+                              </td>
+                              <td>
+                                <p>{request}</p>
+                              </td>
+                              <td>
+                                <p>{quantity * unit_price}</p>
+                              </td>
+                            </tr>
+                          )
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className='my-2 mr-4 flex justify-end space-x-2'>
+                    <div className='mr-4 flex items-center justify-center break-all'>
+                      總金額：
+                      <br />
+                      <span className={clx({ 'skeleton text-transparent': isLoading })}>
+                        {`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(totalPrice)} NTD`}
+                      </span>
+                    </div>
+                    <div>
+                      <button
+                        type='submit'
+                        className='btn btn-outline btn-success'
+                        disabled={isDisabled}
+                      >
+                        {`${t('submitCart')}`}
+                      </button>
+                    </div>
+                    <div>
+                      <button
+                        type='button'
+                        className='btn btn-outline btn-error'
+                        onClick={onRemoveAll}
+                        disabled={isDisabled}
+                      >
+                        {`${t('removerAll')}`}
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <button
-                    type='submit'
-                    className='btn btn-outline btn-success'
-                    disabled={isDisabled}
-                  >
-                    {`${t('submitCart')}`}
-                  </button>
-                </div>
-                <div>
-                  <button
-                    type='button'
-                    className='btn btn-outline btn-error'
-                    onClick={onRemoveAll}
-                    disabled={isDisabled}
-                  >
-                    {`${t('removerAll')}`}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </Form>
-        )
-      }}
-    </Formik>
+              </Form>
+              <Modal
+                id='MODIFY_PURCHASE_MODAL'
+                title='修改或從購物車刪除'
+                modalRef={modifyPurchaseModalRef}
+                onClose={onModifyPurchaseModalClose(formHelper)}
+                onOk={onModifyPurchaseModalOk}
+                closeText='刪除'
+                okText='修改'
+              />
+            </>
+          )
+        }}
+      </Formik>
+      <EditRowModal
+        modalRef={purchaseModalRef}
+        onSubmit={onEditModalOk}
+        onClose={onEditModalClose}
+        initialValues={clickRowData}
+        isLoading={isLoading}
+        isAddToCart={false}
+      />
+    </>
   )
 }
 
