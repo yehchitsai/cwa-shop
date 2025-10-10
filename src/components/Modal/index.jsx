@@ -129,32 +129,34 @@ const Modal = (props) => {
         className={clx(
           'modal-box p-0',
           {
-            'h-full min-h-full w-full max-w-[100vw] rounded-none max-sm:overflow-y-hidden': isFullSize
+            'min-w-[100dvw] min-h-[100dvh] max-w-dvw max-h-dvh rounded-none max-sm:overflow-y-hidden': isFullSize
           },
           { [className]: className },
           { hidden: !visible }
         )}
       >
-        <form method='dialog'>
-          {/* if there is a button in form, it will close the modal */}
-          <button
-            type='button'
-            className='btn btn-circle btn-md absolute right-2 top-2 z-10'
-            onClick={onModalClose}
-          >
-            <MdOutlineClose size='1.5em' />
-          </button>
-        </form>
-        {!isUndefined(title) && (
-          <h3 className='px-6 pt-6 text-lg font-bold'>{title}</h3>
-        )}
+        <div className='flex justify-between p-4'>
+          {!isUndefined(title) && (
+            <h3 className='text-lg font-bold'>{title}</h3>
+          )}
+          <form method='dialog'>
+            {/* if there is a button in form, it will close the modal */}
+            <button
+              type='button'
+              className='btn btn-circle btn-sm'
+              onClick={onModalClose}
+            >
+              <MdOutlineClose size='1.5em' />
+            </button>
+          </form>
+        </div>
         {
           visible
             ? (
               <div
                 id={`${id}-body`}
                 className={clx(
-                  'px-6',
+                  'px-2',
                   { 'overflow-y-auto': !isFullSize },
                   { 'overflow-x-hidden': !isFullSize },
                   { 'max-h-[65vh]': !isFormModal },

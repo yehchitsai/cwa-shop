@@ -82,7 +82,9 @@ export default [
           min_purchase_quantity: random(10, 20),
           note: ['', `note_${index}`][random(0, 1)],
           image_link: getFakeImage(100, 100, `${cat}-${fishName}`),
-          video_link: videos[random(0, 2)]
+          video_link: videos[random(0, 2)],
+          image_links: times(3).map((imageIndex) => getFakeImage(100, 100, `${cat}-${fishName}-${imageIndex}`)),
+          video_links: videos.slice(random(0, 2))
         }
       })
       return {
