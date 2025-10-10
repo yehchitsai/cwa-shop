@@ -226,7 +226,7 @@ const Confirm = () => {
                   className='m-auto h-auto max-lg:max-w-2xl max-sm:min-w-full lg:max-w-5xl'
                 >
                   <div className='flex h-[calc(100dvh-8.5rem)] flex-col justify-between'>
-                    <div className='max-h-[60dvh] overflow-x-auto'>
+                    <div className='max-h-[50dvh] overflow-x-auto overscroll-x-none'>
                       <table className='table table-pin-rows table-pin-cols'>
                         <thead>
                           <tr className='max-sm:-top-1'>
@@ -293,13 +293,13 @@ const Confirm = () => {
                         </tbody>
                       </table>
                     </div>
-                    <div className=''>
+                    <div>
                       <div className='divider my-1' />
                       <div className='flex items-center gap-2 px-2 text-lg font-bold'>
                         <MdDiscount />
                         <span>折扣</span>
                       </div>
-                      <div className='max-h-[calc(34dvh-8.5rem)] overflow-x-auto'>
+                      <div className='max-h-[calc(44dvh-8.5rem)] overflow-x-auto'>
                         <table className='table table-pin-rows max-w-full'>
                           <thead>
                             <tr className='max-sm:-top-1'>
