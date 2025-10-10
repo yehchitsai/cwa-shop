@@ -17,7 +17,7 @@ const PurchaseModal = (props) => {
       title={isAddToCart ? '加入購物車' : '修改購物車'}
       isFormModal
       closeText='關閉'
-      okText={isAddToCart ? '新增' : '修改'}
+      okText={isAddToCart ? '確定' : '修改'}
     >
       {children}
     </Modal>

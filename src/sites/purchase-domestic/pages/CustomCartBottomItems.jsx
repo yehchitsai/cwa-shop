@@ -30,8 +30,8 @@ const CustomCartBottomItems = (props) => {
         })}
       </ul>
     </details>,
-    `${t('totalCount')}: ${total_quantity}`,
-    `${t('totalPrice')}: ${total_price}`
+    `${t('totalCount')}: ${new Intl.NumberFormat('en-US').format(total_quantity)}`,
+    `${t('totalPrice')}: ${`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(total_price)} NTD`}`
   ]
   return (
     <CartBottomItems

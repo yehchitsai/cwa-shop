@@ -7,8 +7,8 @@ const subPrefix = getEnvVar('VITE_AWS_PURCHASE_HOST_PREFIX')
 const awsHostPrefix = getApiPrefix(subPrefix)
 const createPrepurchaseOrderEndPoint = `${awsHostPrefix}/prepurchaseorder`
 
-const useCreatePrepurchaseOrder = () => {
-  const { trigger: originTrigger, ...rest } = useCreate(createPrepurchaseOrderHost)
+const useCreatePrepurchaseOrder = (options) => {
+  const { trigger: originTrigger, ...rest } = useCreate(createPrepurchaseOrderHost, {}, options)
 
   const trigger = (body) => {
     return originTrigger({
