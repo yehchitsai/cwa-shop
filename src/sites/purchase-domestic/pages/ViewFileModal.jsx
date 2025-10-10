@@ -4,7 +4,7 @@ import {
 import clx from 'classnames'
 import { MdArrowForwardIos, MdArrowBackIosNew, MdOpenInNew } from 'react-icons/md'
 import {
-  get, isEmpty
+  get
 } from 'lodash-es'
 import Slider from 'react-slick'
 import wait from '../../../utils/wait'
@@ -48,13 +48,11 @@ const ViewFileModal = (props) => {
     selectedRow = {}
   } = props
   const {
-    video_link: video = '',
-    image_link: image = ''
+    video_links: videos = [],
+    image_links: images = []
   } = selectedRow
-  const [slideIndex, setSlideIndex] = useState(0)
+  const [, setSlideIndex] = useState(0)
   const playerRef = useRef(null)
-  const isVideoExist = !isEmpty(video)
-  const isOpenNewTabBtnVisible = !(isVideoExist && slideIndex === 0)
 
   const onSlideChange = (index) => {
     setSlideIndex(index)
@@ -79,7 +77,6 @@ const ViewFileModal = (props) => {
       isFullSize
     >
       <Slider
-        className='translate-y-[6%]'
         dotsClass='slick-dots bottom-[0.8rem!important]'
         prevArrow={(
           <SliderArrow customClassName='left-2'>
@@ -98,38 +95,48 @@ const ViewFileModal = (props) => {
         infinite
         dots
       >
-        {!isEmpty(video) && (
-          <div className='max-w-full max-sm:h-[80vh] sm:max-h-full'>
-            <div className='m-auto max-w-screen-lg'>
-              <Video
-                options={getOptions([{ productVideo: video }])}
-                onReady={onPlayerReady}
-              />
+        {videos.map((video, index) => {
+          return (
+            <div
+              className='max-w-full max-sm:h-[80vh] sm:max-h-full'
+              key={`video-${index}`}
+            >
+              <div className='m-auto max-w-screen-lg'>
+                <Video
+                  options={getOptions([{ productVideo: video }])}
+                  onReady={onPlayerReady}
+                />
+              </div>
             </div>
-          </div>
-        )}
-        <div className='h-[80vh]'>
-          <div className='max-sm:flex max-sm:h-[75vh]'>
-            <LazyImage
-              src={image}
-              key={image}
-              className='m-auto max-h-screen object-scale-down'
-              alt='Carousel component'
-              loaderClassName='translate-x-[-100%] z-0 w-[100vw] h-[80vh]'
-            />
-          </div>
-        </div>
+          )
+        })}
+        {images.map((image, index) => {
+          return (
+            <div
+              className='h-[80vh]'
+              key={`image-${index}`}
+            >
+              <div className='max-sm:flex max-sm:h-[75vh]'>
+                <LazyImage
+                  src={image}
+                  key={image}
+                  className='m-auto max-h-screen object-scale-down'
+                  alt='Carousel component'
+                  loaderClassName='translate-x-[-100%] z-0 w-[100vw] h-[80vh]'
+                />
+              </div>
+              <a
+                target='_blank'
+                rel='noreferrer noopener'
+                className='btn btn-circle fixed bottom-2 right-2'
+                href={image}
+              >
+                <MdOpenInNew size='1.5rem' />
+              </a>
+            </div>
+          )
+        })}
       </Slider>
-      {(isOpenNewTabBtnVisible) && (
-        <a
-          target='_blank'
-          rel='noreferrer noopener'
-          className='btn btn-circle fixed bottom-2 right-2'
-          href={image}
-        >
-          <MdOpenInNew size='1.5rem' />
-        </a>
-      )}
     </Modal>
   )
 }

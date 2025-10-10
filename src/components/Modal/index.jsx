@@ -129,7 +129,7 @@ const Modal = (props) => {
         className={clx(
           'modal-box p-0',
           {
-            'h-full min-h-full w-full max-w-[100vw] rounded-none max-sm:overflow-y-hidden': isFullSize
+            'min-w-[100dvw] min-h-[100dvh] max-w-dvw max-h-dvh rounded-none max-sm:overflow-y-hidden': isFullSize
           },
           { [className]: className },
           { hidden: !visible }

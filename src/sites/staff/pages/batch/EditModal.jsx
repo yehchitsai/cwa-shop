@@ -29,7 +29,12 @@ const FORM = {
 }
 
 const validationSchema = Yup.object().shape({
-  [FORM.ITEM_SERIAL]: Yup.string().required(`Miss ${FORM.ITEM_SERIAL}!`),
+  [FORM.ITEM_SERIAL]: Yup
+    .number()
+    .typeError('Number only!')
+    .min(100, 'Must be at least 100')
+    .max(9999999, 'Must be at most 9999999')
+    .required(`Miss ${FORM.ITEM_SERIAL}!`),
   [FORM.FISH_TYPE]: Yup
     .string()
     .transform((value) => {
@@ -164,6 +169,7 @@ const EditModal = (props) => {
                   <Field
                     name={FORM.ITEM_SERIAL}
                     className='input input-bordered'
+                    inputMode='numeric'
                     autoComplete='off'
                   />
                 </FormRow>
