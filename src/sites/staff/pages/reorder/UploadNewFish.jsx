@@ -19,29 +19,16 @@ import getApiPrefix from '../../../../utils/getApiPrefix'
 import getFormValues from '../../../../utils/getFormValues'
 import useJsonBlock from '../../../../components/JsonBlock/useJsonBlock'
 
-const REPORT_TYPE = {
-  UPLOAD_DEMAND_REPORT: 'uploaddemandreport',
-  UPLOAD_PURCHASE_ORDER: 'uploadpurchaseorder',
-  UPLOAD_SHIPPING_ORDER: 'uploadshippingorder'
-}
-
 const FORM = {
-  REPORT_TYPE: 'reportType',
   EXCEL: 'excel'
 }
 
 const uploadExcelHost = getEnvVar('VITE_AWS_CREATE_UPLOAD_QUOTATION_PURCHASE_HOST')
 const subPrefix = getEnvVar('VITE_AWS_PURCHASE_HOST_PREFIX')
 const awsHostPrefix = getApiPrefix(subPrefix)
-// const demandreportEndPoint = `${awsHostPrefix}/demandreport`
-const uploadExcelEndPoint = {
-  [REPORT_TYPE.UPLOAD_DEMAND_REPORT]: `${awsHostPrefix}/uploaddemandreport`,
-  [REPORT_TYPE.UPLOAD_PURCHASE_ORDER]: `${awsHostPrefix}/uploadpurchaseorder`,
-  [REPORT_TYPE.UPLOAD_SHIPPING_ORDER]: `${awsHostPrefix}/uploadshippingorder`
-}
+const endPoint = `${awsHostPrefix}/demandreport`
 
 const validationSchema = Yup.object().shape({
-  [FORM.REPORT_TYPE]: Yup.string().required('Miss report type!'),
   [FORM.EXCEL]: Yup.array().min(1, 'Miss excel!')
 })
 
@@ -69,17 +56,10 @@ const UploadNewFish = () => {
   }
 
   const onSubmit = async (formValues, { setSubmitting }) => {
-    console.log(formValues)
     const convertedFormValues = getFormValues(formValues, [FORM.EXCEL])
-    const reportType = formValues[FORM.REPORT_TYPE]
-    const endPointByReportType = uploadExcelEndPoint[reportType]
-    if (isEmpty(endPointByReportType)) {
-      toast.error('Miss report type')
-      return
-    }
 
     const postParams = {
-      url: endPointByReportType,
+      url: endPoint,
       body: {
         file_name: get(convertedFormValues, `${FORM.EXCEL}.0`)
       }
@@ -101,7 +81,6 @@ const UploadNewFish = () => {
   return (
     <Formik
       initialValues={{
-        [FORM.REPORT_TYPE]: REPORT_TYPE.UPLOAD_DEMAND_REPORT,
         [FORM.EXCEL]: []
       }}
       validationSchema={validationSchema}
