@@ -22,6 +22,7 @@ import useCreateUploadTankInfo from '../../../../hooks/useCreateUploadTankInfo'
 import useBettaFishSystemState from '../../../../hooks/useBettaFishSystemState'
 import useCreateBettaFishSystemState from '../../../../hooks/useCreateBettaFishSystemState'
 import useCreateRecoverData from '../../../../hooks/useCreateRecoverData'
+import useCreateBackupData from '../../../../hooks/useCreateBackupData'
 
 const FORM = {
   EXCEL: 'excel'
@@ -70,6 +71,10 @@ const UploadTankInfo = () => {
     isMutating: isRecoverDataLoading,
     trigger: createRecoverData
   } = useCreateRecoverData()
+  const {
+    isMutating: isBackupDataLoading,
+    trigger: createBackupData
+  } = useCreateBackupData()
   const { isSystemStateFail, isOff, isOn } = getSystemState(
     isEmpty(createBettaFishSystemStateData)
       ? bettaFishSystemStateData
@@ -162,6 +167,25 @@ const UploadTankInfo = () => {
     toast.success(`恢復至 ${recovery_point} 成功!`, { id: toastId })
   }
 
+  const onBackupData = async () => {
+    const toastId = toast.loading('資料備份中')
+    const [createError, result] = await safeAwait(createBackupData())
+    setJsonBlock(result)
+    if (createError) {
+      toast.error(`${createError.message}`, { id: toastId })
+      return
+    }
+
+    const isFail = get(result, 'status') === 'fail'
+    const errorMessage = get(result, 'results.message')
+    if (isFail) {
+      toast.error(`Error! ${errorMessage}`, { id: toastId })
+      return
+    }
+
+    toast.success('資料備份成功!', { id: toastId })
+  }
+
   return (
     <Formik
       initialValues={{
@@ -207,7 +231,8 @@ const UploadTankInfo = () => {
             <button
               type='button'
               className='btn btn-outline'
-              disabled={isLoading}
+              disabled={isBackupDataLoading}
+              onClick={onBackupData}
             >
               資料備份
             </button>
