@@ -3,8 +3,7 @@ import getApiPrefix from '../utils/getApiPrefix'
 import useCreate from './useCreate'
 
 const host = getEnvVar('VITE_AWS_COMMON_HOST')
-const subPrefix = getEnvVar('VITE_AWS_HOST_PREFIX')
-const awsHostPrefix = getApiPrefix(subPrefix)
+const awsHostPrefix = getApiPrefix()
 const endpoint = `${awsHostPrefix}/recoveredata`
 
 const useCreateRecoverData = () => {
