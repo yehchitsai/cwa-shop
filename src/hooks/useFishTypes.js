@@ -1,6 +1,8 @@
 import useSWR from 'swr'
 import qs from 'query-string'
-import { get, isEmpty, keyBy } from 'lodash-es'
+import {
+  get, isArray, isEmpty, keyBy
+} from 'lodash-es'
 import getEnvVar from '../utils/getEnvVar'
 import getApiPrefix from '../utils/getApiPrefix'
 
@@ -17,7 +19,7 @@ const useFishTypes = (lang, isAuthRequired = true) => {
     data: defaultData = [], error, isValidating, isLoading
   } = useSWR(() => ({ url, host }), { suspense: true })
   const data = get(defaultData, 'results', defaultData)
-  const fishTypes = isEmpty(data) ? [] : data.map((item) => {
+  const fishTypes = (isEmpty(data) || !isArray(data)) ? [] : data.map((item) => {
     const {
       fishType, fishName, scientificName, fishPrice
     } = item
