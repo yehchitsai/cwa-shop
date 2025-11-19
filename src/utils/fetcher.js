@@ -141,11 +141,21 @@ const fetcher = async (config = {}, triggerArgs = {}) => {
         throw new Error('Endpoint not found.')
       }
       if (isJsonResponse) {
+        const isFail = get(res, 'data.status') === 'fail'
+        const failMessage = get(res, 'data.results.message')
+        if (isFail && failMessage) {
+          throw new Error(failMessage, { cause: res.data })
+        }
         return res.data
       }
       return res
     })
     .catch((e) => {
+      const cause = get(e, 'cause')
+      if (cause) {
+        const failMessage = get(cause, 'results.message')
+        throw new Error(failMessage)
+      }
       const isMockAwsApi = (window.IS_MOCK_AWS_API && key.startsWith(window.AWS_HOST_PREFIX))
       if ((!window.IS_MOCK && !isMockAwsApi) || isForceDisableMock) {
         console.log(e)
