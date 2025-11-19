@@ -11,7 +11,7 @@ export default [
     method: 'post',
     timeout: 100,
     response: () => {
-      const isSuccess = [true, false][random(0, 1)]
+      const isSuccess = random(0, 5) > 1
       const results = isSuccess
         ? {
           message: '成功處理150筆數據',
@@ -45,7 +45,7 @@ export default [
     method: 'post',
     timeout: 100,
     response: () => {
-      const isSuccess = [true, false][random(0, 1)]
+      const isSuccess = random(0, 5) > 1
       const results = isSuccess
         ? {
           message: '櫃位數據導入成功',
@@ -71,7 +71,7 @@ export default [
     method: 'get',
     timeout: 100,
     response: () => {
-      const isSuccess = [true, false][random(0, 1)]
+      const isSuccess = random(0, 5) > 1
       const results = isSuccess
         ? {
           data: [
@@ -93,7 +93,7 @@ export default [
     method: 'post',
     timeout: 100,
     response: () => {
-      const isSuccess = [true, false][random(0, 1)]
+      const isSuccess = random(0, 5) > 1
       const results = isSuccess
         ? {
           message: '數據恢復成功',
@@ -119,13 +119,20 @@ export default [
       const {
         system_type = 'empty'
       } = JSON.parse(JSON.stringify(stringObject))
-      const isSuccess = [true, false][random(0, 1)]
+      const isSuccess = random(0, 5) > 1
       const results = isSuccess
         ? {
-          systems: [{
-            system_type,
-            status: ['on', 'off'][random(0, 1)]
-          }]
+          systems: system_type === 'empty'
+            ? ['external', 'internal'].map((type) => {
+              return {
+                system_type: type,
+                status: ['on', 'off'][random(0, 1)]
+              }
+            })
+            : [{
+              system_type,
+              status: ['on', 'off'][random(0, 1)]
+            }]
         }
         : {
           message: '獲取系統狀態失敗'
@@ -140,12 +147,12 @@ export default [
     url: `${awsHostPrefix}/bettafishsystemstate`,
     method: 'post',
     timeout: 100,
-    response: ({ query: stringObject }) => {
+    response: ({ body = {} }) => {
       const {
         system_type,
         action
-      } = JSON.parse(JSON.stringify(stringObject))
-      const isSuccess = [true, false][random(0, 1)]
+      } = body
+      const isSuccess = random(0, 5) > 1
       const results = isSuccess
         ? {
           message: '鬥魚系統狀態更新成功',

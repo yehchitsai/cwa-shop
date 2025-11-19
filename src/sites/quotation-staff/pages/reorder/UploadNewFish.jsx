@@ -1,7 +1,9 @@
 import { useRef, useState } from 'react'
 import { Formik, Form } from 'formik'
-import { MdInfo } from 'react-icons/md'
+import { MdInfo, MdFileDownload } from 'react-icons/md'
+import { FaPlus } from 'react-icons/fa6'
 import { useTranslation } from 'react-i18next'
+import clx from 'classnames'
 import * as Yup from 'yup'
 import {
   get,
@@ -13,20 +15,13 @@ import safeAwait from 'safe-await'
 import FormRow from '../../../../components/Form/FormRow'
 import ACCEPT from '../../../../components/Dropzone/accept'
 import Dropzone from '../../../../components/Dropzone'
-import useCreate from '../../../../hooks/useCreate'
-import getEnvVar from '../../../../utils/getEnvVar'
-import getApiPrefix from '../../../../utils/getApiPrefix'
 import getFormValues from '../../../../utils/getFormValues'
 import useJsonBlock from '../../../../components/JsonBlock/useJsonBlock'
+import useCreateUploadNewFish from '../../../../hooks/useCreateUploadNewFish'
 
 const FORM = {
   EXCEL: 'excel'
 }
-
-const uploadExcelHost = getEnvVar('VITE_AWS_COMMON_HOST')
-const subPrefix = getEnvVar('VITE_AWS_PURCHASE_HOST_PREFIX')
-const awsHostPrefix = getApiPrefix(subPrefix)
-const endPoint = `${awsHostPrefix}/demandreport`
 
 const validationSchema = Yup.object().shape({
   [FORM.EXCEL]: Yup.array().min(1, 'Miss excel!')
@@ -36,12 +31,9 @@ const UploadNewFish = () => {
   const { t } = useTranslation()
   const resetBtn = useRef()
   const [isExcelUploaded, setIsExcelUploaded] = useState(false)
-  // const [isGenerating, setIsGenerating] = useState(false)
-  const [, setJsonBlock] = useJsonBlock()
-  const {
-    trigger,
-    isMutating
-  } = useCreate(uploadExcelHost)
+  const { trigger, isMutating, data } = useCreateUploadNewFish()
+  const downloadUrl = get(data, 'download_url')
+  const [json, setJsonBlock] = useJsonBlock()
   const isLoading = isMutating
 
   const onDropExcels = (excelFiles) => {
@@ -59,7 +51,6 @@ const UploadNewFish = () => {
     const convertedFormValues = getFormValues(formValues, [FORM.EXCEL])
 
     const postParams = {
-      url: endPoint,
       body: {
         file_name: get(convertedFormValues, `${FORM.EXCEL}.0`)
       }
@@ -112,13 +103,31 @@ const UploadNewFish = () => {
               </div>
             )}
           </FormRow>
-          <div className='flex justify-end'>
+          <div className='flex justify-end gap-2'>
+            <button
+              ref={resetBtn}
+              type='reset'
+              className='hidden'
+            >
+              reset
+            </button>
+            <a
+              href={downloadUrl}
+              className={clx('btn btn-outline', {
+                'btn-disabled': (isLoading || isEmpty(json) || isEmpty(downloadUrl))
+              })}
+              download
+            >
+              <MdFileDownload />
+              Download
+            </a>
             <button
               type='submit'
               className='btn btn-outline'
               disabled={isLoading}
             >
-              確認
+              <FaPlus />
+              New item
             </button>
           </div>
         </Form>

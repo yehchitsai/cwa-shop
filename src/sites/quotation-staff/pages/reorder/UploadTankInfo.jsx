@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { Formik, Field, Form } from 'formik'
+import { Formik, Form } from 'formik'
 import { MdInfo } from 'react-icons/md'
 import { FaPlus } from 'react-icons/fa6'
 import { useTranslation } from 'react-i18next'
@@ -9,66 +9,69 @@ import {
   isEmpty,
   isUndefined
 } from 'lodash-es'
+import clx from 'classnames'
 import toast from 'react-hot-toast'
 import safeAwait from 'safe-await'
 import FormRow from '../../../../components/Form/FormRow'
 import ACCEPT from '../../../../components/Dropzone/accept'
 import Dropzone from '../../../../components/Dropzone'
-import useCreate from '../../../../hooks/useCreate'
-import getEnvVar from '../../../../utils/getEnvVar'
-import getApiPrefix from '../../../../utils/getApiPrefix'
 import getFormValues from '../../../../utils/getFormValues'
 import useJsonBlock from '../../../../components/JsonBlock/useJsonBlock'
-
-const REPORT_TYPE = {
-  UPLOAD_DEMAND_REPORT: 'uploaddemandreport',
-  UPLOAD_PURCHASE_ORDER: 'uploadpurchaseorder',
-  UPLOAD_SHIPPING_ORDER: 'uploadshippingorder'
-}
-
-const REPORT_TYPE_MAP = {
-  [REPORT_TYPE.UPLOAD_DEMAND_REPORT]: '需求彙整單 (零售商)',
-  [REPORT_TYPE.UPLOAD_PURCHASE_ORDER]: '最終需求彙整單 (供應商-採購單)',
-  [REPORT_TYPE.UPLOAD_SHIPPING_ORDER]: '包裝彙整單 (零售商-出貨單)'
-}
-
-const REPORT_TYPE_OPTIONS = [
-  REPORT_TYPE.UPLOAD_DEMAND_REPORT,
-  REPORT_TYPE.UPLOAD_PURCHASE_ORDER,
-  REPORT_TYPE.UPLOAD_SHIPPING_ORDER
-].map((type) => ({ label: REPORT_TYPE_MAP[type], value: type }))
+import useRecoverData from '../../../../hooks/useRecoverData'
+import useCreateUploadTankInfo from '../../../../hooks/useCreateUploadTankInfo'
+import useBettaFishSystemState from '../../../../hooks/useBettaFishSystemState'
+import useCreateBettaFishSystemState from '../../../../hooks/useCreateBettaFishSystemState'
 
 const FORM = {
-  REPORT_TYPE: 'reportType',
   EXCEL: 'excel'
 }
 
-const uploadExcelHost = getEnvVar('VITE_AWS_COMMON_HOST')
-const subPrefix = getEnvVar('VITE_AWS_PURCHASE_HOST_PREFIX')
-const awsHostPrefix = getApiPrefix(subPrefix)
-// const demandreportEndPoint = `${awsHostPrefix}/demandreport`
-const uploadExcelEndPoint = {
-  [REPORT_TYPE.UPLOAD_DEMAND_REPORT]: `${awsHostPrefix}/uploaddemandreport`,
-  [REPORT_TYPE.UPLOAD_PURCHASE_ORDER]: `${awsHostPrefix}/uploadpurchaseorder`,
-  [REPORT_TYPE.UPLOAD_SHIPPING_ORDER]: `${awsHostPrefix}/uploadshippingorder`
-}
-
 const validationSchema = Yup.object().shape({
-  [FORM.REPORT_TYPE]: Yup.string().required('Miss report type!'),
   [FORM.EXCEL]: Yup.array().min(1, 'Miss excel!')
 })
+
+const SYSTEM_TYPE = 'internal'
+
+const SYSTEM_STATUS = {
+  ON: 'on',
+  OFF: 'off'
+}
+
+const SYSTEM_STATUS_MAP = {
+  [SYSTEM_STATUS.ON]: '開啟',
+  [SYSTEM_STATUS.OFF]: '關閉'
+}
+
+const getSystemState = (data) => {
+  const isSystemStateFail = get(data, 'status') === 'fail'
+  if (isSystemStateFail) {
+    return { isSystemStateFail, isOn: null, isOff: null }
+  }
+
+  const status = get(data, 'results.systems[0].status')
+  const isOn = status === SYSTEM_STATUS.ON
+  const isOff = status === SYSTEM_STATUS.OFF
+  return { isSystemStateFail: false, isOn, isOff }
+}
 
 const UploadTankInfo = () => {
   const { t } = useTranslation()
   const resetBtn = useRef()
   const [isExcelUploaded, setIsExcelUploaded] = useState(false)
-  // const [isGenerating, setIsGenerating] = useState(false)
-  const [, setJsonBlock] = useJsonBlock()
+  const { data: recoverDataResult } = useRecoverData()
+  const { trigger: createUploadTankInfo, isMutating: isLoading } = useCreateUploadTankInfo()
+  const { data: bettaFishSystemStateData } = useBettaFishSystemState({ system_type: SYSTEM_TYPE })
   const {
-    trigger,
-    isMutating
-  } = useCreate(uploadExcelHost)
-  const isLoading = isMutating
+    trigger: createBettaFishSystemState,
+    data: createBettaFishSystemStateData
+  } = useCreateBettaFishSystemState()
+  const { isSystemStateFail, isOff, isOn } = getSystemState(
+    isEmpty(createBettaFishSystemStateData)
+      ? bettaFishSystemStateData
+      : { results: createBettaFishSystemStateData }
+  )
+  const recoverData = get(recoverDataResult, 'results.data', [])
+  const [, setJsonBlock] = useJsonBlock()
 
   const onDropExcels = (excelFiles) => {
     const isAcceptFile = isUndefined(get(excelFiles, '0.code')) && !isEmpty(excelFiles)
@@ -82,23 +85,14 @@ const UploadTankInfo = () => {
   }
 
   const onSubmit = async (formValues, { setSubmitting }) => {
-    console.log(formValues)
     const convertedFormValues = getFormValues(formValues, [FORM.EXCEL])
-    const reportType = formValues[FORM.REPORT_TYPE]
-    const endPointByReportType = uploadExcelEndPoint[reportType]
-    if (isEmpty(endPointByReportType)) {
-      toast.error('Miss report type')
-      return
-    }
-
     const postParams = {
-      url: endPointByReportType,
       body: {
         file_name: get(convertedFormValues, `${FORM.EXCEL}.0`)
       }
     }
     const toastId = toast.loading('Uploading...')
-    const [createError, result] = await safeAwait(trigger(postParams))
+    const [createError, result] = await safeAwait(createUploadTankInfo(postParams))
     clearForm()
     if (createError) {
       toast.error(`Error! ${createError.message}`, { id: toastId })
@@ -111,10 +105,33 @@ const UploadTankInfo = () => {
     setIsExcelUploaded(false)
   }
 
+  const onUpdateBettaFishSystemState = async (status) => {
+    const msgPrefix = SYSTEM_STATUS_MAP[status]
+    const message = `${msgPrefix}服務中...`
+    const toastId = toast.loading(message)
+    const [createError, result] = await safeAwait(createBettaFishSystemState({
+      action: status,
+      system_type: SYSTEM_TYPE
+    }))
+    setJsonBlock(result)
+    if (createError) {
+      toast.error(`Error! ${createError.message}`, { id: toastId })
+      return
+    }
+
+    const isFail = get(result, 'status') === 'fail'
+    const errorMessage = get(result, 'results.message')
+    if (isFail) {
+      toast.error(`Error! ${errorMessage}`, { id: toastId })
+      return
+    }
+
+    toast.success(`${msgPrefix}服務成功!`, { id: toastId })
+  }
+
   return (
     <Formik
       initialValues={{
-        [FORM.REPORT_TYPE]: REPORT_TYPE.UPLOAD_DEMAND_REPORT,
         [FORM.EXCEL]: []
       }}
       validationSchema={validationSchema}
@@ -128,29 +145,6 @@ const UploadTankInfo = () => {
               上傳系統排好的櫃位excel
             </span>
           </div>
-          <FormRow
-            label='類型'
-            required
-          >
-            <Field
-              as='select'
-              name={FORM.REPORT_TYPE}
-              className='select select-bordered w-full lg:max-w-xs'
-              autoComplete='off'
-              disabled={isLoading}
-            >
-              {REPORT_TYPE_OPTIONS.map(({ value, label }) => {
-                return (
-                  <option
-                    value={value}
-                    key={value}
-                  >
-                    {label}
-                  </option>
-                )
-              })}
-            </Field>
-          </FormRow>
           <FormRow
             label='上傳 Excel(.xlsx)'
             error={touched[FORM.EXCEL] && errors[FORM.EXCEL]}
@@ -177,29 +171,54 @@ const UploadTankInfo = () => {
             >
               reset
             </button>
+            <button
+              type='button'
+              className='btn btn-outline'
+              disabled={isLoading}
+            >
+              資料備份
+            </button>
             <div className='dropdown dropdown-top dropdown-hover'>
-              <div tabIndex={0} role='button' className='btn btn-outline'>
+              <div
+                tabIndex={0}
+                role='button'
+                className={clx('btn btn-outline', {
+                  'btn-disabled': isEmpty(recoverData)
+                })}
+              >
                 Recover
               </div>
               <ul
                 tabIndex={-1}
-                className='menu dropdown-content z-[1] w-52 rounded-box bg-base-100 p-2 shadow'
+                className={clx('menu dropdown-content z-[1] w-52 rounded-box bg-base-100 p-2 shadow', {
+                  hidden: isEmpty(recoverData)
+                })}
               >
-                <li><span>Item 1</span></li>
-                <li><span>Item 2</span></li>
+                {recoverData.map((item, index) => {
+                  return (
+                    <li
+                      key={index}
+                      onClick={() => console.log({ item })}
+                    >
+                      <span>{item}</span>
+                    </li>
+                  )
+                })}
               </ul>
             </div>
             <button
-              type='submit'
+              type='button'
               className='btn btn-outline'
-              disabled={isLoading}
+              disabled={isLoading || isOff || isSystemStateFail}
+              onClick={() => onUpdateBettaFishSystemState(SYSTEM_STATUS.OFF)}
             >
               關閉服務
             </button>
             <button
-              type='submit'
+              type='button'
               className='btn btn-outline'
-              disabled={isLoading}
+              disabled={isLoading || isOn || isSystemStateFail}
+              onClick={() => onUpdateBettaFishSystemState(SYSTEM_STATUS.ON)}
             >
               開啟服務
             </button>
