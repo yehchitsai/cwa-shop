@@ -8,7 +8,7 @@ const SiteLayout = (props) => {
     <Root>
       <NavBar
         appBaseName={appBaseName}
-        title='Staff'
+        title='Bettafish Staff'
       />
       <div className='w-full max-w-full'>
         <Outlet />

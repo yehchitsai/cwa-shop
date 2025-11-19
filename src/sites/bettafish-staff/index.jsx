@@ -14,7 +14,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Router
       routes={dynamicRoutes}
-      basename={getRouterBase('/staff')}
+      basename={getRouterBase('/bettafish-staff')}
       layout={SiteLayout}
       loader={loader}
     />
