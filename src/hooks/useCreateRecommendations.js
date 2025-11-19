@@ -4,7 +4,7 @@ import getEnvVar from '../utils/getEnvVar'
 import getApiPrefix from '../utils/getApiPrefix'
 import useNewCreate from './useNewCreate'
 
-const host = getEnvVar('VITE_AWS_GET_CATEGORY_INFO_PURCHASE_HOST')
+const host = getEnvVar('VITE_AWS_COMMON_HOST')
 const subPrefix = getEnvVar('VITE_AWS_PURCHASE_HOST_PREFIX')
 const awsHostPrefix = getApiPrefix(subPrefix)
 const url = `${awsHostPrefix}/recommendations`

@@ -43,7 +43,7 @@ const FORM = {
   EXCEL: 'excel'
 }
 
-const uploadExcelHost = getEnvVar('VITE_AWS_CREATE_UPLOAD_QUOTATION_PURCHASE_HOST')
+const uploadExcelHost = getEnvVar('VITE_AWS_COMMON_HOST')
 const subPrefix = getEnvVar('VITE_AWS_PURCHASE_HOST_PREFIX')
 const awsHostPrefix = getApiPrefix(subPrefix)
 // const demandreportEndPoint = `${awsHostPrefix}/demandreport`

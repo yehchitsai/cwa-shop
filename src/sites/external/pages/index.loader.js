@@ -9,12 +9,12 @@ import getApiPrefix from '../../../utils/getApiPrefix'
 import subPrefix from '../layout/subPrefix'
 
 const awsHostPrefix = getApiPrefix(subPrefix)
-const preorderHost = getEnvVar('VITE_AWS_FISH_PREORDER_SHOP_HOST')
+const preorderHost = getEnvVar('VITE_AWS_COMMON_HOST')
 const preorderConfig = {
   host: preorderHost,
   url: `${awsHostPrefix}/bettafishpreorder`
 }
-const fishDataHost = getEnvVar('VITE_AWS_FISH_INFO_SHOP_HOST')
+const fishDataHost = getEnvVar('VITE_AWS_COMMON_HOST')
 const getFishDataConfig = (fishType) => ({
   host: fishDataHost,
   url: `${awsHostPrefix}/bettafishinfo?fishType=${fishType}`
