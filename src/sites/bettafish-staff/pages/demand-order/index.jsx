@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { Formik, Field, Form } from 'formik'
-import { MdInfo } from 'react-icons/md'
+import { MdAdd } from 'react-icons/md'
 import { useTranslation } from 'react-i18next'
 import * as Yup from 'yup'
 import {
@@ -42,10 +42,10 @@ const FORM = {
   EXCEL: 'excel'
 }
 
-const uploadExcelHost = getEnvVar('VITE_AWS_CREATE_UPLOAD_QUOTATION_PURCHASE_HOST')
+const uploadExcelHost = getEnvVar('VITE_AWS_COMMON_HOST')
 const subPrefix = getEnvVar('VITE_AWS_PURCHASE_HOST_PREFIX')
 const awsHostPrefix = getApiPrefix(subPrefix)
-// const demandreportEndPoint = `${awsHostPrefix}/demandreport`
+const demandreportEndPoint = `${awsHostPrefix}/demandreport`
 const uploadExcelEndPoint = {
   [REPORT_TYPE.UPLOAD_DEMAND_REPORT]: `${awsHostPrefix}/uploaddemandreport`,
   [REPORT_TYPE.UPLOAD_PURCHASE_ORDER]: `${awsHostPrefix}/uploadpurchaseorder`,
@@ -61,7 +61,7 @@ const Page = () => {
   const { t } = useTranslation()
   const resetBtn = useRef()
   const [isExcelUploaded, setIsExcelUploaded] = useState(false)
-  // const [isGenerating, setIsGenerating] = useState(false)
+  const [isGenerating, setIsGenerating] = useState(false)
   const [apiResult, setApiResult] = useState({})
   const {
     trigger,
@@ -78,6 +78,26 @@ const Page = () => {
   const clearForm = () => {
     setIsExcelUploaded(false)
     resetBtn.current.click()
+  }
+
+  const onSubmitDemandReport = async () => {
+    setApiResult({})
+    const postParams = {
+      url: demandreportEndPoint,
+      body: {}
+    }
+    const toastId = toast.loading('Generate report...')
+    setIsGenerating(true)
+    const [createError, result] = await safeAwait(trigger(postParams))
+    setIsGenerating(false)
+    clearForm()
+    if (createError) {
+      toast.error(`Error! ${createError.message}`, { id: toastId })
+      return
+    }
+
+    setApiResult(result)
+    toast.success('Finish!', { id: toastId })
   }
 
   const onSubmit = async (formValues, { setSubmitting }) => {
@@ -122,48 +142,19 @@ const Page = () => {
       {({ errors, touched }) => (
         <Form>
           <div className='m-auto flex w-full flex-col gap-4 max-lg:m-auto max-lg:max-w-2xl max-sm:min-w-full max-sm:p-4 sm:p-12 lg:max-w-5xl'>
-            <div className='flex flex-col gap-2 md:flex-row'>
+            <div className='flex flex-col gap-4 md:flex-row'>
               <div className='md:flex-1'>
-                <div role='alert' className='alert'>
-                  <MdInfo size='1.5em' />
-                  <span>
-                    先上傳新購進魚的excel匯總信息
-                  </span>
-                </div>
-                <FormRow
-                  label='上傳 Excel(.xlsx)'
-                  error={touched[FORM.EXCEL] && errors[FORM.EXCEL]}
-                  required
-                >
-                  <Dropzone
-                    name={FORM.EXCEL}
-                    accept={ACCEPT.EXCEL}
-                    disabled={isLoading || isExcelUploaded}
-                    onFinish={onDropExcels}
-                    isShowPreview={false}
-                  />
-                  {isExcelUploaded && (
-                    <div className='alert alert-success my-4 flex flex-wrap'>
-                      {`按${t('newItem')}上傳 Excel`}
-                    </div>
-                  )}
-                </FormRow>
-                <div className='flex justify-end'>
+                <div>
                   <button
-                    type='submit'
+                    type='button'
+                    onClick={onSubmitDemandReport}
                     className='btn btn-outline'
-                    disabled={isLoading}
+                    disabled={isGenerating || isLoading}
                   >
-                    確認
+                    生成彙整單
                   </button>
                 </div>
-                <div className='divider my-2' />
-                <div role='alert' className='alert'>
-                  <MdInfo size='1.5em' />
-                  <span>
-                    上傳系統排好的櫃位excel
-                  </span>
-                </div>
+                <div className='divider' />
                 <FormRow
                   label='類型'
                   required
@@ -205,7 +196,7 @@ const Page = () => {
                     </div>
                   )}
                 </FormRow>
-                <div className='flex justify-end gap-2'>
+                <div className='text-right'>
                   <button
                     ref={resetBtn}
                     type='reset'
@@ -218,21 +209,8 @@ const Page = () => {
                     className='btn btn-outline'
                     disabled={isLoading}
                   >
-                    關閉服務
-                  </button>
-                  <button
-                    type='submit'
-                    className='btn btn-outline'
-                    disabled={isLoading}
-                  >
-                    開啟服務
-                  </button>
-                  <button
-                    type='submit'
-                    className='btn btn-outline'
-                    disabled={isLoading}
-                  >
-                    確認
+                    <MdAdd size='1.5em' />
+                    {`${t('newItem')}`}
                   </button>
                 </div>
               </div>

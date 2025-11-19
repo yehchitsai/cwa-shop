@@ -21,8 +21,8 @@ import SkeletonHome from '../../../../components/Skeleton/Home'
 import LazyImage from '../../../../components/LazyImage'
 import ProductModal from '../../../../components/Modal/Product'
 
-const preOrderHost = getEnvVar('VITE_AWS_FISH_PREORDER_SHOP_HOST')
-const orderHost = getEnvVar('VITE_AWS_FISH_ORDER_SHOP_HOST')
+const preOrderHost = getEnvVar('VITE_AWS_COMMON_HOST')
+const orderHost = getEnvVar('VITE_AWS_COMMON_HOST')
 const subPrefix = getEnvVar('VITE_AWS_SHOP_HOST_PREFIX')
 const awsHostPrefix = getApiPrefix(subPrefix)
 const preOrderEndPoint = `${awsHostPrefix}/bettafishpreorder`

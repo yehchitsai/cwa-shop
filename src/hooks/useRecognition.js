@@ -9,13 +9,13 @@ import useOnInit from './useOnInit'
 import useGet from './useGet'
 import useUploadS3 from './useUploadS3'
 
-const getVideoRecognitionHost = getEnvVar('VITE_AWS_GET_VIDEO_RECOGNITION_SHOP_HOST')
+const getVideoRecognitionHost = getEnvVar('VITE_AWS_S3_OLD_HOST')
 const subPrefix = getEnvVar('VITE_AWS_SHOP_HOST_PREFIX')
 const awsHostPrefix = getApiPrefix(subPrefix)
 
 const s3Env = {
-  getPreSignedUrlsHost: getEnvVar('VITE_AWS_GET_PRE_SIGNED_URLS_SHOP_HOST'),
-  getS3FinalizeHost: getEnvVar('VITE_AWS_S3_FINALIZE_SHOP_HOST'),
+  getPreSignedUrlsHost: getEnvVar('VITE_AWS_S3_OLD_HOST'),
+  getS3FinalizeHost: getEnvVar('VITE_AWS_S3_OLD_HOST'),
   getPreSignedUrlsEndPoint: `${awsHostPrefix}/getPreSignedUrls`,
   s3FinalizeEndPoint: `${awsHostPrefix}/finalize`
 }

@@ -4,7 +4,7 @@ import { get, isEmpty } from 'lodash-es'
 import getEnvVar from '../utils/getEnvVar'
 import getApiPrefix from '../utils/getApiPrefix'
 
-const host = getEnvVar('VITE_AWS_EXPORT_QUERY_INFO_PURCHASE_HOST')
+const host = getEnvVar('VITE_AWS_COMMON_HOST')
 const subPrefix = getEnvVar('VITE_AWS_PURCHASE_HOST_PREFIX')
 const awsHostPrefix = getApiPrefix(subPrefix)
 const useExportQueryInfo = (phrase) => {

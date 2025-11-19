@@ -31,14 +31,14 @@ const FORM = {
 
 const today = new Date()
 
-const uploadExcelHost = getEnvVar('VITE_AWS_CREATE_UPLOAD_QUOTATION_PURCHASE_HOST')
+const uploadExcelHost = getEnvVar('VITE_AWS_COMMON_HOST')
 const subPrefix = getEnvVar('VITE_AWS_PURCHASE_HOST_PREFIX')
 const awsHostPrefix = getApiPrefix(subPrefix)
 const uploadExcelEndPoint = `${awsHostPrefix}/uploadquotation`
 
 const s3Env = {
-  getPreSignedUrlsHost: getEnvVar('VITE_AWS_GET_PRE_SIGNED_URLS_PURCHASE_HOST'),
-  getS3FinalizeHost: getEnvVar('VITE_AWS_S3_FINALIZE_PURCHASE_HOST'),
+  getPreSignedUrlsHost: getEnvVar('VITE_AWS_COMMON_HOST'),
+  getS3FinalizeHost: getEnvVar('VITE_AWS_COMMON_HOST'),
   getPreSignedUrlsEndPoint: `${awsHostPrefix}/presignedurls`,
   s3FinalizeEndPoint: `${awsHostPrefix}/uploadfinalize`
 }

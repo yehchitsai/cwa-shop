@@ -4,7 +4,7 @@ import { get, isEmpty, keyBy } from 'lodash-es'
 import getEnvVar from '../utils/getEnvVar'
 import getApiPrefix from '../utils/getApiPrefix'
 
-const nonAuthHost = getEnvVar('VITE_AWS_NO_AUTH_FISH_TYPE_SHOP_HOST')
+const nonAuthHost = getEnvVar('VITE_AWS_COMMON_HOST')
 const authHost = getEnvVar('VITE_AWS_AUTH_FISH_TYPE_SHOP_HOST')
 const subPrefix = getEnvVar('VITE_AWS_SHOP_HOST_PREFIX')
 const awsHostPrefix = getApiPrefix(subPrefix)
