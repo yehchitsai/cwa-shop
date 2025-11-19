@@ -37,7 +37,8 @@ const mockFetcher = async (key, authorization = {}, options = {}) => {
     timeout = 0
   } = find(mockData, (item) => {
     return (
-      item.url.replace(/:.*/, '').includes(endpoint) &&
+      // item.url.replace(/:.*/, '').includes(endpoint)
+      (item.url === endpoint) &&
       (item.method === method)
     )
   }) || {}
