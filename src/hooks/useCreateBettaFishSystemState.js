@@ -7,7 +7,7 @@ const awsHostPrefix = getApiPrefix()
 const endpoint = `${awsHostPrefix}/bettafishsystemstate`
 
 const useCreateBettaFishSystemState = () => {
-  const { trigger: originTrigger, ...rest } = useCreate(host)
+  const { trigger: originTrigger, ...rest } = useCreate(host, { isOriginData: true })
 
   const trigger = (body) => {
     return originTrigger({

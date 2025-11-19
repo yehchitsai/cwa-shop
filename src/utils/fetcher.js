@@ -151,11 +151,10 @@ const fetcher = async (config = {}, triggerArgs = {}) => {
       return res
     })
     .catch((e) => {
-      const cause = get(e, 'cause')
-      if (cause) {
-        const failMessage = get(cause, 'results.message')
-        throw new Error(failMessage)
-      }
+      // const cause = get(e, 'cause')
+      // if (cause) {
+      //   throw new Error(e)
+      // }
       const isMockAwsApi = (window.IS_MOCK_AWS_API && key.startsWith(window.AWS_HOST_PREFIX))
       if ((!window.IS_MOCK && !isMockAwsApi) || isForceDisableMock) {
         console.log(e)
