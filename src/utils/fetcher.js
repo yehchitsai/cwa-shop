@@ -141,11 +141,11 @@ const fetcher = async (config = {}, triggerArgs = {}) => {
         throw new Error('Endpoint not found.')
       }
       if (isJsonResponse) {
-        const isFail = get(res, 'data.status') === 'fail'
-        const failMessage = get(res, 'data.results.message')
-        if (isFail && failMessage) {
-          throw new Error(failMessage, { cause: res.data })
-        }
+        // const isFail = get(res, 'data.status') === 'fail'
+        // const failMessage = get(res, 'data.results.message')
+        // if (isFail && failMessage) {
+        //   throw new Error(failMessage, { cause: res.data })
+        // }
         return res.data
       }
       return res
