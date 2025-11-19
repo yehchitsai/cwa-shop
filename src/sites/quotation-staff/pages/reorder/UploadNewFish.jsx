@@ -32,7 +32,7 @@ const UploadNewFish = () => {
   const resetBtn = useRef()
   const [isExcelUploaded, setIsExcelUploaded] = useState(false)
   const { trigger, isMutating, data } = useCreateUploadNewFish()
-  const downloadUrl = get(data, 'download_url')
+  const downloadUrl = get(data, 'results.download_url')
   const [json, setJsonBlock] = useJsonBlock()
   const isLoading = isMutating
 
@@ -58,12 +58,19 @@ const UploadNewFish = () => {
     const toastId = toast.loading('Uploading...')
     const [createError, result] = await safeAwait(trigger(postParams))
     clearForm()
+    setJsonBlock(result)
     if (createError) {
       toast.error(`Error! ${createError.message}`, { id: toastId })
       setSubmitting(false)
     }
 
-    setJsonBlock(result)
+    const isFail = get(result, 'status') === 'fail'
+    const errorMessage = get(result, 'results.message')
+    if (isFail) {
+      toast.error(`Error! ${errorMessage}`, { id: toastId })
+      return
+    }
+
     toast.success('Finish!', { id: toastId })
     setSubmitting(false)
     setIsExcelUploaded(false)

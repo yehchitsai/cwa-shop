@@ -21,6 +21,7 @@ import useRecoverData from '../../../../hooks/useRecoverData'
 import useCreateUploadTankInfo from '../../../../hooks/useCreateUploadTankInfo'
 import useBettaFishSystemState from '../../../../hooks/useBettaFishSystemState'
 import useCreateBettaFishSystemState from '../../../../hooks/useCreateBettaFishSystemState'
+import useCreateRecoverData from '../../../../hooks/useCreateRecoverData'
 
 const FORM = {
   EXCEL: 'excel'
@@ -65,10 +66,14 @@ const UploadTankInfo = () => {
     trigger: createBettaFishSystemState,
     data: createBettaFishSystemStateData
   } = useCreateBettaFishSystemState()
+  const {
+    isMutating: isRecoverDataLoading,
+    trigger: createRecoverData
+  } = useCreateRecoverData()
   const { isSystemStateFail, isOff, isOn } = getSystemState(
     isEmpty(createBettaFishSystemStateData)
       ? bettaFishSystemStateData
-      : { results: createBettaFishSystemStateData }
+      : createBettaFishSystemStateData
   )
   const recoverData = get(recoverDataResult, 'results.data', [])
   const [, setJsonBlock] = useJsonBlock()
@@ -94,12 +99,19 @@ const UploadTankInfo = () => {
     const toastId = toast.loading('Uploading...')
     const [createError, result] = await safeAwait(createUploadTankInfo(postParams))
     clearForm()
+    setJsonBlock(result)
     if (createError) {
       toast.error(`Error! ${createError.message}`, { id: toastId })
       setSubmitting(false)
     }
 
-    setJsonBlock(result)
+    const isFail = get(result, 'status') === 'fail'
+    const errorMessage = get(result, 'results.message')
+    if (isFail) {
+      toast.error(`Error! ${errorMessage}`, { id: toastId })
+      return
+    }
+
     toast.success('Finish!', { id: toastId })
     setSubmitting(false)
     setIsExcelUploaded(false)
@@ -115,7 +127,7 @@ const UploadTankInfo = () => {
     }))
     setJsonBlock(result)
     if (createError) {
-      toast.error(`Error! ${createError.message}`, { id: toastId })
+      toast.error(`${createError.message}`, { id: toastId })
       return
     }
 
@@ -127,6 +139,27 @@ const UploadTankInfo = () => {
     }
 
     toast.success(`${msgPrefix}服務成功!`, { id: toastId })
+  }
+
+  const onRecover = async (recovery_point) => {
+    const toastId = toast.loading(`恢復至 ${recovery_point} 中...`)
+    const [createError, result] = await safeAwait(createRecoverData({
+      recovery_point
+    }))
+    setJsonBlock(result)
+    if (createError) {
+      toast.error(`${createError.message}`, { id: toastId })
+      return
+    }
+
+    const isFail = get(result, 'status') === 'fail'
+    const errorMessage = get(result, 'results.message')
+    if (isFail) {
+      toast.error(`Error! ${errorMessage}`, { id: toastId })
+      return
+    }
+
+    toast.success(`恢復至 ${recovery_point} 成功!`, { id: toastId })
   }
 
   return (
@@ -183,7 +216,7 @@ const UploadTankInfo = () => {
                 tabIndex={0}
                 role='button'
                 className={clx('btn btn-outline', {
-                  'btn-disabled': isEmpty(recoverData)
+                  'btn-disabled': isEmpty(recoverData) || isRecoverDataLoading
                 })}
               >
                 Recover
@@ -191,14 +224,14 @@ const UploadTankInfo = () => {
               <ul
                 tabIndex={-1}
                 className={clx('menu dropdown-content z-[1] w-52 rounded-box bg-base-100 p-2 shadow', {
-                  hidden: isEmpty(recoverData)
+                  hidden: isEmpty(recoverData) || isRecoverDataLoading
                 })}
               >
                 {recoverData.map((item, index) => {
                   return (
                     <li
                       key={index}
-                      onClick={() => console.log({ item })}
+                      onClick={() => onRecover(item)}
                     >
                       <span>{item}</span>
                     </li>

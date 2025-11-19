@@ -92,12 +92,13 @@ export default [
     url: `${awsHostPrefix}/recoveredata`,
     method: 'post',
     timeout: 100,
-    response: () => {
+    response: ({ body }) => {
+      const { recovery_point } = body
       const isSuccess = random(0, 5) > 1
       const results = isSuccess
         ? {
           message: '數據恢復成功',
-          recovered_to: '2025-09-24T10:00:00Z'
+          recovered_to: recovery_point
         }
         : {
           message: '找不到指定時間點的備份數據',
