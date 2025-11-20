@@ -170,24 +170,5 @@ export default [
         results
       }
     }
-  },
-  {
-    url: `${awsHostPrefix}/backupdata`,
-    method: 'post',
-    timeout: 100,
-    response: () => {
-      const isSuccess = random(0, 5) > 1
-      const results = isSuccess
-        ? {
-          message: '資料備份成功'
-        }
-        : {
-          message: '系統忙線中，請稍後再試'
-        }
-      return {
-        status: isSuccess ? 'success' : 'fail',
-        results
-      }
-    }
   }
 ]
