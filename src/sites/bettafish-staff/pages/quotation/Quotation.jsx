@@ -24,7 +24,8 @@ import useUploadS3 from '../../../../hooks/useUploadS3'
 import useQueue from '../../../../hooks/useQueue'
 
 const FORM = {
-  DATE: 'delivery_date',
+  DELIVERY_DATE: 'delivery_date',
+  ORDER_DEADLINE: 'order_deadline',
   EXCEL: 'excel',
   ASSETS: 'assets'
 }
@@ -44,6 +45,18 @@ const s3Env = {
 }
 
 const validationSchema = Yup.object().shape({
+  [FORM.DELIVERY_DATE]: Yup
+    .date()
+    .typeError('Invalid start date')
+    .required('Start date is required'),
+  [FORM.ORDER_DEADLINE]: Yup
+    .date()
+    .typeError('Invalid end date')
+    .required('End date is required')
+    .min(
+      Yup.ref(FORM.DELIVERY_DATE),
+      'End date must be later than start date'
+    ),
   [FORM.EXCEL]: Yup.array().min(1, 'Miss excel!')
 })
 
@@ -117,7 +130,8 @@ const Quotation = () => {
     const postParams = {
       url: uploadExcelEndPoint,
       body: {
-        delivery_date: get(formValues, FORM.DATE),
+        [FORM.DELIVERY_DATE]: get(formValues, FORM.DELIVERY_DATE),
+        [FORM.ORDER_DEADLINE]: get(formValues, FORM.ORDER_DEADLINE),
         file_name: get(convertedFormValues, `${FORM.EXCEL}.0`)
       }
     }
@@ -137,7 +151,8 @@ const Quotation = () => {
   return (
     <Formik
       initialValues={{
-        [FORM.DATE]: format(today, 'yyyy-MM-dd'),
+        [FORM.DELIVERY_DATE]: format(today, 'yyyy-MM-dd'),
+        [FORM.ORDER_DEADLINE]: format(today, 'yyyy-MM-dd'),
         [FORM.EXCEL]: undefined
       }}
       validationSchema={validationSchema}
@@ -164,18 +179,34 @@ const Quotation = () => {
                 isShowPreview={false}
               />
             </FormRow>
-            <FormRow
-              label='預計出貨日期'
-              required
-            >
-              <Field
-                type='date'
-                name={FORM.DATE}
-                className='input input-bordered w-full lg:max-w-xs'
-                autoComplete='off'
-                disabled={isMutating || !isAssetsUploaded}
-              />
-            </FormRow>
+            <div className='flex gap-2'>
+              <FormRow
+                label='預計出貨日期'
+                error={errors[FORM.DELIVERY_DATE]}
+                required
+              >
+                <Field
+                  type='date'
+                  name={FORM.DELIVERY_DATE}
+                  className='input input-bordered w-full lg:max-w-xs'
+                  autoComplete='off'
+                  disabled={isMutating || !isAssetsUploaded}
+                />
+              </FormRow>
+              <FormRow
+                label='訂單截止日期'
+                error={errors[FORM.ORDER_DEADLINE]}
+                required
+              >
+                <Field
+                  type='date'
+                  name={FORM.ORDER_DEADLINE}
+                  className='input input-bordered w-full lg:max-w-xs'
+                  autoComplete='off'
+                  disabled={isMutating || !isAssetsUploaded}
+                />
+              </FormRow>
+            </div>
             <FormRow
               label='上傳 Excel(.xlsx)'
               error={touched[FORM.EXCEL] && errors[FORM.EXCEL]}
