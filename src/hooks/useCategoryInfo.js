@@ -1,7 +1,8 @@
 import useSWR from 'swr'
+import useSWRInfinite from 'swr/infinite'
 import qs from 'query-string'
 import {
-  get, isEmpty, isNull, omitBy
+  get, isEmpty, isNull, isNumber, omitBy
 } from 'lodash-es'
 import getEnvVar from '../utils/getEnvVar'
 import getApiPrefix from '../utils/getApiPrefix'
@@ -22,6 +23,33 @@ const useCategoryInfo = (params, options = {}) => {
     data,
     isLoading: isValidating || isLoading,
     isError: error
+  }
+}
+
+export const useCategoryInfoPages = (params, options = {}) => {
+  const getKey = (pageIndex) => {
+    const cleanParams = omitBy({ ...params, page: pageIndex }, (v) => {
+      if (isNumber(v)) {
+        return false
+      }
+
+      return isEmpty(v)
+    })
+    const qsStr = `?${qs.stringify(cleanParams)}`
+    const url = `${awsHostPrefix}/categoryinfo${qsStr}`
+    return { url, host }
+  }
+
+  const {
+    data, error, isValidating, isLoading, ...rest
+  } = useSWRInfinite(getKey, {
+    suspense: false, revalidateFirstPage: false, parallel: true, ...options
+  })
+  return {
+    data,
+    isLoading: isValidating || isLoading,
+    isError: error,
+    ...rest
   }
 }
 

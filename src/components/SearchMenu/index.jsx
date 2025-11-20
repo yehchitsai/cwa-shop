@@ -1,6 +1,6 @@
 import clx from 'classnames'
 import {
-  MdSearch, MdFilterAlt
+  MdSearch, MdFilterAlt, MdClear
 } from 'react-icons/md'
 import { IoSparklesSharp } from 'react-icons/io5'
 import { isEmpty } from 'lodash-es'
@@ -60,6 +60,13 @@ const SearchMenu = (props) => {
     setPhaseType(PHASE_TYPE.NORMAL)
   }
 
+  const onClearSearch = (e) => {
+    e.stopPropagation()
+    setCurrentPhase('')
+    setPhaseType(null)
+    setPhase('')
+  }
+
   return (
     <>
       <label
@@ -99,6 +106,15 @@ const SearchMenu = (props) => {
         )}
         {phaseType === null && (
           <MdSearch size='1.5em' />
+        )}
+        {!isEmpty(currentPhase) && (
+          <button
+            type='button'
+            className='btn btn-square btn-ghost btn-xs'
+            onClick={onClearSearch}
+          >
+            <MdClear size='1.5em' />
+          </button>
         )}
       </label>
       <div className='relative'>
