@@ -1,10 +1,13 @@
+import clx from 'classnames'
 import safeJSON from '../../utils/safeJSON'
 import useJsonBlock from './useJsonBlock'
 
-const JsonBlock = () => {
+const JsonBlock = ({ className }) => {
   const [json] = useJsonBlock()
   return (
-    <div className='alert flex w-full flex-col items-start gap-4 md:w-1/3'>
+    <div
+      className={clx('alert flex w-full flex-col items-start gap-4', { [className]: className })}
+    >
       <div>
         API response
       </div>

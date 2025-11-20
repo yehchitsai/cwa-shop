@@ -22,9 +22,11 @@ import getApiPrefix from '../../../../utils/getApiPrefix'
 import getFormValues from '../../../../utils/getFormValues'
 import useUploadS3 from '../../../../hooks/useUploadS3'
 import useQueue from '../../../../hooks/useQueue'
+import useJsonBlock from '../../../../components/JsonBlock/useJsonBlock'
 
 const FORM = {
-  DATE: 'delivery_date',
+  DELIVERY_DATE: 'delivery_date',
+  ORDER_DEADLINE: 'order_deadline',
   EXCEL: 'excel',
   ASSETS: 'assets'
 }
@@ -44,7 +46,22 @@ const s3Env = {
 }
 
 const validationSchema = Yup.object().shape({
-  [FORM.EXCEL]: Yup.array().min(1, 'Miss excel!')
+  [FORM.DELIVERY_DATE]: Yup
+    .date()
+    .typeError(`Invalid ${FORM.DELIVERY_DATE}`)
+    .required(),
+  [FORM.ORDER_DEADLINE]: Yup
+    .date()
+    .typeError(`Invalid ${FORM.ORDER_DEADLINE}`)
+    .required()
+    .min(
+      Yup.ref(FORM.DELIVERY_DATE),
+      `${FORM.ORDER_DEADLINE} must be later than ${FORM.DELIVERY_DATE}`
+    ),
+  [FORM.EXCEL]: Yup
+    .array()
+    .required()
+    .min(1, 'Miss excel!')
 })
 
 const Quotation = () => {
@@ -60,6 +77,7 @@ const Quotation = () => {
     trigger,
     isMutating
   } = useCreate(uploadExcelHost)
+  const [, setJsonBlock] = useJsonBlock()
 
   const onDropAssets = async (assetFiles) => {
     const uploadedMap = keyBy(uploadedAssets, 'name')
@@ -80,7 +98,7 @@ const Quotation = () => {
 
     const toastId = toast.loading('Uploading...')
     setIsAssetsUploaded(false)
-    const [uploadS3Error] = await safeAwait(
+    const [uploadS3Error, uploadResult] = await safeAwait(
       Promise.all(
         acceptFiles.map((file) => {
           return uploadS3(file).then((result) => {
@@ -94,6 +112,7 @@ const Quotation = () => {
         })
       )
     )
+    setJsonBlock(uploadResult)
     if (uploadS3Error) {
       toast.error(`Error! ${uploadS3Error.message}`, { id: toastId })
       return
@@ -113,17 +132,20 @@ const Quotation = () => {
   }
 
   const onSubmit = async (formValues, { setSubmitting }) => {
-    console.log(formValues)
     const convertedFormValues = getFormValues(formValues, [FORM.EXCEL])
     const postParams = {
       url: uploadExcelEndPoint,
       body: {
-        delivery_date: get(formValues, FORM.DATE),
+        [FORM.DELIVERY_DATE]: get(formValues, FORM.DELIVERY_DATE),
+        [FORM.ORDER_DEADLINE]: get(formValues, FORM.ORDER_DEADLINE),
         file_name: get(convertedFormValues, `${FORM.EXCEL}.0`)
       }
     }
     const toastId = toast.loading('Uploading...')
-    const [createError] = await safeAwait(trigger(postParams))
+    const [createError, result] = await safeAwait(trigger(postParams))
+    clearForm()
+    setIsExcelUploaded(false)
+    setJsonBlock(result)
     if (createError) {
       toast.error(`Error! ${createError.message}`, { id: toastId })
       setSubmitting(false)
@@ -131,13 +153,13 @@ const Quotation = () => {
 
     toast.success('Finish!', { id: toastId })
     setSubmitting(false)
-    clearForm()
   }
 
   return (
     <Formik
       initialValues={{
-        [FORM.DATE]: format(today, 'yyyy-MM-dd'),
+        [FORM.DELIVERY_DATE]: format(today, 'yyyy-MM-dd\'T\'HH:mm'),
+        [FORM.ORDER_DEADLINE]: format(today, 'yyyy-MM-dd\'T\'HH:mm'),
         [FORM.EXCEL]: undefined
       }}
       validationSchema={validationSchema}
@@ -145,7 +167,7 @@ const Quotation = () => {
     >
       {({ errors, touched }) => (
         <Form>
-          <div className='m-auto flex w-full flex-col max-lg:m-auto max-lg:max-w-2xl max-sm:min-w-full max-sm:p-4 sm:p-12 lg:max-w-5xl'>
+          <div className='m-auto flex w-full flex-col max-lg:m-auto max-lg:max-w-2xl max-sm:min-w-full lg:max-w-5xl'>
             <div role='alert' className='alert flex text-left'>
               <MdError size='1.5em' />
               <span>先把圖片與影片上傳完成後再上傳 Excel</span>
@@ -164,18 +186,35 @@ const Quotation = () => {
                 isShowPreview={false}
               />
             </FormRow>
-            <FormRow
-              label='預計出貨日期'
-              required
-            >
-              <Field
-                type='date'
-                name={FORM.DATE}
-                className='input input-bordered w-full lg:max-w-xs'
-                autoComplete='off'
-                disabled={isMutating || !isAssetsUploaded}
-              />
-            </FormRow>
+            <div className='divider m-auto flex w-full' />
+            <div className='flex gap-2'>
+              <FormRow
+                label='預計出貨日期'
+                error={errors[FORM.DELIVERY_DATE]}
+                required
+              >
+                <Field
+                  type='datetime-local'
+                  name={FORM.DELIVERY_DATE}
+                  className='input input-bordered w-full lg:max-w-xs'
+                  autoComplete='off'
+                  disabled={isMutating || !isAssetsUploaded}
+                />
+              </FormRow>
+              <FormRow
+                label='訂單截止日期'
+                error={errors[FORM.ORDER_DEADLINE]}
+                required
+              >
+                <Field
+                  type='datetime-local'
+                  name={FORM.ORDER_DEADLINE}
+                  className='input input-bordered w-full lg:max-w-xs'
+                  autoComplete='off'
+                  disabled={isMutating || !isAssetsUploaded}
+                />
+              </FormRow>
+            </div>
             <FormRow
               label='上傳 Excel(.xlsx)'
               error={touched[FORM.EXCEL] && errors[FORM.EXCEL]}
