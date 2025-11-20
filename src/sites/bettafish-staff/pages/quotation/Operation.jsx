@@ -30,7 +30,7 @@ const SYSTEM_STATUS_MAP = {
 const getSystemState = (data) => {
   const isSystemStateFail = get(data, 'status') === 'fail'
   if (isSystemStateFail) {
-    return { isSystemStateFail, isOn: null, isOff: null }
+    return { isSystemStateFail, isOn: false, isOff: false }
   }
 
   const status = get(data, 'results.systems[0].status')
