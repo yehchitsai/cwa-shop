@@ -186,6 +186,7 @@ const Quotation = () => {
                 isShowPreview={false}
               />
             </FormRow>
+            <div className='divider m-auto flex w-full' />
             <div className='flex gap-2'>
               <FormRow
                 label='預計出貨日期'
