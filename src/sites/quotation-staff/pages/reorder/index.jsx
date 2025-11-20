@@ -11,7 +11,7 @@ const Page = () => {
           <div className='divider my-2' />
           <UploadTankInfo />
         </div>
-        <JsonBlock />
+        <JsonBlock className='min-w-72 flex-none' />
       </div>
     </div>
   )
