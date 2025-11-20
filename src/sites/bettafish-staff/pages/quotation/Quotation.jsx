@@ -113,7 +113,6 @@ const Quotation = () => {
   }
 
   const onSubmit = async (formValues, { setSubmitting }) => {
-    console.log(formValues)
     const convertedFormValues = getFormValues(formValues, [FORM.EXCEL])
     const postParams = {
       url: uploadExcelEndPoint,
@@ -124,6 +123,8 @@ const Quotation = () => {
     }
     const toastId = toast.loading('Uploading...')
     const [createError] = await safeAwait(trigger(postParams))
+    clearForm()
+    setIsExcelUploaded(false)
     if (createError) {
       toast.error(`Error! ${createError.message}`, { id: toastId })
       setSubmitting(false)
@@ -131,7 +132,6 @@ const Quotation = () => {
 
     toast.success('Finish!', { id: toastId })
     setSubmitting(false)
-    clearForm()
   }
 
   return (
@@ -145,7 +145,7 @@ const Quotation = () => {
     >
       {({ errors, touched }) => (
         <Form>
-          <div className='m-auto flex w-full flex-col max-lg:m-auto max-lg:max-w-2xl max-sm:min-w-full max-sm:p-4 sm:p-12 lg:max-w-5xl'>
+          <div className='m-auto flex w-full flex-col max-lg:m-auto max-lg:max-w-2xl max-sm:min-w-full lg:max-w-5xl'>
             <div role='alert' className='alert flex text-left'>
               <MdError size='1.5em' />
               <span>先把圖片與影片上傳完成後再上傳 Excel</span>

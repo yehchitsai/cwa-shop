@@ -75,7 +75,7 @@ const UploadTankInfo = () => {
     isMutating: isBackupDataLoading,
     trigger: createBackupData
   } = useCreateBackupData()
-  const { isSystemStateFail, isOff, isOn } = getSystemState(
+  const { isOff, isOn } = getSystemState(
     isEmpty(createBettaFishSystemStateData)
       ? bettaFishSystemStateData
       : createBettaFishSystemStateData
@@ -267,7 +267,7 @@ const UploadTankInfo = () => {
             <button
               type='button'
               className='btn btn-outline'
-              disabled={isLoading || isOff || isSystemStateFail}
+              disabled={isLoading || isOff}
               onClick={() => onUpdateBettaFishSystemState(SYSTEM_STATUS.OFF)}
             >
               關閉服務
@@ -275,7 +275,7 @@ const UploadTankInfo = () => {
             <button
               type='button'
               className='btn btn-outline'
-              disabled={isLoading || isOn || isSystemStateFail}
+              disabled={isLoading || isOn}
               onClick={() => onUpdateBettaFishSystemState(SYSTEM_STATUS.ON)}
             >
               開啟服務
