@@ -6,7 +6,7 @@ const JsonBlock = ({ className }) => {
   const [json] = useJsonBlock()
   return (
     <div
-      className={clx('alert flex w-full max-w-fit flex-col items-start gap-4', { [className]: className })}
+      className={clx('alert flex w-full flex-col items-start gap-4', { [className]: className })}
     >
       <div>
         API response
