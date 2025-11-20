@@ -22,6 +22,7 @@ import getApiPrefix from '../../../../utils/getApiPrefix'
 import getFormValues from '../../../../utils/getFormValues'
 import useUploadS3 from '../../../../hooks/useUploadS3'
 import useQueue from '../../../../hooks/useQueue'
+import useJsonBlock from '../../../../components/JsonBlock/useJsonBlock'
 
 const FORM = {
   DELIVERY_DATE: 'delivery_date',
@@ -47,17 +48,20 @@ const s3Env = {
 const validationSchema = Yup.object().shape({
   [FORM.DELIVERY_DATE]: Yup
     .date()
-    .typeError('Invalid start date')
-    .required('Start date is required'),
+    .typeError(`Invalid ${FORM.DELIVERY_DATE}`)
+    .required(),
   [FORM.ORDER_DEADLINE]: Yup
     .date()
-    .typeError('Invalid end date')
-    .required('End date is required')
+    .typeError(`Invalid ${FORM.ORDER_DEADLINE}`)
+    .required()
     .min(
       Yup.ref(FORM.DELIVERY_DATE),
-      'End date must be later than start date'
+      `${FORM.ORDER_DEADLINE} must be later than ${FORM.DELIVERY_DATE}`
     ),
-  [FORM.EXCEL]: Yup.array().min(1, 'Miss excel!')
+  [FORM.EXCEL]: Yup
+    .array()
+    .required()
+    .min(1, 'Miss excel!')
 })
 
 const Quotation = () => {
@@ -73,6 +77,7 @@ const Quotation = () => {
     trigger,
     isMutating
   } = useCreate(uploadExcelHost)
+  const [, setJsonBlock] = useJsonBlock()
 
   const onDropAssets = async (assetFiles) => {
     const uploadedMap = keyBy(uploadedAssets, 'name')
@@ -93,7 +98,7 @@ const Quotation = () => {
 
     const toastId = toast.loading('Uploading...')
     setIsAssetsUploaded(false)
-    const [uploadS3Error] = await safeAwait(
+    const [uploadS3Error, uploadResult] = await safeAwait(
       Promise.all(
         acceptFiles.map((file) => {
           return uploadS3(file).then((result) => {
@@ -107,6 +112,7 @@ const Quotation = () => {
         })
       )
     )
+    setJsonBlock(uploadResult)
     if (uploadS3Error) {
       toast.error(`Error! ${uploadS3Error.message}`, { id: toastId })
       return
@@ -136,9 +142,10 @@ const Quotation = () => {
       }
     }
     const toastId = toast.loading('Uploading...')
-    const [createError] = await safeAwait(trigger(postParams))
+    const [createError, result] = await safeAwait(trigger(postParams))
     clearForm()
     setIsExcelUploaded(false)
+    setJsonBlock(result)
     if (createError) {
       toast.error(`Error! ${createError.message}`, { id: toastId })
       setSubmitting(false)
@@ -151,8 +158,8 @@ const Quotation = () => {
   return (
     <Formik
       initialValues={{
-        [FORM.DELIVERY_DATE]: format(today, 'yyyy-MM-dd'),
-        [FORM.ORDER_DEADLINE]: format(today, 'yyyy-MM-dd'),
+        [FORM.DELIVERY_DATE]: format(today, 'yyyy-MM-dd\'T\'HH:mm'),
+        [FORM.ORDER_DEADLINE]: format(today, 'yyyy-MM-dd\'T\'HH:mm'),
         [FORM.EXCEL]: undefined
       }}
       validationSchema={validationSchema}
@@ -186,7 +193,7 @@ const Quotation = () => {
                 required
               >
                 <Field
-                  type='date'
+                  type='datetime-local'
                   name={FORM.DELIVERY_DATE}
                   className='input input-bordered w-full lg:max-w-xs'
                   autoComplete='off'
@@ -199,7 +206,7 @@ const Quotation = () => {
                 required
               >
                 <Field
-                  type='date'
+                  type='datetime-local'
                   name={FORM.ORDER_DEADLINE}
                   className='input input-bordered w-full lg:max-w-xs'
                   autoComplete='off'
