@@ -1,8 +1,12 @@
+import {
+  useEffect, useMemo, useRef, useState
+} from 'react'
 import useSWR from 'swr'
 import useSWRInfinite from 'swr/infinite'
 import qs from 'query-string'
 import {
-  get, isEmpty, isNull, isNumber, omitBy
+  delay,
+  get, isEmpty, isEqual, isNull, omitBy
 } from 'lodash-es'
 import getEnvVar from '../utils/getEnvVar'
 import getApiPrefix from '../utils/getApiPrefix'
@@ -26,24 +30,41 @@ const useCategoryInfo = (params, options = {}) => {
   }
 }
 
-export const useCategoryInfoPages = (params, options = {}) => {
-  const getKey = (pageIndex) => {
-    const cleanParams = omitBy({ ...params, page: pageIndex }, (v) => {
-      if (isNumber(v)) {
-        return false
-      }
-
-      return isEmpty(v)
-    })
-    const qsStr = `?${qs.stringify(cleanParams)}`
-    const url = `${awsHostPrefix}/categoryinfo${qsStr}`
-    return { url, host }
+const getKey = (cleanParams) => (pageIndex) => {
+  if (isNull(cleanParams)) {
+    return null
   }
+
+  const cleanQs = isEmpty(cleanParams) ? '' : `&${qs.stringify(cleanParams)}`
+  const qsStr = `?page=${pageIndex}${cleanQs}`
+  const url = `${awsHostPrefix}/categoryinfo${qsStr}`
+  const key = JSON.stringify({ url, host })
+  return key
+}
+
+export const useCategoryInfoPages = (params, options = {}) => {
+  const memRef = useRef(null)
+  const [stateParams, setStateParams] = useState(null)
+  const cleanParams = useMemo(() => omitBy(params, isEmpty), [params])
+
+  useEffect(() => {
+    if (isEqual(cleanParams, memRef.current)) {
+      return
+    }
+
+    memRef.current = cleanParams
+    delay(() => {
+      setStateParams(cleanParams)
+    }, 100)
+  }, [cleanParams, stateParams])
 
   const {
     data, error, isValidating, isLoading, ...rest
-  } = useSWRInfinite(getKey, {
-    suspense: false, revalidateFirstPage: false, parallel: true, ...options
+  } = useSWRInfinite(getKey(stateParams), {
+    suspense: false,
+    revalidateFirstPage: false,
+    parallel: true,
+    ...options
   })
   return {
     data,

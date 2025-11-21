@@ -100,11 +100,12 @@ const fetcher = async (config = {}, triggerArgs = {}) => {
       body: data
     } = {}
   } = triggerArgs
+  const isStringConfig = isString(config)
   const {
     host: hostFromHook = '',
     url: keyFromGet = '',
     options = {}
-  } = config
+  } = isStringConfig ? JSON.parse(config) : config
   const host = hostFromTrigger || hostFromHook
   const { header = {}, errorMessage = '發生錯誤', ...restOptions } = options
   const key = keyFromGet || keyFromTrigger
