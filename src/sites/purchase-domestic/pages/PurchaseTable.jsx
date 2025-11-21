@@ -11,6 +11,7 @@ import { FaEye } from 'react-icons/fa'
 import { TiShoppingCart } from 'react-icons/ti'
 import {
   concat,
+  filter,
   flow,
   get,
   isEmpty,
@@ -168,7 +169,9 @@ const PurchaseTable = (props) => {
     data, isLoading, size: pageSize, setSize: setPageSize, mutate
   } = useCategoryInfoPages(queryPayload, {
     onSuccess: (categoryInfoPagesData) => {
-      const currentTotal = size(categoryInfoPagesData)
+      const currentTotal = size(
+        filter(categoryInfoPagesData, (page) => !isEmpty(get(page, 'results.items')))
+      )
       const isAllDataLoaded = pagesRef.current === currentTotal
       setIsAllDataVisible(isAllDataLoaded)
       if (isAllDataLoaded) {

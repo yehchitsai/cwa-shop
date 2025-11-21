@@ -9,7 +9,7 @@ const awsHostPrefix = getApiPrefix(subPrefix)
 const today = new Date()
 
 const getFakeImage = (width, height, text) => {
-  return `https://fakeimg.ryd.tools/${width}x${height}/?text=${text}&font=lobster&font_size=50`
+  return `https://dummyimage.com/${width}x${height}/?text=${text}&font=lobster&font_size=50`
 }
 
 const getRecommendations = (query = 'history') => {
