@@ -10,18 +10,14 @@ import { MdOutlineDelete } from 'react-icons/md'
 import { FaEye } from 'react-icons/fa'
 import { TiShoppingCart } from 'react-icons/ti'
 import {
-  concat,
-  filter,
-  flow,
   get,
   isEmpty,
   isObject,
-  map,
   size,
   times
 } from 'lodash-es'
 import { useIntersectionObserver } from '@react-hooks-library/core'
-import { useCategoryInfoPages } from '../../../hooks/useCategoryInfo'
+import useCategoryInfo from '../../../hooks/useCategoryInfo'
 import ViewFileModal from './ViewFileModal'
 import wait from '../../../utils/wait'
 import { usePhase } from '../../../components/SearchMenu/store'
@@ -141,7 +137,64 @@ const TableRow = (props) => {
   )
 }
 
-const PAGE_SIZE = 20
+const PAGE_SIZE = 100
+
+const PageTableRows = (props) => {
+  const {
+    page,
+    onClickRow,
+    selectProductMap,
+    onViewFileModalClick,
+    stopLoadmore
+  } = props
+  const [phase] = usePhase()
+  const [searchParams] = useSearchParams()
+  const category = searchParams.get('type') || 'all'
+  const uuid = searchParams.get('uuid')
+  const queryPayload = useMemo(() => {
+    if (category === 'all') {
+      return { page, uuid, search_keyword: phase }
+    }
+
+    return {
+      page, category, uuid, search_keyword: phase
+    }
+  }, [page, category, phase, uuid])
+  const {
+    data, isLoading
+  } = useCategoryInfo(queryPayload, {
+    onSuccess: (result) => {
+      const tableData = get(result, 'results.items', [])
+      if (size(tableData) === PAGE_SIZE) {
+        return
+      }
+      stopLoadmore()
+    }
+  })
+  const totalTableData = useMemo(() => {
+    if (
+      isLoading && (isEmpty(data) || page === 0)
+    ) {
+      return times(PAGE_SIZE)
+    }
+
+    const tableData = get(data, 'items', [])
+    return tableData
+  }, [isLoading, data, page])
+
+  return totalTableData.map((rowData, index) => {
+    return (
+      <TableRow
+        key={index}
+        index={index + (page * PAGE_SIZE)}
+        rowData={rowData}
+        onClickRow={onClickRow}
+        selectProductMap={selectProductMap}
+        onViewFileModalClick={onViewFileModalClick}
+      />
+    )
+  })
+}
 
 const PurchaseTable = (props) => {
   const {
@@ -152,51 +205,22 @@ const PurchaseTable = (props) => {
   const tableRef = useRef()
   const loadmoreRef = useRef()
   const isAllowLoadmoreRef = useRef(true)
-  const pagesRef = useRef(0)
+  const [pageSize, setPageSize] = useState(0)
   const [selectedRow, setSelectedRow] = useState({})
   const [isAllDataVisible, setIsAllDataVisible] = useState(false)
-  const [searchParams] = useSearchParams()
-  const category = searchParams.get('type') || 'all'
-  const uuid = searchParams.get('uuid')
-  const queryPayload = useMemo(() => {
-    if (category === 'all') {
-      return { uuid, search_keyword: phase }
-    }
-
-    return { category, uuid, search_keyword: phase }
-  }, [category, phase, uuid])
-  const {
-    data, isLoading, size: pageSize, setSize: setPageSize, mutate
-  } = useCategoryInfoPages(queryPayload, {
-    onSuccess: (categoryInfoPagesData) => {
-      const currentTotal = size(
-        filter(categoryInfoPagesData, (page) => !isEmpty(get(page, 'results.items')))
-      )
-      const isAllDataLoaded = pagesRef.current === currentTotal
-      setIsAllDataVisible(isAllDataLoaded)
-      if (isAllDataLoaded) {
-        return
-      }
-      pagesRef.current = currentTotal
-      isAllowLoadmoreRef.current = true
-    }
-  })
-  const totalTableData = useMemo(() => {
-    if (isLoading && isEmpty(data)) {
-      return times(PAGE_SIZE)
-    }
-
-    const tableData = flow(
-      () => map(data, 'results.items'),
-      (resultItems) => concat(...resultItems)
-    )()
-    return tableData
-  }, [isLoading, data])
   const { inView } = useIntersectionObserver(loadmoreRef)
+  const pages = useMemo(() => {
+    return times(pageSize)
+  }, [pageSize])
 
   const onViewFileModalClick = (row) => {
     modalRef.current.open()
     setSelectedRow(row)
+  }
+
+  const stopLoadmore = () => {
+    setIsAllDataVisible(true)
+    isAllowLoadmoreRef.current = false
   }
 
   useEffect(() => {
@@ -206,8 +230,9 @@ const PurchaseTable = (props) => {
       }
 
       isAllowLoadmoreRef.current = false
-      await wait(300)
       setPageSize(pageSize + 1)
+      await wait(300)
+      isAllowLoadmoreRef.current = true
     }
     loadmore()
   }, [inView, pageSize, setPageSize])
@@ -215,11 +240,9 @@ const PurchaseTable = (props) => {
   useEffect(() => {
     tableRef.current.scrollIntoView()
     isAllowLoadmoreRef.current = true
-    pagesRef.current = 0
-    setPageSize(1)
+    setPageSize(0)
     setIsAllDataVisible(false)
-    mutate([])
-  }, [phase, setIsAllDataVisible, setPageSize, mutate])
+  }, [phase, setIsAllDataVisible, setPageSize])
 
   return (
     <>
@@ -243,14 +266,14 @@ const PurchaseTable = (props) => {
           </tr>
         </thead>
         <tbody className='content-visibility-auto'>
-          {totalTableData.map((rowData, index) => {
+          {pages.map((page) => {
             return (
-              <TableRow
-                key={index}
-                index={index}
-                rowData={rowData}
+              <PageTableRows
+                key={page}
+                page={page}
                 onClickRow={onClickRow}
                 selectProductMap={selectProductMap}
+                stopLoadmore={stopLoadmore}
                 onViewFileModalClick={onViewFileModalClick}
               />
             )
