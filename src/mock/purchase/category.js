@@ -68,7 +68,7 @@ export default [
       } = JSON.parse(JSON.stringify(stringObject))
       const isFishCodeEmpty = isEmpty(fish_code)
       const isUUIDEmpty = isEmpty(uuid)
-      const fishCodes = isFishCodeEmpty ? times(random(97, 100)) : fish_code.split(',')
+      const fishCodes = isFishCodeEmpty ? times(random(99, 100)) : fish_code.split(',')
       const items = fishCodes.map((fishCode, index) => {
         const cat = category || CATEGORIES[random(0, 2)]
         const fishName = isUUIDEmpty ? `fish_name_${cat}_${index}` : `fish_name_$${uuid}_${index}`
