@@ -115,7 +115,12 @@ const TableRow = (props) => {
         </label>
       </th>
       {!isRowVisible && times(9).map((i) => (
-        <td key={i}>
+        <td
+          key={i}
+          className={clx('table-cell', {
+            'max-md:hidden': i > 2
+          })}
+        >
           <p className='skeleton h-4 w-16' />
         </td>
       ))}
@@ -124,15 +129,19 @@ const TableRow = (props) => {
           <td>{fish_name}</td>
           <td>{fish_size}</td>
           <td>{unit_price}</td>
-          <td>{retail_price}</td>
-          <td>{inventory === -1 ? '無上限' : inventory}</td>
-          <td>{min_purchase_quantity}</td>
-          <td>{note}</td>
-          <td>{request}</td>
-          <td>{quantity}</td>
+          <div
+            className='contents max-md:hidden'
+          >
+            <td>{retail_price}</td>
+            <td>{inventory === -1 ? '無上限' : inventory}</td>
+            <td>{min_purchase_quantity}</td>
+            <td>{note}</td>
+            <td>{request}</td>
+            <td>{quantity}</td>
+            {tableLinkCols}
+          </div>
         </>
       )}
-      {tableLinkCols}
     </tr>
   )
 }
@@ -256,13 +265,15 @@ const PurchaseTable = (props) => {
             <td>品名</td>
             <td>尺寸</td>
             <td>單價</td>
-            <td>建議零售價</td>
-            <td>在庫量</td>
-            <td>起購量</td>
-            <td>說明</td>
-            <td>特殊要求</td>
-            <td>購買數量</td>
-            <td>檢視連結</td>
+            <div className='contents max-md:hidden'>
+              <td>建議零售價</td>
+              <td>在庫量</td>
+              <td>起購量</td>
+              <td>說明</td>
+              <td>特殊要求</td>
+              <td>購買數量</td>
+              <td>檢視連結</td>
+            </div>
           </tr>
         </thead>
         <tbody className='content-visibility-auto'>
