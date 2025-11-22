@@ -8,8 +8,12 @@ import { useSearchParams } from 'react-router-dom'
 import clx from 'classnames'
 import { MdOutlineDelete } from 'react-icons/md'
 import { FaEye } from 'react-icons/fa'
-import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa6'
-import { TiShoppingCart } from 'react-icons/ti'
+import {
+  TiShoppingCart,
+  TiArrowUnsorted,
+  TiArrowSortedUp,
+  TiArrowSortedDown
+} from 'react-icons/ti'
 import {
   get,
   isEmpty,
@@ -227,18 +231,18 @@ const SortCell = (props) => {
 
   const renderSortIcon = () => {
     if (sortField !== field) {
-      return <FaSort />
+      return <TiArrowUnsorted />
     }
 
     if (sortOrder === 'asc') {
-      return <FaSortUp />
+      return <TiArrowSortedDown />
     }
 
     if (sortOrder === 'desc') {
-      return <FaSortDown />
+      return <TiArrowSortedUp />
     }
 
-    return <FaSort />
+    return <TiArrowUnsorted />
   }
 
   const onSortChange = async () => {
