@@ -15,6 +15,7 @@ const PurchaseModalTable = (props) => {
     retail_price,
     inventory,
     min_purchase_quantity,
+    group,
     note
   } = values
 
@@ -49,6 +50,10 @@ const PurchaseModalTable = (props) => {
           <tr>
             <td>起購量</td>
             <td>{min_purchase_quantity}</td>
+          </tr>
+          <tr>
+            <td>購買對數</td>
+            <td>{group}</td>
           </tr>
           <tr>
             <td>說明</td>
