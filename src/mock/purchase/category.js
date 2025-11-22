@@ -51,6 +51,7 @@ export default [
         results: {
           update_date: '2024-05-27',
           delivery_date: '2024-06-01',
+          order_deadline: '2024-10-30',
           category_list
         }
       }
@@ -79,7 +80,7 @@ export default [
           fish_size: FISH_SIZES[random(0, 2)],
           unit_price: random(10, 100),
           retail_price: random(10, 100),
-          // test unlimited
+          group: random(1, 5),
           inventory: [random(50, 100), -1][random(0, 1)],
           min_purchase_quantity: random(10, 20),
           note: ['', `note_${index}`][random(0, 1)],
