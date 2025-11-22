@@ -44,7 +44,7 @@ const getTableLinkCols = (rowData, isSelected, onClick) => {
   }
 
   return (
-    <td>
+    <td data-desktop>
       <button
         type='button'
         id={`view-file-btn-${fish_code}`}
@@ -101,7 +101,7 @@ const TableRow = (props) => {
       key={index}
       ref={visibleRef}
       className={clx(
-        'whitespace-nowrap cursor-pointer',
+        'whitespace-nowrap cursor-pointer max-md:[&_[data-desktop]]:hidden',
         { 'bg-base-200': isSelected }
       )}
       onClick={() => isObject(rowData) && onClickRow(rowData)}
@@ -137,17 +137,13 @@ const TableRow = (props) => {
           <td>{fish_name}</td>
           <td>{fish_size}</td>
           <td>{unit_price}</td>
-          <div
-            className='contents max-md:hidden'
-          >
-            <td>{retail_price}</td>
-            <td>{inventory === -1 ? '無上限' : inventory}</td>
-            <td>{min_purchase_quantity}</td>
-            <td>{note}</td>
-            <td>{request}</td>
-            <td>{quantity}</td>
-            {tableLinkCols}
-          </div>
+          <td data-desktop>{retail_price}</td>
+          <td data-desktop>{inventory === -1 ? '無上限' : inventory}</td>
+          <td data-desktop>{min_purchase_quantity}</td>
+          <td data-desktop>{note}</td>
+          <td data-desktop>{request}</td>
+          <td data-desktop>{quantity}</td>
+          {tableLinkCols}
         </>
       )}
     </tr>
@@ -333,7 +329,7 @@ const PurchaseTable = (props) => {
         className='table table-pin-rows table-pin-cols'
       >
         <thead>
-          <tr className='z-[1] max-sm:-top-1'>
+          <tr className='z-[1] max-sm:-top-1 max-md:[&_[data-desktop]]:hidden'>
             <th>項次</th>
             <td>
               <SortCell field='fish_name'>
@@ -350,15 +346,13 @@ const PurchaseTable = (props) => {
                 單價
               </SortCell>
             </td>
-            <div className='contents max-md:hidden'>
-              <td>建議零售價</td>
-              <td>在庫量</td>
-              <td>起購量</td>
-              <td>說明</td>
-              <td>特殊要求</td>
-              <td>購買數量</td>
-              <td>檢視連結</td>
-            </div>
+            <td data-desktop>建議零售價</td>
+            <td data-desktop>在庫量</td>
+            <td data-desktop>起購量</td>
+            <td data-desktop>說明</td>
+            <td data-desktop>特殊要求</td>
+            <td data-desktop>購買數量</td>
+            <td data-desktop>檢視連結</td>
           </tr>
         </thead>
         <tbody className='content-visibility-auto'>
