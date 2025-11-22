@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Field, useFormikContext } from 'formik'
 import clx from 'classnames'
+import { FaEye } from 'react-icons/fa'
 import { FORM_ITEM } from './constants'
 import FieldError from '../../../components/Form/FieldError'
 
@@ -103,10 +104,13 @@ const PurchaseModalTable = (props) => {
             <td colSpan={2}>
               <button
                 type='button'
-                className='btn btn-outline btn-primary btn-md w-full'
+                className='btn btn-md w-full'
                 disabled={!editable}
                 onClick={onViewFiles}
               >
+                <FaEye
+                  className='!fill-indigo-500'
+                />
                 檢視
               </button>
             </td>
