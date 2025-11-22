@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Field, useFormikContext } from 'formik'
 import clx from 'classnames'
+import { FaEye } from 'react-icons/fa'
 import { FORM_ITEM } from './constants'
 import FieldError from '../../../components/Form/FieldError'
 
@@ -10,6 +11,7 @@ const PurchaseModalTable = (props) => {
   const editable = (!disabled && isAddToCart)
   const {
     fish_name,
+    fish_code,
     fish_size,
     unit_price,
     retail_price,
@@ -18,6 +20,14 @@ const PurchaseModalTable = (props) => {
     group,
     note
   } = values
+
+  const onViewFiles = () => {
+    const element = document.querySelector(`#view-file-btn-${fish_code}`).click()
+    if (!element) {
+      return
+    }
+    element.click()
+  }
 
   useEffect(() => {
     setValues(rowData)
@@ -88,6 +98,21 @@ const PurchaseModalTable = (props) => {
                 className='textarea textarea-bordered w-full resize-none'
                 disabled={!editable}
               />
+            </td>
+          </tr>
+          <tr>
+            <td colSpan={2}>
+              <button
+                type='button'
+                className='btn btn-md w-full'
+                disabled={!editable}
+                onClick={onViewFiles}
+              >
+                <FaEye
+                  className='!fill-indigo-500'
+                />
+                檢視
+              </button>
             </td>
           </tr>
         </tbody>
