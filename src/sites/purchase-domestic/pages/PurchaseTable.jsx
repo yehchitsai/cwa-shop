@@ -8,6 +8,7 @@ import { useSearchParams } from 'react-router-dom'
 import clx from 'classnames'
 import { MdOutlineDelete } from 'react-icons/md'
 import { FaEye } from 'react-icons/fa'
+import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa6'
 import { TiShoppingCart } from 'react-icons/ti'
 import {
   get,
@@ -16,11 +17,16 @@ import {
   size,
   times
 } from 'lodash-es'
+import { atom, useAtom } from 'jotai'
 import { useIntersectionObserver } from '@react-hooks-library/core'
 import useCategoryInfo from '../../../hooks/useCategoryInfo'
 import ViewFileModal from './ViewFileModal'
 import wait from '../../../utils/wait'
 import { usePhase } from '../../../components/SearchMenu/store'
+
+const sortFieldAtom = atom()
+const sortOrderAtom = atom()
+const pageSizeAtom = atom(0)
 
 const getTableLinkCols = (rowData, isSelected, onClick) => {
   const {
@@ -158,19 +164,26 @@ const PageTableRows = (props) => {
     onViewFileModalClick,
     stopLoadmore
   } = props
+  const [sortField] = useAtom(sortFieldAtom)
+  const [sortOrder] = useAtom(sortOrderAtom)
   const [phase] = usePhase()
   const [searchParams] = useSearchParams()
   const category = searchParams.get('type') || 'all'
   const uuid = searchParams.get('uuid')
   const queryPayload = useMemo(() => {
+    const commonPayload = {
+      page,
+      uuid,
+      search_keyword: phase,
+      sort_field: sortField,
+      sort_order: sortOrder
+    }
     if (category === 'all') {
-      return { page, uuid, search_keyword: phase }
+      return commonPayload
     }
 
-    return {
-      page, category, uuid, search_keyword: phase
-    }
-  }, [page, category, phase, uuid])
+    return { ...commonPayload, category }
+  }, [page, category, phase, uuid, sortField, sortOrder])
   const {
     data, isLoading
   } = useCategoryInfo(queryPayload, {
@@ -207,16 +220,74 @@ const PageTableRows = (props) => {
   })
 }
 
+const SortCell = (props) => {
+  const {
+    field,
+    children
+  } = props
+  const [sortField, setSortField] = useAtom(sortFieldAtom)
+  const [sortOrder, setSortOrder] = useAtom(sortOrderAtom)
+  const [, setPageSize] = useAtom(pageSizeAtom)
+
+  const renderSortIcon = () => {
+    if (sortField !== field) {
+      return <FaSort />
+    }
+
+    if (sortOrder === 'asc') {
+      return <FaSortUp />
+    }
+
+    if (sortOrder === 'desc') {
+      return <FaSortDown />
+    }
+
+    return <FaSort />
+  }
+
+  const onSortChange = async () => {
+    setPageSize(0)
+    await wait(0)
+
+    if (sortField !== field) {
+      setSortField(field)
+      setSortOrder('asc')
+      return
+    }
+
+    if (sortOrder === 'asc') {
+      setSortOrder('desc')
+      return
+    }
+
+    setSortOrder(null)
+    setSortField(null)
+  }
+
+  return (
+    <button
+      type='button'
+      className='flex w-full cursor-pointer select-none items-center gap-1'
+      onClick={onSortChange}
+    >
+      <span>{children}</span>
+      {renderSortIcon()}
+    </button>
+  )
+}
+
 const PurchaseTable = (props) => {
   const {
     selectProductMap, onClickRow
   } = props
+  const [sortField] = useAtom(sortFieldAtom)
+  const [sortOrder] = useAtom(sortOrderAtom)
+  const [pageSize, setPageSize] = useAtom(pageSizeAtom)
   const [phase] = usePhase()
   const modalRef = useRef()
   const tableRef = useRef()
   const loadmoreRef = useRef()
   const isAllowLoadmoreRef = useRef(true)
-  const [pageSize, setPageSize] = useState(0)
   const [selectedRow, setSelectedRow] = useState({})
   const [isAllDataVisible, setIsAllDataVisible] = useState(false)
   const { inView } = useIntersectionObserver(loadmoreRef)
@@ -253,7 +324,7 @@ const PurchaseTable = (props) => {
     isAllowLoadmoreRef.current = true
     setPageSize(0)
     setIsAllDataVisible(false)
-  }, [phase, setIsAllDataVisible, setPageSize])
+  }, [phase, setIsAllDataVisible, setPageSize, sortField, sortOrder])
 
   return (
     <>
@@ -264,9 +335,21 @@ const PurchaseTable = (props) => {
         <thead>
           <tr className='z-[1] max-sm:-top-1'>
             <th>項次</th>
-            <td>品名</td>
-            <td>尺寸</td>
-            <td>單價</td>
+            <td>
+              <SortCell field='fish_name'>
+                品名
+              </SortCell>
+            </td>
+            <td>
+              <SortCell field='fish_size'>
+                尺寸
+              </SortCell>
+            </td>
+            <td>
+              <SortCell field='unit_price'>
+                單價
+              </SortCell>
+            </td>
             <div className='contents max-md:hidden'>
               <td>建議零售價</td>
               <td>在庫量</td>
