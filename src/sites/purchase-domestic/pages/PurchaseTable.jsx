@@ -24,6 +24,7 @@ import { usePhase } from '../../../components/SearchMenu/store'
 
 const getTableLinkCols = (rowData, isSelected, onClick) => {
   const {
+    fish_code,
     image_link,
     video_link
   } = rowData
@@ -40,6 +41,7 @@ const getTableLinkCols = (rowData, isSelected, onClick) => {
     <td>
       <button
         type='button'
+        id={`view-file-btn-${fish_code}`}
         className={clx(
           'btn btn-sm !w-20',
           {

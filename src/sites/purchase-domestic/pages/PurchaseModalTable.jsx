@@ -10,6 +10,7 @@ const PurchaseModalTable = (props) => {
   const editable = (!disabled && isAddToCart)
   const {
     fish_name,
+    fish_code,
     fish_size,
     unit_price,
     retail_price,
@@ -18,6 +19,14 @@ const PurchaseModalTable = (props) => {
     group,
     note
   } = values
+
+  const onViewFiles = () => {
+    const element = document.querySelector(`#view-file-btn-${fish_code}`).click()
+    if (!element) {
+      return
+    }
+    element.click()
+  }
 
   useEffect(() => {
     setValues(rowData)
@@ -88,6 +97,18 @@ const PurchaseModalTable = (props) => {
                 className='textarea textarea-bordered w-full resize-none'
                 disabled={!editable}
               />
+            </td>
+          </tr>
+          <tr>
+            <td colSpan={2}>
+              <button
+                type='button'
+                className='btn btn-outline btn-primary btn-md w-full'
+                disabled={!editable}
+                onClick={onViewFiles}
+              >
+                檢視
+              </button>
             </td>
           </tr>
         </tbody>
