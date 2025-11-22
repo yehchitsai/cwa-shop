@@ -51,6 +51,7 @@ export default [
         results: {
           update_date: '2024-05-27',
           delivery_date: '2024-06-01',
+          order_deadline: '2024-10-30',
           category_list
         }
       }

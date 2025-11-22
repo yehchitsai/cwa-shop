@@ -7,7 +7,8 @@ const PurchaseAction = () => {
   const {
     data: {
       delivery_date = '--',
-      update_date = '--'
+      update_date = '--',
+      order_deadline = '--'
     } = {}
   } = useGetCategoryList()
   return (
@@ -17,7 +18,7 @@ const PurchaseAction = () => {
       </label>
       <ul
         tabIndex={0}
-        className='menu dropdown-content z-10 mt-4 w-64 translate-y-10 rounded-box bg-base-100 p-2 shadow'
+        className='menu dropdown-content z-10 mt-4 w-64 translate-y-10 rounded-box bg-base-100 p-2 shadow [&_label]:pointer-events-none'
       >
         <li>
           <label className='label cursor-pointer'>
@@ -37,6 +38,13 @@ const PurchaseAction = () => {
           <label className='label cursor-pointer'>
             <span className='label-text'>
               {`報價單更新日期：${update_date}`}
+            </span>
+          </label>
+        </li>
+        <li>
+          <label className='label cursor-pointer'>
+            <span className='label-text'>
+              {`訂單截止日期：${order_deadline}`}
             </span>
           </label>
         </li>
