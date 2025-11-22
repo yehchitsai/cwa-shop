@@ -63,7 +63,7 @@ const PurchaseModalTable = (props) => {
           </tr>
           <tr>
             <td>購買對數</td>
-            <td>{group}</td>
+            <td>{`${group} 對`}</td>
           </tr>
           <tr>
             <td>說明</td>
