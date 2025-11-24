@@ -63,7 +63,7 @@ const Option = (props) => {
     const toastId = toast.loading(`${message}中...`)
     const [createError, result] = await safeAwait(createBettaFishSystemState({
       action,
-      system_type: SYSTEM_TYPE
+      system_type: systemType
     }))
     setJsonBlock(result)
     if (createError) {
