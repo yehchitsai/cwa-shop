@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Field, useFormikContext } from 'formik'
 import clx from 'classnames'
+import { isEmpty } from 'lodash-es'
 import { FaEye } from 'react-icons/fa'
 import { FORM_ITEM } from './constants'
 import FieldError from '../../../components/Form/FieldError'
@@ -18,8 +19,13 @@ const PurchaseModalTable = (props) => {
     inventory,
     min_purchase_quantity,
     group,
-    note
+    note,
+    video_links: videos = [],
+    image_links: images = []
   } = values
+  const isOverviewBtnDisabled = (
+    isEmpty(videos) && isEmpty(images)
+  )
 
   const onViewFiles = () => {
     const element = document.querySelector(`#view-file-btn-${fish_code}`).click()
@@ -105,7 +111,7 @@ const PurchaseModalTable = (props) => {
               <button
                 type='button'
                 className='btn btn-md w-full'
-                disabled={!editable}
+                disabled={!editable || isOverviewBtnDisabled}
                 onClick={onViewFiles}
               >
                 <FaEye
