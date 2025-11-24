@@ -1,10 +1,12 @@
 import {
-  get, isEmpty
+  get,
+  isEmpty
 } from 'lodash-es'
 import toast from 'react-hot-toast'
 import safeAwait from 'safe-await'
-import useSystemState from '../../../../hooks/useSystemState'
-import useCreateSystemState from '../../../../hooks/useCreateSystemState'
+import useCreateUploadTankInfo from '../../../../hooks/useCreateUploadTankInfo'
+import useBettaFishSystemState from '../../../../hooks/useBettaFishSystemState'
+import useCreateBettaFishSystemState from '../../../../hooks/useCreateBettaFishSystemState'
 import useJsonBlock from '../../../../components/JsonBlock/useJsonBlock'
 
 const SYSTEM_TYPE = {
@@ -41,29 +43,27 @@ const getSystemState = (data) => {
 
 const Option = (props) => {
   const { label, systemType } = props
+  const { isMutating: isLoading } = useCreateUploadTankInfo()
+  const { data: bettaFishSystemStateData } = useBettaFishSystemState({ system_type: systemType })
   const {
-    data: systemStateData,
-    isLoading: isSystemStateLoading
-  } = useSystemState({ system_type: systemType })
-  const {
-    data: createSystemStateData,
-    trigger: createSystemState,
-    isMutating: isCreateSystemStateLoading
-  } = useCreateSystemState()
-  const [, setJsonBlock] = useJsonBlock()
+    trigger: createBettaFishSystemState,
+    data: createBettaFishSystemStateData
+  } = useCreateBettaFishSystemState()
   const { isOn } = getSystemState(
-    isEmpty(createSystemStateData) ? systemStateData : createSystemStateData
+    isEmpty(createBettaFishSystemStateData)
+      ? bettaFishSystemStateData
+      : createBettaFishSystemStateData
   )
-  const isDisableOption = (isSystemStateLoading || isCreateSystemStateLoading)
+  const [, setJsonBlock] = useJsonBlock()
 
   const onUpdateSystemState = async (e) => {
     const nextChecked = get(e, 'target.checked', false)
     const action = nextChecked ? SYSTEM_STATUS.ON : SYSTEM_STATUS.OFF
-    const message = `報價單${SYSTEM_TYPE_MAP[systemType]}服務 ${SYSTEM_STATUS_MAP[action]}`
-    const toastId = toast.loading(`${message} 中...`)
-    const [createError, result] = await safeAwait(createSystemState({
-      system_type: systemType,
-      action
+    const message = `鬥魚${SYSTEM_TYPE_MAP[systemType]}服務 ${SYSTEM_STATUS_MAP[action]}`
+    const toastId = toast.loading(`${message}中...`)
+    const [createError, result] = await safeAwait(createBettaFishSystemState({
+      action,
+      system_type: systemType
     }))
     setJsonBlock(result)
     if (createError) {
@@ -89,7 +89,7 @@ const Option = (props) => {
         className='toggle toggle-primary'
         onChange={onUpdateSystemState}
         checked={isOn}
-        disabled={isDisableOption}
+        disabled={isLoading}
       />
     </label>
   )
@@ -100,26 +100,26 @@ const Operation = () => {
     <div className='alert flex w-full flex-col items-start gap-4'>
       <div className='flex w-full flex-col gap-4 rounded-md bg-white px-2 py-1'>
         <Option
-          label='開啟報價單內部系統'
+          label='開啟鬥魚內部平台'
           systemType={SYSTEM_TYPE.INTERNAL}
         />
         <Option
-          label='開啟報價單外部系統'
+          label='開啟鬥魚外部平台'
           systemType={SYSTEM_TYPE.EXTERNAL}
         />
       </div>
       <div className='divider !my-0 w-full' />
       <a
-        href='https://quotation4test.uniheart.com.tw/'
+        href='https://bettafish4test.uniheart.com.tw/'
         className='btn btn-outline w-full'
       >
-        進入報價單內部系統
+        進入鬥魚內部系統
       </a>
       <a
-        href='https://quotation.uniheart.com.tw/'
+        href='https://bettafish.uniheart.com.tw/'
         className='btn btn-outline w-full'
       >
-        進入報價單外部系統
+        進入鬥魚外部系統
       </a>
     </div>
   )

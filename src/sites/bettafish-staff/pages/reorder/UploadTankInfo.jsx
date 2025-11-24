@@ -19,8 +19,6 @@ import getFormValues from '../../../../utils/getFormValues'
 import useJsonBlock from '../../../../components/JsonBlock/useJsonBlock'
 import useRecoverData from '../../../../hooks/useRecoverData'
 import useCreateUploadTankInfo from '../../../../hooks/useCreateUploadTankInfo'
-import useBettaFishSystemState from '../../../../hooks/useBettaFishSystemState'
-import useCreateBettaFishSystemState from '../../../../hooks/useCreateBettaFishSystemState'
 import useCreateRecoverData from '../../../../hooks/useCreateRecoverData'
 
 const FORM = {
@@ -31,50 +29,16 @@ const validationSchema = Yup.object().shape({
   [FORM.EXCEL]: Yup.array().min(1, 'Miss excel!')
 })
 
-const SYSTEM_TYPE = 'internal'
-
-const SYSTEM_STATUS = {
-  ON: 'on',
-  OFF: 'off'
-}
-
-const SYSTEM_STATUS_MAP = {
-  [SYSTEM_STATUS.ON]: '開啟',
-  [SYSTEM_STATUS.OFF]: '關閉'
-}
-
-const getSystemState = (data) => {
-  const isSystemStateFail = get(data, 'status') === 'fail'
-  if (isSystemStateFail) {
-    return { isSystemStateFail, isOn: null, isOff: null }
-  }
-
-  const status = get(data, 'results.systems[0].status')
-  const isOn = status === SYSTEM_STATUS.ON
-  const isOff = status === SYSTEM_STATUS.OFF
-  return { isSystemStateFail: false, isOn, isOff }
-}
-
 const UploadTankInfo = () => {
   const { t } = useTranslation()
   const resetBtn = useRef()
   const [isExcelUploaded, setIsExcelUploaded] = useState(false)
   const { data: recoverDataResult } = useRecoverData()
   const { trigger: createUploadTankInfo, isMutating: isLoading } = useCreateUploadTankInfo()
-  const { data: bettaFishSystemStateData } = useBettaFishSystemState({ system_type: SYSTEM_TYPE })
-  const {
-    trigger: createBettaFishSystemState,
-    data: createBettaFishSystemStateData
-  } = useCreateBettaFishSystemState()
   const {
     isMutating: isRecoverDataLoading,
     trigger: createRecoverData
   } = useCreateRecoverData()
-  const { isOff, isOn } = getSystemState(
-    isEmpty(createBettaFishSystemStateData)
-      ? bettaFishSystemStateData
-      : createBettaFishSystemStateData
-  )
   const recoverData = get(recoverDataResult, 'results.data', [])
   const [, setJsonBlock] = useJsonBlock()
 
@@ -115,30 +79,6 @@ const UploadTankInfo = () => {
     toast.success('Finish!', { id: toastId })
     setSubmitting(false)
     setIsExcelUploaded(false)
-  }
-
-  const onUpdateBettaFishSystemState = async (status) => {
-    const msgPrefix = SYSTEM_STATUS_MAP[status]
-    const message = `${msgPrefix}服務中...`
-    const toastId = toast.loading(message)
-    const [createError, result] = await safeAwait(createBettaFishSystemState({
-      action: status,
-      system_type: SYSTEM_TYPE
-    }))
-    setJsonBlock(result)
-    if (createError) {
-      toast.error(`${createError.message}`, { id: toastId })
-      return
-    }
-
-    const isFail = get(result, 'status') === 'fail'
-    const errorMessage = get(result, 'results.message')
-    if (isFail) {
-      toast.error(`Error! ${errorMessage}`, { id: toastId })
-      return
-    }
-
-    toast.success(`${msgPrefix}服務成功!`, { id: toastId })
   }
 
   const onRecover = async (recovery_point) => {
@@ -232,22 +172,6 @@ const UploadTankInfo = () => {
                 })}
               </ul>
             </div>
-            <button
-              type='button'
-              className='btn btn-outline'
-              disabled={isLoading || isOff}
-              onClick={() => onUpdateBettaFishSystemState(SYSTEM_STATUS.OFF)}
-            >
-              關閉服務
-            </button>
-            <button
-              type='button'
-              className='btn btn-outline'
-              disabled={isLoading || isOn}
-              onClick={() => onUpdateBettaFishSystemState(SYSTEM_STATUS.ON)}
-            >
-              開啟服務
-            </button>
             <button
               type='submit'
               className='btn btn-outline'
