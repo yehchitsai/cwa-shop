@@ -11,7 +11,7 @@ const ExternalLink = () => {
   return (
     <a
       className='btn btn-ghost'
-      href='https://quotation.uniheart.com.tw/'
+      href='https://bettafish.uniheart.com.tw/'
     >
       <div
         className='tooltip tooltip-bottom'
