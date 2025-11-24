@@ -9,7 +9,15 @@ import useBettaFishSystemState from '../../../../hooks/useBettaFishSystemState'
 import useCreateBettaFishSystemState from '../../../../hooks/useCreateBettaFishSystemState'
 import useJsonBlock from '../../../../components/JsonBlock/useJsonBlock'
 
-const SYSTEM_TYPE = 'internal'
+const SYSTEM_TYPE = {
+  INTERNAL: 'internal',
+  EXTERNAL: 'external'
+}
+
+const SYSTEM_TYPE_MAP = {
+  [SYSTEM_TYPE.INTERNAL]: '內部',
+  [SYSTEM_TYPE.EXTERNAL]: '外部'
+}
 
 const SYSTEM_STATUS = {
   ON: 'on',
@@ -34,9 +42,9 @@ const getSystemState = (data) => {
 }
 
 const Option = (props) => {
-  const { label } = props
+  const { label, systemType } = props
   const { isMutating: isLoading } = useCreateUploadTankInfo()
-  const { data: bettaFishSystemStateData } = useBettaFishSystemState({ system_type: SYSTEM_TYPE })
+  const { data: bettaFishSystemStateData } = useBettaFishSystemState({ system_type: systemType })
   const {
     trigger: createBettaFishSystemState,
     data: createBettaFishSystemStateData
@@ -51,8 +59,7 @@ const Option = (props) => {
   const onUpdateSystemState = async (e) => {
     const nextChecked = get(e, 'target.checked', false)
     const action = nextChecked ? SYSTEM_STATUS.ON : SYSTEM_STATUS.OFF
-    const msgPrefix = SYSTEM_STATUS_MAP[action]
-    const message = `${msgPrefix}服務`
+    const message = `鬥魚${SYSTEM_TYPE_MAP[systemType]}服務 ${SYSTEM_STATUS_MAP[action]}`
     const toastId = toast.loading(`${message}中...`)
     const [createError, result] = await safeAwait(createBettaFishSystemState({
       action,
@@ -93,7 +100,12 @@ const Operation = () => {
     <div className='alert flex w-full flex-col items-start gap-4'>
       <div className='flex w-full flex-col gap-4 rounded-md bg-white px-2 py-1'>
         <Option
-          label='開啟鬥魚系統'
+          label='開啟鬥魚內部平台'
+          systemType={SYSTEM_TYPE.INTERNAL}
+        />
+        <Option
+          label='開啟鬥魚外部平台'
+          systemType={SYSTEM_TYPE.EXTERNAL}
         />
       </div>
       <div className='divider !my-0 w-full' />
@@ -101,13 +113,13 @@ const Operation = () => {
         href='https://bettafish4test.uniheart.com.tw/'
         className='btn btn-outline w-full'
       >
-        進入報價單內部系統
+        進入鬥魚內部系統
       </a>
       <a
         href='https://bettafish.uniheart.com.tw/'
         className='btn btn-outline w-full'
       >
-        進入報價單外部系統
+        進入鬥魚外部系統
       </a>
     </div>
   )
