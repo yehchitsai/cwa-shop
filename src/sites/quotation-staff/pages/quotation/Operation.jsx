@@ -110,13 +110,13 @@ const Operation = () => {
       </div>
       <div className='divider !my-0 w-full' />
       <a
-        href='https://bettafish4test.uniheart.com.tw/'
+        href='https://quotation4test.uniheart.com.tw/'
         className='btn btn-outline w-full'
       >
         進入報價單內部系統
       </a>
       <a
-        href='https://bettafish.uniheart.com.tw/'
+        href='https://quotation.uniheart.com.tw/'
         className='btn btn-outline w-full'
       >
         進入報價單外部系統
