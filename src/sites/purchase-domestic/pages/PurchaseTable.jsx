@@ -35,11 +35,11 @@ const pageSizeAtom = atom(0)
 const getTableLinkCols = (rowData, isSelected, onClick) => {
   const {
     fish_code,
-    image_link,
-    video_link
+    image_links,
+    video_links
   } = rowData
-  const isImageEmpty = isEmpty(image_link)
-  const isVideoEmpty = isEmpty(video_link)
+  const isImageEmpty = isEmpty(image_links)
+  const isVideoEmpty = isEmpty(video_links)
   const isAssetExist = !(isVideoEmpty && isImageEmpty)
 
   const handleViewFileBtnClick = (e) => {
