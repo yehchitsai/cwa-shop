@@ -46,17 +46,17 @@ const s3Env = {
 }
 
 const validationSchema = Yup.object().shape({
-  [FORM.DELIVERY_DATE]: Yup
-    .date()
-    .typeError(`Invalid ${FORM.DELIVERY_DATE}`)
-    .required(),
   [FORM.ORDER_DEADLINE]: Yup
     .date()
     .typeError(`Invalid ${FORM.ORDER_DEADLINE}`)
+    .required(),
+  [FORM.DELIVERY_DATE]: Yup
+    .date()
+    .typeError(`Invalid ${FORM.DELIVERY_DATE}`)
     .required()
     .min(
-      Yup.ref(FORM.DELIVERY_DATE),
-      `${FORM.ORDER_DEADLINE} must be later than ${FORM.DELIVERY_DATE}`
+      Yup.ref(FORM.ORDER_DEADLINE),
+      `${FORM.DELIVERY_DATE} must be later than ${FORM.ORDER_DEADLINE}`
     ),
   [FORM.EXCEL]: Yup
     .array()
@@ -189,19 +189,6 @@ const Quotation = () => {
             <div className='divider m-auto flex w-full' />
             <div className='flex gap-2'>
               <FormRow
-                label='預計出貨日期'
-                error={errors[FORM.DELIVERY_DATE]}
-                required
-              >
-                <Field
-                  type='datetime-local'
-                  name={FORM.DELIVERY_DATE}
-                  className='input input-bordered w-full lg:max-w-xs'
-                  autoComplete='off'
-                  disabled={isMutating || !isAssetsUploaded}
-                />
-              </FormRow>
-              <FormRow
                 label='訂單截止日期'
                 error={errors[FORM.ORDER_DEADLINE]}
                 required
@@ -209,6 +196,19 @@ const Quotation = () => {
                 <Field
                   type='datetime-local'
                   name={FORM.ORDER_DEADLINE}
+                  className='input input-bordered w-full lg:max-w-xs'
+                  autoComplete='off'
+                  disabled={isMutating || !isAssetsUploaded}
+                />
+              </FormRow>
+              <FormRow
+                label='預計出貨日期'
+                error={errors[FORM.DELIVERY_DATE]}
+                required
+              >
+                <Field
+                  type='datetime-local'
+                  name={FORM.DELIVERY_DATE}
                   className='input input-bordered w-full lg:max-w-xs'
                   autoComplete='off'
                   disabled={isMutating || !isAssetsUploaded}
