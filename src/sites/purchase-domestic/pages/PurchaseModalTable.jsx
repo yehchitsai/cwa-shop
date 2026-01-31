@@ -21,7 +21,8 @@ const PurchaseModalTable = (props) => {
     group,
     note,
     video_links: videos = [],
-    image_links: images = []
+    image_links: images = [],
+    quantity = 0
   } = values
   const isOverviewBtnDisabled = (
     isEmpty(videos) && isEmpty(images)
@@ -64,12 +65,12 @@ const PurchaseModalTable = (props) => {
             <td>{inventory}</td>
           </tr>
           <tr>
-            <td>起購量</td>
+            <td>最低訂購量 (隻/組)</td>
             <td>{min_purchase_quantity}</td>
           </tr>
           <tr>
-            <td>購買對數</td>
-            <td>{`${group} 對`}</td>
+            <td>按組購買</td>
+            <td>{`${group} 隻/組`}</td>
           </tr>
           <tr>
             <td>說明</td>
@@ -79,19 +80,26 @@ const PurchaseModalTable = (props) => {
             <td>購買數量</td>
             <td>
               <FieldError name={FORM_ITEM.QUANTITY}>
-                <Field
-                  name={FORM_ITEM.QUANTITY}
-                  type='text'
-                  inputMode='numeric'
-                  className={clx(
-                    'input input-bordered w-full lg:max-w-xs',
-                    { '!text-black': !editable }
-                  )}
-                  min={min_purchase_quantity}
-                  placeholder={inventory === -1 ? '無上限' : ''}
-                  disabled={!editable}
-                  autoComplete='off'
-                />
+                <div className='join'>
+                  <Field
+                    name={FORM_ITEM.QUANTITY}
+                    type='text'
+                    inputMode='numeric'
+                    className={clx(
+                      'input input-bordered join-item w-full lg:max-w-xs',
+                      { '!text-black': !editable }
+                    )}
+                    min={min_purchase_quantity}
+                    placeholder={inventory === -1 ? '無上限' : ''}
+                    disabled={!editable}
+                    autoComplete='off'
+                  />
+                  <input
+                    className='input input-bordered join-item'
+                    value={`(組) 共 ${quantity * group} 隻`}
+                    readOnly
+                  />
+                </div>
               </FieldError>
             </td>
           </tr>
