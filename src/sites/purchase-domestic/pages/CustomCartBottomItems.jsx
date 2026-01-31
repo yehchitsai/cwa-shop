@@ -14,7 +14,7 @@ const CustomCartBottomItems = (props) => {
   } = props
   const safeTotalQuantity = Number.isFinite(Number(total_quantity)) ? total_quantity : 0
   const safeTotalPrice = Number.isFinite(Number(total_price)) ? total_price : 0
-  const safeTrueTotalPrice = safeTotalPrice - total_discount_amt
+  const safeTrueTotalPrice = Number.parseFloat(safeTotalPrice - total_discount_amt).toFixed(2)
   const customItems = [
     <details open>
       <summary>
