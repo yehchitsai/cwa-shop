@@ -11,6 +11,7 @@
     "build:dev": "ls -d src/sites/*/ | sed -r 's#src/sites/(.*)/#\\1#' | xargs -I {} sh -c 'ENTRY={} VITE_CJS_IGNORE_WARNING=true vite build --mode development'",
     "build:spa": "vite build && npm run build:404",
     "build:gh": "BASENAME=1 MOCK=1 MOCK_AWS_API=1 npm run build:spa",
+    "build:cf": "MOCK=1 MOCK_AWS_API=1 npm run build:spa",
     "build:404": "cp dist/index.html dist/404.html",
     "lint": "eslint . --ext .js,.jsx",
     "lint:fix": "npm run lint -- --fix",
