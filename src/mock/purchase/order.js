@@ -46,6 +46,7 @@ export default [
               quantity,
               request,
               unit_price: random(1000, 2000),
+              group: random(1, 5),
               ...(statusList[random(0, size(statusList - 1))])
             }
           }),
@@ -87,6 +88,7 @@ export default [
               science_name: `science_name_${index}`,
               quantity,
               request,
+              group: random(1, 5),
               fish_name: fishName,
               fish_size: FISH_SIZES[random(0, 2)],
               unit_price: random(10, 100),
