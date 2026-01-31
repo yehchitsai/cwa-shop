@@ -7,7 +7,6 @@ const CustomCartItems = (props) => {
   const items = get(cart, 'items', [])
   const customItems = map(items, (item) => {
     const { fish_code, quantity = 0, group = 0 } = item
-    console.log({ item })
     const fishName = get(selectProductMap, `${fish_code}.fish_name`, fish_code)
     const totalCount = quantity * group
     return (
