@@ -37,7 +37,7 @@ const PurchaseModalTable = (props) => {
   }
 
   useEffect(() => {
-    resetForm({ values: rowData })
+    resetForm({ values: { quantity, ...rowData } })
   }, [resetForm, rowData])
 
   return (
