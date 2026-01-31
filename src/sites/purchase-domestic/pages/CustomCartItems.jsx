@@ -14,7 +14,7 @@ const CustomCartItems = (props) => {
         <span>
           {`${fishName} x ${quantity}(隻)`}
           <span className='ml-1 text-sm text-gray-500'>
-            {`(共 ${totalCount})`}
+            {`(共 ${totalCount}) 隻`}
           </span>
         </span>
         <MdEdit size='1.2em' />
