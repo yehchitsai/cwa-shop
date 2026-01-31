@@ -116,6 +116,7 @@ const Confirm = () => {
   // Coerce totalPrice and totalDiscount to safe numbers to prevent NaN rendering
   const displayTotalPrice = toSafeNumber(totalPrice)
   const displayTotalDiscount = toSafeNumber(totalDiscount)
+  const actualPaymentAmount = displayTotalPrice - displayTotalDiscount
 
   const updateCart = async (newItems) => {
     const orderItems = map(newItems, (item) => {
@@ -268,6 +269,9 @@ const Confirm = () => {
                               [FORM_ITEM.REQUEST]: request = '--',
                               [FORM_ITEM.QUANTITY]: quantity = 0
                             } = item
+                            const safeQuantity = toSafeNumber(quantity)
+                            const safeUnitPrice = toSafeNumber(unit_price)
+                            const itemTotal = safeQuantity * safeUnitPrice
                             return (
                               <tr
                                 key={index}
@@ -298,7 +302,7 @@ const Confirm = () => {
                                 </td>
                                 <td>
                                   <div className='flex flex-col'>
-                                    <p>{quantity * unit_price}</p>
+                                    <p>{itemTotal}</p>
                                     <span className='text-xs text-gray-500'>calculated</span>
                                   </div>
                                 </td>
@@ -381,7 +385,7 @@ const Confirm = () => {
                         實際付款金額：
                         <br />
                         <span className={clx({ 'skeleton text-transparent': isLoading })}>
-                          {`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(displayTotalPrice - displayTotalDiscount)} NTD`}
+                          {`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(actualPaymentAmount)} NTD`}
                         </span>
                       </div>
                     </div>
