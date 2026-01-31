@@ -1,14 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { map } from 'lodash-es'
 import CartBottomItems from '../../../components/CartBottomItems'
-
-// Helper to coerce values to safe numbers, preventing NaN rendering
-const toSafeNumber = (v) => {
-  if (v === null || v === undefined) return 0.0
-  // handle strings with commas or whitespace
-  const num = Number(String(v).replace(/,/g, '').trim())
-  return Number.isFinite(num) ? num : 0.0
-}
+import toSafeNumber from '../../../utils/numberUtils'
 
 const CustomCartBottomItems = (props) => {
   const { t } = useTranslation()
@@ -25,7 +18,7 @@ const CustomCartBottomItems = (props) => {
   const customItems = [
     <details open>
       <summary>
-        {`總折扣: ${safeTotalDiscountAmt}`}
+        {`總折扣: ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(safeTotalDiscountAmt)} NTD`}
       </summary>
       <ul>
         {map(discounts, (discount, index) => {
@@ -34,7 +27,7 @@ const CustomCartBottomItems = (props) => {
           return (
             <li key={index}>
               <a href='void:(0)'>
-                {`${type} ${safeDiscountAmt}`}
+                {`${type} ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(safeDiscountAmt)} NTD`}
               </a>
             </li>
           )

@@ -18,6 +18,7 @@ import useCategoryInfo from '../../../../hooks/useCategoryInfo'
 import Modal from '../../../../components/Modal'
 import { FORM_ITEM } from '../constants'
 import EditRowModal from '../EditRowModal'
+import toSafeNumber from '../../../../utils/numberUtils'
 
 const initCart = {
   discounts: [],
@@ -41,14 +42,6 @@ const getDiscounts = (result) => {
 const defaultClickRowData = {
   [FORM_ITEM.QUANTITY]: 0,
   [FORM_ITEM.REQUEST]: ''
-}
-
-// Helper to coerce values to safe numbers, preventing NaN rendering
-const toSafeNumber = (v) => {
-  if (v === null || v === undefined) return 0.0
-  // handle strings with commas or whitespace
-  const num = Number(String(v).replace(/,/g, '').trim())
-  return Number.isFinite(num) ? num : 0.0
 }
 
 const Confirm = () => {
