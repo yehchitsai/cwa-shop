@@ -62,7 +62,7 @@ const PurchaseModalTable = (props) => {
           </tr>
           <tr>
             <td>在庫量</td>
-            <td>{inventory}</td>
+            <td>{inventory === -1 ? '無上限' : inventory}</td>
           </tr>
           <tr>
             <td>最低訂購量 (隻/組)</td>
