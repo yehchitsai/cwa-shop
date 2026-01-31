@@ -21,6 +21,7 @@ import CustomCartBottomItems from './CustomCartBottomItems'
 import ItemSelectSection from './ItemSelectSection'
 import PurchaseTable from './PurchaseTable'
 import Modal from '../../../components/Modal'
+import wait from '../../../utils/wait'
 import useCreatePrepurchaseOrder from '../../../hooks/useCreatePrepurchaseOrder'
 import usePrepurchaseOrder from '../../../hooks/usePrepurchaseOrder'
 import Chat from './Chat'
@@ -105,7 +106,7 @@ const PurchaseDomestic = () => {
     return newSelectProducts
   }
 
-  const onClickRow = (originData) => {
+  const onClickRow = async (originData) => {
     if (isMutating) {
       return
     }
@@ -122,6 +123,8 @@ const PurchaseDomestic = () => {
       modifyPurchaseModalRef.current.open()
       return
     }
+
+    await wait(0)
     purchaseModalRef.current.open()
   }
 
