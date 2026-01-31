@@ -43,6 +43,14 @@ const defaultClickRowData = {
   [FORM_ITEM.REQUEST]: ''
 }
 
+// Helper to coerce values to safe numbers, preventing NaN rendering
+const toSafeNumber = (v) => {
+  if (v === null || v === undefined) return 0.0
+  // handle strings with commas or whitespace
+  const num = Number(String(v).replace(/,/g, '').trim())
+  return Number.isFinite(num) ? num : 0.0
+}
+
 const Confirm = () => {
   const { t } = useTranslation()
   const purchaseModalRef = useRef()
@@ -111,6 +119,10 @@ const Confirm = () => {
   }, [discounts])
   const isLoading = (isPreorderMutating || isOrderMutating || isCategoryInfoLoading)
   const isDisabled = (isLoading || isSubmitted)
+
+  // Coerce totalPrice and totalDiscount to safe numbers to prevent NaN rendering
+  const displayTotalPrice = toSafeNumber(totalPrice)
+  const displayTotalDiscount = toSafeNumber(totalDiscount)
 
   const updateCart = async (newItems) => {
     const orderItems = map(newItems, (item) => {
@@ -328,6 +340,7 @@ const Confirm = () => {
                                 type = '--',
                                 discount_amt = 0
                               } = discount
+                              const safeDiscountAmt = toSafeNumber(discount_amt)
                               return (
                                 <tr
                                   key={index}
@@ -342,7 +355,7 @@ const Confirm = () => {
                                     <p>{type}</p>
                                   </td>
                                   <td>
-                                    <p>{`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(discount_amt)} NTD`}</p>
+                                    <p>{`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(safeDiscountAmt)} NTD`}</p>
                                   </td>
                                 </tr>
                               )
@@ -358,14 +371,14 @@ const Confirm = () => {
                         總折扣：
                         <br />
                         <span className={clx({ 'skeleton text-transparent': isLoading })}>
-                          {`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(totalDiscount)} NTD`}
+                          {`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(displayTotalDiscount)} NTD`}
                         </span>
                       </div>
                       <div className='flex break-all text-sm'>
                         總金額：
                         <br />
                         <span className={clx({ 'skeleton text-transparent': isLoading })}>
-                          {`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(totalPrice)} NTD`}
+                          {`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(displayTotalPrice)} NTD`}
                         </span>
                       </div>
                     </div>
