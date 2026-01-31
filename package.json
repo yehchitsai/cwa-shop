@@ -2,7 +2,7 @@
   "name": "cwa-shop",
   "type": "module",
   "private": true,
-  "version": "0.348.0",
+  "version": "0.349.0",
   "scripts": {
     "dev": "VITE_CJS_IGNORE_WARNING=true vite",
     "dev:mock": "MOCK=1 npm run dev",
