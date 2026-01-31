@@ -8,7 +8,7 @@ import FieldError from '../../../components/Form/FieldError'
 
 const PurchaseModalTable = (props) => {
   const { rowData = {}, isAddToCart, disabled } = props
-  const { resetForm, values } = useFormikContext()
+  const { setValues, values } = useFormikContext()
   const editable = (!disabled && isAddToCart)
   const {
     fish_name,
@@ -37,8 +37,8 @@ const PurchaseModalTable = (props) => {
   }
 
   useEffect(() => {
-    resetForm({ values: { quantity: 0, ...rowData } })
-  }, [resetForm, rowData])
+    setValues({ values: { quantity: 0, ...rowData } })
+  }, [setValues, rowData])
 
   return (
     <div className='m-4 rounded-box border border-base-200'>
