@@ -48,6 +48,7 @@ const EditRowModal = (props) => {
       initialValues={initialValues}
       validationSchema={validationSchema}
       onSubmit={onSubmit}
+      enableReinitialize
     >
       <PurchaseModal
         modalRef={modalRef}
