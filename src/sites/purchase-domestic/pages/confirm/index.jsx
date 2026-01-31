@@ -297,7 +297,10 @@ const Confirm = () => {
                                   <p>{request}</p>
                                 </td>
                                 <td>
-                                  <p>{quantity * unit_price}</p>
+                                  <div className='flex flex-col'>
+                                    <p>{quantity * unit_price}</p>
+                                    <span className='text-xs text-gray-500'>calculated</span>
+                                  </div>
                                 </td>
                                 <th>
                                   <MdEdit size='1.2em' />
@@ -372,6 +375,13 @@ const Confirm = () => {
                         <br />
                         <span className={clx({ 'skeleton text-transparent': isLoading })}>
                           {`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(displayTotalPrice)} NTD`}
+                        </span>
+                      </div>
+                      <div className='flex break-all text-sm'>
+                        實際付款金額：
+                        <br />
+                        <span className={clx({ 'skeleton text-transparent': isLoading })}>
+                          {`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(displayTotalPrice - displayTotalDiscount)} NTD`}
                         </span>
                       </div>
                     </div>

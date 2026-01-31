@@ -15,6 +15,7 @@ const CustomCartBottomItems = (props) => {
   } = props
   const safeTotalPrice = toSafeNumber(total_price)
   const safeTotalDiscountAmt = toSafeNumber(total_discount_amt)
+  const actualPaymentAmount = safeTotalPrice - safeTotalDiscountAmt
   const customItems = [
     <details open>
       <summary>
@@ -35,7 +36,8 @@ const CustomCartBottomItems = (props) => {
       </ul>
     </details>,
     `${t('totalCount')}: ${new Intl.NumberFormat('en-US').format(total_quantity)}`,
-    `${t('totalPrice')}: ${`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(safeTotalPrice)} NTD`}`
+    `${t('totalPrice')}: ${`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(safeTotalPrice)} NTD`}`,
+    `實際付款金額: ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(actualPaymentAmount)} NTD`
   ]
   return (
     <CartBottomItems
