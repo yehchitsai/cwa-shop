@@ -95,7 +95,7 @@ const PurchaseModalTable = (props) => {
                     autoComplete='off'
                   />
                   <input
-                    className='input input-bordered join-item'
+                    className='input input-bordered join-item min-w-[130px]'
                     value={`(組) 共 ${quantity * group} 隻`}
                     readOnly
                   />
