@@ -18,7 +18,6 @@ import useCategoryInfo from '../../../../hooks/useCategoryInfo'
 import Modal from '../../../../components/Modal'
 import { FORM_ITEM } from '../constants'
 import EditRowModal from '../EditRowModal'
-import toSafeNumber from '../../../../utils/numberUtils'
 
 const initCart = {
   discounts: [],
@@ -112,11 +111,6 @@ const Confirm = () => {
   }, [discounts])
   const isLoading = (isPreorderMutating || isOrderMutating || isCategoryInfoLoading)
   const isDisabled = (isLoading || isSubmitted)
-
-  // Coerce totalPrice and totalDiscount to safe numbers to prevent NaN rendering
-  const displayTotalPrice = toSafeNumber(totalPrice)
-  const displayTotalDiscount = toSafeNumber(totalDiscount)
-  const actualPaymentAmount = displayTotalPrice - displayTotalDiscount
 
   const updateCart = async (newItems) => {
     const orderItems = map(newItems, (item) => {
@@ -269,9 +263,6 @@ const Confirm = () => {
                               [FORM_ITEM.REQUEST]: request = '--',
                               [FORM_ITEM.QUANTITY]: quantity = 0
                             } = item
-                            const safeQuantity = toSafeNumber(quantity)
-                            const safeUnitPrice = toSafeNumber(unit_price)
-                            const itemTotal = safeQuantity * safeUnitPrice
                             return (
                               <tr
                                 key={index}
@@ -301,10 +292,7 @@ const Confirm = () => {
                                   <p>{request}</p>
                                 </td>
                                 <td>
-                                  <div className='flex flex-col'>
-                                    <p>{itemTotal}</p>
-                                    <span className='text-xs text-gray-500'>calculated</span>
-                                  </div>
+                                  <p>{quantity * unit_price}</p>
                                 </td>
                                 <th>
                                   <MdEdit size='1.2em' />
@@ -340,7 +328,6 @@ const Confirm = () => {
                                 type = '--',
                                 discount_amt = 0
                               } = discount
-                              const safeDiscountAmt = toSafeNumber(discount_amt)
                               return (
                                 <tr
                                   key={index}
@@ -355,7 +342,7 @@ const Confirm = () => {
                                     <p>{type}</p>
                                   </td>
                                   <td>
-                                    <p>{`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(safeDiscountAmt)} NTD`}</p>
+                                    <p>{`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(discount_amt)} NTD`}</p>
                                   </td>
                                 </tr>
                               )
@@ -371,21 +358,14 @@ const Confirm = () => {
                         總折扣：
                         <br />
                         <span className={clx({ 'skeleton text-transparent': isLoading })}>
-                          {`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(displayTotalDiscount)} NTD`}
+                          {`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(totalDiscount)} NTD`}
                         </span>
                       </div>
                       <div className='flex break-all text-sm'>
                         總金額：
                         <br />
                         <span className={clx({ 'skeleton text-transparent': isLoading })}>
-                          {`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(displayTotalPrice)} NTD`}
-                        </span>
-                      </div>
-                      <div className='flex break-all text-sm'>
-                        實際付款金額：
-                        <br />
-                        <span className={clx({ 'skeleton text-transparent': isLoading })}>
-                          {`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(actualPaymentAmount)} NTD`}
+                          {`${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(totalPrice)} NTD`}
                         </span>
                       </div>
                     </div>
