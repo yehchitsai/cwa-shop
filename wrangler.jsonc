@@ -2,6 +2,6 @@
   "name": "cwa-shop",
   "compatibility_date": "2026-01-31",
   "assets": {
-    "directory": "./dist"
-  }
+    "directory": "./dist",
+  },
 }
