@@ -37,7 +37,7 @@ const PurchaseModalTable = (props) => {
   }
 
   useEffect(() => {
-    setValues({ ...rowData, quantity: rowData.quantity || 0 })
+    setValues({ rowData })
   }, [setValues, rowData])
 
   return (
