@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { Field, useFormikContext } from 'formik'
 import clx from 'classnames'
 import { isEmpty } from 'lodash-es'
@@ -7,8 +6,8 @@ import { FORM_ITEM } from './constants'
 import FieldError from '../../../components/Form/FieldError'
 
 const PurchaseModalTable = (props) => {
-  const { rowData = {}, isAddToCart, disabled } = props
-  const { setValues, values } = useFormikContext()
+  const { isAddToCart, disabled } = props
+  const { values } = useFormikContext()
   const editable = (!disabled && isAddToCart)
   const {
     fish_name,
@@ -35,10 +34,6 @@ const PurchaseModalTable = (props) => {
     }
     element.click()
   }
-
-  useEffect(() => {
-    setValues({ rowData })
-  }, [setValues, rowData])
 
   return (
     <div className='m-4 rounded-box border border-base-200'>
