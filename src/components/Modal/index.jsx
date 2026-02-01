@@ -165,7 +165,7 @@ const Modal = (props) => {
               >
                 {!isFormModal && children}
                 {
-                  isFormModal && children(
+                  isFormModal && children && children(
                     <>
                       <ModalActions
                         className='absolute bottom-0 right-0 z-10 w-full bg-base-100 pt-6'
