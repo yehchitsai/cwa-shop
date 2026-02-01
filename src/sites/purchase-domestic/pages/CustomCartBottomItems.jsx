@@ -16,7 +16,7 @@ const CustomCartBottomItems = (props) => {
   const safeTotalPrice = Number.isFinite(Number(total_price)) ? total_price : 0
   const safeTrueTotalPrice = Number.parseFloat(safeTotalPrice - total_discount_amt).toFixed(2)
   const customItems = [
-    <details open>
+    <details key='discount-details' open>
       <summary>
         {`總折扣: ${total_discount_amt}`}
       </summary>
