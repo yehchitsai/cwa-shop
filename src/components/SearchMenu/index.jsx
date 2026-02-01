@@ -121,7 +121,7 @@ const SearchMenu = (props) => {
         <div
           className={clx(
             'absolute top-0 left-0 z-10 w-full',
-            'menu w-56 rounded-b-lg bg-white border-base-content/20 border',
+            'menu rounded-b-lg bg-white border-base-content/20 border',
             { hidden: !isFilterMenuOpen }
           )}
         >

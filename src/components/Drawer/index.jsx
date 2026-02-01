@@ -149,7 +149,7 @@ const Drawer = (props) => {
           {
             lastItem && (
               <div className='flex-none'>
-                <ul className='menu'>
+                <ul className='menu w-full'>
                   {lastItem}
                 </ul>
               </div>

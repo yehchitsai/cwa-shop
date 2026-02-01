@@ -28,7 +28,7 @@ const Example = () => {
         <Link to='detail/' className='btn btn-outline'>Detail</Link>
         <br />
       </div>
-      <div className='m-4 flex flex-wrap md:flex-nowrap md:space-x-4'>
+      <div className='m-4 flex flex-wrap md:flex-nowrap md:gap-4'>
         <div className='w-full md:w-1/2'>
           <button
             type='button'

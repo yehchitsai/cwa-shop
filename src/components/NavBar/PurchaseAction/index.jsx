@@ -29,7 +29,7 @@ const PurchaseAction = () => {
       </label>
       <ul
         tabIndex={0}
-        className='menu dropdown-content z-10 mt-4 w-72 translate-y-10 rounded-box bg-base-100 p-2 shadow [&_label]:pointer-events-none'
+        className='menu dropdown-content z-10 mt-4 w-72 rounded-box bg-base-100 p-2 shadow [&_label]:pointer-events-none'
       >
         <li>
           <label className='label cursor-pointer'>

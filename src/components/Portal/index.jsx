@@ -10,7 +10,7 @@ const Portal = (props) => {
       )}
     >
       <div className='hero-content text-center'>
-        <div className='flex flex-wrap justify-center max-sm:flex-col max-sm:space-y-4 sm:flex-row sm:space-x-4'>
+        <div className='flex flex-wrap justify-center max-sm:flex-col max-sm:gap-4 sm:flex-row sm:gap-4'>
           {children}
         </div>
       </div>

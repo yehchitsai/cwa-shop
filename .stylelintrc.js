@@ -1,6 +1,7 @@
 export default {
   extends: 'stylelint-config-standard',
   rules: {
-    'at-rule-no-unknown': null
+    'at-rule-no-unknown': null,
+    'import-notation': null
   }
 }

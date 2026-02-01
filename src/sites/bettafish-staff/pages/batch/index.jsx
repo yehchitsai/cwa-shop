@@ -299,7 +299,7 @@ const Batch = () => {
                   />
                 </FormRow>
               )}
-              <div className='space-x-2 text-right'>
+              <div className='flex gap-2 justify-end'>
                 <button
                   type='button'
                   className='btn btn-outline'

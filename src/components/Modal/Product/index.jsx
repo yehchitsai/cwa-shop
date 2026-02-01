@@ -28,7 +28,8 @@ const SliderArrow = (props) => {
       className={clx(
         customClassName,
         'fixed top-[46%]',
-        'btn btn-circle glass btn-md text-center pl-[0.8rem] z-10'
+        'btn btn-circle glass btn-md text-center z-10',
+        '[&_svg]:relative [&_svg]:left-2'
       )}
       style={style}
       onClick={onClick}
@@ -158,7 +159,7 @@ const ProductModal = (props) => {
         <a
           target='_blank'
           rel='noreferrer noopener'
-          className='btn btn-circle fixed bottom-2 right-2'
+          className='btn btn-circle fixed bottom-2 right-2 flex items-center justify-center'
           href={largeImgUrl}
         >
           <MdOpenInNew size='1.5rem' />

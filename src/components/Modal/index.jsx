@@ -19,7 +19,7 @@ const ModalActions = (props) => {
   return (
     <div
       className={clx(
-        'modal-action px-6 pb-6 space-x-2',
+        'modal-action px-6 pb-6 flex gap-2',
         { [className]: className }
       )}
     >

@@ -70,7 +70,7 @@ const Confirm = () => {
           </tbody>
         </table>
       </div>
-      <div className='my-2 mr-4 flex justify-end space-x-2'>
+      <div className='my-2 mr-4 flex justify-end gap-2'>
         <div className='mr-4 flex items-center justify-center break-all'>
           總金額：
           <br />

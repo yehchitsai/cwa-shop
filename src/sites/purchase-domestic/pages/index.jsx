@@ -176,7 +176,7 @@ const PurchaseDomestic = () => {
       lastItem={(
         <Link
           to='./confirm'
-          className={clx({ 'pointer-events-none': isNoProductSelected })}
+          className={clx('block', { 'pointer-events-none': isNoProductSelected })}
         >
           <button
             type='button'
@@ -196,12 +196,12 @@ const PurchaseDomestic = () => {
       indicator={get(cart, 'total_quantity', '0')}
       overlay
     >
-      <div className='space-y-4 p-4'>
+      <div className='flex flex-col gap-4 p-4'>
         <div className='flex gap-4 max-sm:flex-col sm:flex-row'>
           <div className='flex-1'>
             <ItemSelectSection />
           </div>
-          <div className='flex-1'>
+          <div className='flex-none min-w-[30%]'>
             <SearchMenu name='search' />
           </div>
         </div>

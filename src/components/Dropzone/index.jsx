@@ -187,7 +187,7 @@ const Dropzone = (props) => {
     <>
       {
         isSelectFolder && (
-          <div className='w-full'>
+          <div className='w-full flex flex-col gap-4'>
             {SELECT_TYPE_OPTIONS.map((option, index) => (
               <label className='label cursor-pointer' key={index}>
                 <input
@@ -219,7 +219,7 @@ const Dropzone = (props) => {
           { 'border-gray-400': isDragActive }
         )}
         >
-          <span className='flex items-center space-x-2'>
+          <span className='flex items-center gap-2'>
             <MdOutlineCloudUpload
               className='text-gray-600 max-sm:size-16 sm:size-8'
             />

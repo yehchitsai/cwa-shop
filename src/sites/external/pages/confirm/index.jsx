@@ -237,7 +237,7 @@ const Page = () => {
               <td>
                 {`${totalPrice} ${currency}`}
               </td>
-              <th className='space-y-2'>
+              <th className='flex flex-col gap-2'>
                 <button
                   type='button'
                   className='btn btn-outline btn-success'

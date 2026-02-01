@@ -230,7 +230,7 @@ const Chat = () => {
         {/* Messages */}
         <div
           ref={messagesRef}
-          className={clx('flex-1 space-y-4 overflow-y-auto p-4', {
+          className={clx('flex-1 flex flex-col gap-4 overflow-y-auto p-4', {
             'skeleton rounded-none [&_*]:invisible': isLoading
           })}
         >

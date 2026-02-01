@@ -70,7 +70,7 @@ const PurchaseExport = () => {
       indicator={size(selectProducts)}
       overlay
     >
-      <div className='space-y-4 p-4'>
+      <div className='flex flex-col gap-4 p-4'>
         <div className='flex gap-4 max-sm:flex-col sm:flex-row'>
           <div className='flex-1'>
             <ItemSelectSection />

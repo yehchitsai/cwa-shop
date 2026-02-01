@@ -1,10 +1,24 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* stylelint-disable property-no-unknown */
+@plugin "daisyui" {
+  themes: light --default, light --prefersdark;
+  logs: false;
+  exclude: properties;
+}
+/* stylelint-enable property-no-unknown */
+
+@theme {
+  --height-screen-fill: -webkit-fill-available;
+}
 
 @layer base {
   html,
   body {
     @apply overscroll-none md:overscroll-x-auto;
+  }
+
+  .label {
+    @apply px-1 py-2;
   }
 }

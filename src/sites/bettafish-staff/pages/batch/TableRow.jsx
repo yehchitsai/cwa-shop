@@ -135,7 +135,7 @@ const TableRow = (props) => {
         </>
       )}
       <th>
-        <div className='w-32 space-x-4 text-right'>
+        <div className='w-32 flex gap-4 justify-end'>
           {(!state.isError || isRecognitionError) && (
             <button
               type='button'
